@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Next.PCL;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -30,6 +31,7 @@ namespace Next.UWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            Logger.ConfigureLogger();
         }
 
         /// <summary>
