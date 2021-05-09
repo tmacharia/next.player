@@ -4,4 +4,8 @@
     {
         int Id { get; set; }
     }
+    public interface IRootEntity<TKey>
+    {
+        TKey Id { get; set; }
+    }
 }

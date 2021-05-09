@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Next.PCL.Entities
 {
@@ -6,5 +7,9 @@ namespace Next.PCL.Entities
     {
         Uri Url { get; set; }
         MetaSource Source { get; set; }
+    }
+    public interface IUrls
+    {
+        IList<MetaUrl> Urls { get; set; }
     }
 }

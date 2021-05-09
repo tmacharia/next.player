@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace Next.PCL.Entities
 {
@@ -11,15 +10,9 @@ namespace Next.PCL.Entities
             Urls = new List<MetaUrl>();
             Images = new List<MetaImage>();
         }
-        public Role Role { get; set; }
-
-        [JsonProperty(
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Character { get; set; }
         public DateTime? LastModified { get; set; }
 
-        public List<MetaUrl> Urls { get; set; }
-        public List<MetaImage> Images { get; set; }
+        public IList<MetaUrl> Urls { get; set; }
+        public IList<MetaImage> Images { get; set; }
     }
 }

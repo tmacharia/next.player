@@ -1,35 +1,57 @@
-﻿namespace Next.PCL.Entities
+﻿using System.ComponentModel;
+
+namespace Next.PCL.Entities
 {
     public enum MetaSource
     {
-        IMDB = 0,
-        TMDB = 1,
-        TVDB = 2,
-        OMDB = 3,
-        TVMAZE = 4,
-        YTS_MX = 5
+        [Description("Imdb")]           IMDB = 0,
+        [Description("The Movie DB")]   TMDB = 1,
+        [Description("The TV DB")]      TVDB = 2,
+        [Description("Open Movie DB")]  OMDB = 3,
+        [Description("TV Maze")]        TVMAZE = 4,
+        [Description("YTS")]            YTS_MX = 5
     }
     public enum Resolution
     {
-        SD = 480,
-        HD = 720,
-        UHD = 1080,
-        QuadHD,
-        _4K
+        [Description("Standard Definition")]    SD = 480,
+        [Description("High Definition")]        HD = 720,
+        [Description("Ultra High Definition")]  UHD = 1080,
+        [Description("Quad High Definition")]   QuadHD,
+        [Description("4K")]                     _4K
     }
     public enum MetaImageType
     {
-        Image = 0,
-        Poster = 1,
-        Backdrop = 2,
-        Thumbnail = 3,
-        Screenshot = 4,
+        Image       = 0,
+        Poster      = 1,
+        Backdrop    = 2,
+        Thumbnail   = 3,
+        Screenshot  = 4,
+        Banner      = 5,
+        Icon        = 6,
+        Logo        = 7
     }
-    public enum Role
+    public enum MetaVideoType
     {
-        Actor = 0,
-        Producer = 1,
-        Director = 2,
-        Writer = 3,
+        Trailer = 0,
+        Teaser  = 1,
+        Clip    = 2
+    }
+    public enum Profession
+    {
+        Director    = 0,
+        Writer      = 1,
+        Producer    = 2,
+    }
+    public enum CompanyService
+    {
+        Production = 0,
+        Distributor = 1
+    }
+    public enum MetaStatus
+    {
+        [Description("Release")]Released = 0,
+        [Description("Airing")] Airing = 1,
+        [Description("Ended")] Ended = 2,
+        [Description("In Production")] InProduction = 3,
     }
 }

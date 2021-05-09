@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
-
-namespace Next.PCL.Entities
+﻿namespace Next.PCL.Entities
 {
-    public interface IPerson
+    public interface IPerson : INamedEntity, IUrls, IMetaImages
     {
-        Role Role { get; set; }
-        string Name { get; set; }
-        List<MetaUrl> Urls { get; set; }
-        List<MetaImage> Images { get; set; }
+        
+    }
+    public interface IFilmMaker : IPerson
+    {
+        Profession Role { get; set; }
+    }
+    public interface ICompany : IPerson
+    {
+        CompanyService Service { get; set; }
     }
 }
