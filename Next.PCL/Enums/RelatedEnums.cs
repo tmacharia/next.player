@@ -4,12 +4,12 @@ namespace Next.PCL.Entities
 {
     public enum MetaSource
     {
-        [Description("Imdb")]           IMDB = 0,
-        [Description("The Movie DB")]   TMDB = 1,
-        [Description("The TV DB")]      TVDB = 2,
-        [Description("Open Movie DB")]  OMDB = 3,
-        [Description("TV Maze")]        TVMAZE = 4,
-        [Description("YTS")]            YTS_MX = 5
+        [Description("Imdb")]           IMDB = 0X284,
+        [Description("The Movie DB")]   TMDB = 0X295,
+        [Description("The TV DB")]      TVDB = 0X304,
+        [Description("Open Movie DB")]  OMDB = 0X290,
+        [Description("TV Maze")]        TVMAZE = 0X471,
+        [Description("YTS")]            YTS_MX = 0X421
     }
     public enum Resolution
     {
@@ -30,6 +30,18 @@ namespace Next.PCL.Entities
         /// </summary>
         UltraHD = 2160
     }
+    public enum StreamingPlatform
+    {
+        Youtube,
+        Netflix,
+        [Description("Amazon Prime Video")] PrimeVideo,
+        [Description("Apple TV")] AppleTV,
+        ABC,
+        CBS,
+        HBO,
+        [Description("HBO Max")] HBOMax,
+        Hulu
+    }
     public enum MetaImageType
     {
         Image       = 0,
@@ -43,9 +55,10 @@ namespace Next.PCL.Entities
     }
     public enum MetaVideoType
     {
-        Trailer = 0,
-        Teaser  = 1,
-        Clip    = 2
+        Clip    = 0,
+        Trailer = 1,
+        Teaser  = 2,
+        Extras  = 3
     }
     public enum Profession
     {
@@ -60,9 +73,9 @@ namespace Next.PCL.Entities
     }
     public enum MetaStatus
     {
-        [Description("Release")]Released = 0,
-        [Description("Airing")] Airing = 1,
-        [Description("Ended")] Ended = 2,
-        [Description("In Production")] InProduction = 3,
+        Released = 0,
+        Airing = 1,
+        Ended = 2,
+        InProduction = 3,
     }
 }

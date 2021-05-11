@@ -23,5 +23,6 @@ namespace Next.PCL.Entities
     public interface IMetaVideo : IMetaMedia
     {
         MetaVideoType Type { get; set; }
+        StreamingPlatform Platform { get; set; }
     }
 }
