@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Next.PCL.Entities
+﻿namespace Next.PCL.Entities
 {
-
     public class Movie : MetaCommonC
     {
-
+        public MPAA AgeRating { get; set; }
     }
 }

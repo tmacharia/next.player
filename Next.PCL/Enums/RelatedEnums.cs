@@ -13,11 +13,22 @@ namespace Next.PCL.Entities
     }
     public enum Resolution
     {
-        [Description("Standard Definition")]    SD = 480,
-        [Description("High Definition")]        HD = 720,
-        [Description("Ultra High Definition")]  UHD = 1080,
-        [Description("Quad High Definition")]   QuadHD,
-        [Description("4K")]                     _4K
+        /// <summary>
+        /// 720 x 480 / WVGA
+        /// </summary>
+        WVGA    = 480,
+        /// <summary>
+        /// 1280 x 720 / 720p
+        /// </summary>
+        HD      = 720,
+        /// <summary>
+        /// 1920 x 1080 / 1080p
+        /// </summary>
+        FullHD  = 1080,
+        /// <summary>
+        /// 3840 x 2160p
+        /// </summary>
+        UltraHD = 2160
     }
     public enum MetaImageType
     {
@@ -38,9 +49,9 @@ namespace Next.PCL.Entities
     }
     public enum Profession
     {
-        Director    = 0,
-        Writer      = 1,
-        Producer    = 2,
+        Director = 0,
+        Writer   = 1,
+        Producer = 2,
     }
     public enum CompanyService
     {
