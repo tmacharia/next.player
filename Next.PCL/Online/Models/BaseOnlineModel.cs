@@ -13,7 +13,7 @@ namespace Next.PCL.Online.Models
     }
     public class BaseOnlineModel : IBaseOnlineModel
     {
-        public Uri Url { get; set; }
+        public virtual Uri Url { get; set; }
         public MetaSource Source { get; set; }
         public virtual string Name { get; set; }
         public virtual string ImdbId { get; set; }

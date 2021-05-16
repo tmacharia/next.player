@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Next.PCL.Entities;
 
 namespace Next.PCL.Extensions
 {
@@ -24,6 +25,17 @@ namespace Next.PCL.Extensions
                     return n;
             }
             return null;
+        }
+        internal static MetaImageType ParseToMetaImageType(string s)
+        {
+            if (s.IsValid())
+            {
+                if (s.Matches("poster"))
+                    return MetaImageType.Poster;
+                else if (s.MatchesAny("backdrop", "background"))
+                    return MetaImageType.Backdrop;
+            }
+            return MetaImageType.Image;
         }
         internal static IEnumerable<string> SplitByAndTrim(this string s, params string[] args)
         {
