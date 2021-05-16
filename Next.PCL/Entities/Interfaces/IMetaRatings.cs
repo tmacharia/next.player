@@ -1,19 +1,22 @@
 ﻿namespace Next.PCL.Entities
 {
-    public interface IMetaRatings : IBaseRating
+    public interface IImdbRating
     {
         /// <summary>
         /// Total no. of IMDB votes.
         /// </summary>
         int ImdbVotes { get; set; }
         /// <summary>
-        /// Total no. of TMDB votes.
-        /// </summary>
-        int TmdbVotes { get; set; }
-        /// <summary>
         /// IMDB score out of 10 based.
         /// </summary>
         double ImdbScore { get; set; }
+    }
+    public interface IMetaRatings : IBaseRating, IImdbRating
+    {
+        /// <summary>
+        /// Total no. of TMDB votes.
+        /// </summary>
+        int TmdbVotes { get; set; }
         /// <summary>
         /// TheMovieDb score out of 100 based.
         /// </summary>
