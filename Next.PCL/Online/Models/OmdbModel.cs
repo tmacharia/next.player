@@ -17,6 +17,7 @@ namespace Next.PCL.Online.Models
             Writers = new List<string>();
             Countries = new List<string>();
             Languages = new List<string>();
+            Companies = new List<string>();
         }
         [JsonProperty("imdbID")]
         public override string ImdbId { get; set; }
@@ -43,8 +44,8 @@ namespace Next.PCL.Online.Models
         [JsonConverter(typeof(StringToListConverter))]
         public List<string> Countries { get; set; }
         [JsonProperty("Production")]
-        [JsonConverter(typeof(NAStringConverterResolver))]
-        public string Company { get; set; }
+        [JsonConverter(typeof(StringToListConverter))]
+        public List<string> Companies { get; set; }
         [JsonProperty("Website")]
         [JsonConverter(typeof(StringToUriConverter))]
         public Uri Website { get; set; }
@@ -65,8 +66,8 @@ namespace Next.PCL.Online.Models
 
 
         [JsonProperty("Metascore")]
-        [JsonConverter(typeof(NAStringConverterResolver))]
-        public string Metascore { get; set; }
+        [JsonConverter(typeof(StringToIntConverter))]
+        public int Metascore { get; set; }
         [JsonProperty("imdbRating")]
         [JsonConverter(typeof(StringToDoubleConverter))]
         public double ImdbScore { get; set; }
