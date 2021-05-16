@@ -15,6 +15,16 @@ namespace Next.PCL.Extensions
             }
             return false;
         }
+        internal static int? ParseToInt(this string s)
+        {
+            if (s.IsValid())
+            {
+                s = s.Replace(",", "").Trim();
+                if (int.TryParse(s, out int n))
+                    return n;
+            }
+            return null;
+        }
         internal static IEnumerable<string> SplitByAndTrim(this string s, params string[] args)
         {
             if (s.IsValid())

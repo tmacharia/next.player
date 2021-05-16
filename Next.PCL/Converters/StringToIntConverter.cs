@@ -19,9 +19,9 @@ namespace Next.PCL.Converters
                 string s = token.Value<string>();
                 if (s.IsNotEmptyOr())
                 {
-                    s = s.Trim();
-                    if (int.TryParse(s, out int n))
-                        return n;
+                    var r = s.ParseToInt();
+                    if (r.HasValue)
+                        return r.Value;
                 }
             }
             return default(int);
