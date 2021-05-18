@@ -53,7 +53,7 @@ namespace Next.PCL.Online.Models
 
         [JsonProperty("Genre")]
         [JsonConverter(typeof(StringToListConverter))]
-        public List<string> Genres { get; set; }
+        public override List<string> Genres { get; set; }
         [JsonProperty("Actors")]
         [JsonConverter(typeof(StringToListConverter))]
         public List<string> Actors { get; set; }

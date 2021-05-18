@@ -34,6 +34,10 @@ namespace Next.PCL.Extensions
                     return MetaImageType.Poster;
                 else if (s.MatchesAny("backdrop", "background"))
                     return MetaImageType.Backdrop;
+                else if (s.Matches("banner"))
+                    return MetaImageType.Banner;
+                else if (s.Matches("typography"))
+                    return MetaImageType.Typography;
             }
             return MetaImageType.Image;
         }

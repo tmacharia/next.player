@@ -51,7 +51,8 @@ namespace Next.PCL.Entities
         Screenshot  = 4,
         Banner      = 5,
         Icon        = 6,
-        Logo        = 7
+        Logo        = 7,
+        Typography  = 8
     }
     public enum MetaVideoType
     {

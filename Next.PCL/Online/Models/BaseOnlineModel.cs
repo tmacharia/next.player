@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Next.PCL.Entities;
 
 namespace Next.PCL.Online.Models
@@ -10,9 +11,14 @@ namespace Next.PCL.Online.Models
         int? Runtime { get; set; }
         string Plot { get; set; }
         DateTime? ReleaseDate { get; set; }
+        List<string> Genres { get; set; }
     }
     public class BaseOnlineModel : IBaseOnlineModel
     {
+        public BaseOnlineModel()
+        {
+            Genres = new List<string>();
+        }
         public virtual Uri Url { get; set; }
         public MetaSource Source { get; set; }
         public virtual string Name { get; set; }
@@ -21,5 +27,7 @@ namespace Next.PCL.Online.Models
         public virtual string Plot { get; set; }
         public virtual int? Runtime { get; set; }
         public virtual DateTime? ReleaseDate { get; set; }
+
+        public virtual List<string> Genres { get; set; }
     }
 }

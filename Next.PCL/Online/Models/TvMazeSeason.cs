@@ -6,6 +6,8 @@ namespace Next.PCL.Online.Models
 {
     public class TvMazeSeason : INamedEntity
     {
+        [JsonProperty("id")]
+        public int? Id { get; set; }
         [JsonProperty("url")]
         public Uri Url { get; set; }
         [JsonProperty("number")]

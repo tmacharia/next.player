@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Next.PCL.Converters;
 using Next.PCL.Entities;
@@ -7,7 +8,7 @@ namespace Next.PCL.Online.Models
 {
     public class TvMazeModel : BaseOnlineModel
     {
-        public TvMazeModel()
+        public TvMazeModel() :base()
         {
             Source = MetaSource.TVMAZE;
         }
@@ -36,6 +37,8 @@ namespace Next.PCL.Online.Models
         public int? TvdbId => Externals?.TvdbId;
 
 
+        [JsonProperty("genres")]
+        public override List<string> Genres { get; set; }
         public string Company => Network?.Name;
         [JsonProperty("language")]
         public string Language { get; set; }
