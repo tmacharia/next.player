@@ -5,13 +5,18 @@ VisualStudioVersion = 16.0.31004.235
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Next.UWP", "Next.UWP\Next.UWP.csproj", "{1453D89D-7260-4711-9233-27D3180AA3C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Next.PCL", "Next.PCL\Next.PCL.csproj", "{BB5A5F41-C7BF-4233-9041-76A825AA216B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Next.PCL", "Next.PCL\Next.PCL.csproj", "{BB5A5F41-C7BF-4233-9041-76A825AA216B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Next.WRC", "Next.WRC\Next.WRC.csproj", "{3C39FB93-9973-4A2F-8075-935D7B5C2EC5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{137ECA74-96AC-45D5-826A-8A7C18E37778}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Next.Tests", "Next.Tests\Next.Tests.csproj", "{FC304412-FDD3-445E-A2C6-7F7B91FF77A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Next.Tests", "Next.Tests\Next.Tests.csproj", "{FC304412-FDD3-445E-A2C6-7F7B91FF77A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF4B3A55-5228-40EC-B033-3E0029F07EB9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
