@@ -19,8 +19,17 @@ namespace Next.PCL.Online
                     return await res.Content.ReadAsStringAsync();
                 else
                 {
-                    Log.Error("http error {0} | {1}", res.StatusCode, res.ReasonPhrase);
-                    throw new OnlineException(string.Format("http error {0} | {1}", res.StatusCode, res.ReasonPhrase));
+                    int code = (int)res.StatusCode;
+                    if(code == 301 || code == 302)
+                    {
+                        Log.Information("{0} Redirect to {1}", code, res.Headers.Location);
+                        return await GetAsync(res.Headers.Location, token);
+                    }
+                    else
+                    {
+                        Log.Error("http error {0} | {1}", res.StatusCode, res.ReasonPhrase);
+                        throw new OnlineException(string.Format("http error {0} | {1}", res.StatusCode, res.ReasonPhrase));
+                    }
                 }
             }
         }
