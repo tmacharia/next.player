@@ -66,6 +66,13 @@ namespace Next.PCL.Entities
         Director = 0,
         Writer   = 1,
         Producer = 2,
+        Other    = 3
+    }
+    public enum Gender
+    {
+        Male    = 1,
+        Female  = 2,
+        Unknown = 0,
     }
     public enum CompanyService
     {

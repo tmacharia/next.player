@@ -12,4 +12,8 @@
     {
         CompanyService Service { get; set; }
     }
+    public interface IGender
+    {
+        Gender Gender { get; set; }
+    }
 }
