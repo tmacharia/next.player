@@ -13,6 +13,14 @@ namespace Next.PCL.Online
     /// Free, fast and clean REST client for TvMaze API that's easy to use.<br/>
     /// API calls are rate limited to allow at least 20 calls every 10 seconds per IP address.
     /// </summary>
+    /// <remarks>
+    /// Use of the TVmaze API is licensed by 
+    /// <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA</a>. 
+    /// This means the data can freely be used for any purpose, 
+    /// as long as TVmaze is properly credited as source and your application complies with the ShareAlike provision.
+    /// You can satisfy the attribution requirement by linking back to TVmaze from within your application or website,
+    /// for example using the URLs available in the API.
+    /// </remarks>
     public class TvMaze : BaseOnline
     {
         public Task<TvMazeModel> GetShowByIdAsync(int id, CancellationToken token = default)

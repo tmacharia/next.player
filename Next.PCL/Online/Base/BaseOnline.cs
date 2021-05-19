@@ -9,6 +9,8 @@ namespace Next.PCL.Online
 {
     public class BaseOnline : IOnline
     {
+        /// <summary></summary>
+        /// <exception cref="OnlineException"/>
         internal async Task<string> GetAsync(Uri uri, CancellationToken token = default)
         {
             using (HttpClient client = new HttpClient())
