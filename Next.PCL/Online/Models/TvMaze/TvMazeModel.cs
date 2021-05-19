@@ -55,20 +55,4 @@ namespace Next.PCL.Online.Models
         [JsonProperty("network")]
         internal TvMazeNetwork Network { get; set; }
     }
-    public class TvMazeExternals
-    {
-        [JsonProperty("tvrage")]
-        public int? Tvrage { get; set; }
-        [JsonProperty("thetvdb")]
-        public int? TvdbId { get; set; }
-        [JsonProperty("imdb")]
-        public string ImdbId { get; set; }
-    }
-    internal class TvMazeNetwork : INamedEntity
-    {
-        [JsonProperty("id")]
-        public int Id { get; set; }
-        [JsonProperty("name")]
-        public string Name { get; set; }
-    }
 }

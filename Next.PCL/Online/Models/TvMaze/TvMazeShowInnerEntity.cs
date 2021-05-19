@@ -4,22 +4,16 @@ using Next.PCL.Entities;
 
 namespace Next.PCL.Online.Models
 {
-    public class TvMazeSeason : INamedEntity
+    public abstract class TvMazeShowInnerEntity : INamedEntity
     {
         [JsonProperty("id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         [JsonProperty("url")]
         public Uri Url { get; set; }
-        [JsonProperty("number")]
-        public int? Number { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
-        [JsonProperty("episodeOrder")]
-        public int? TotalEpisodes { get; set; }
-        [JsonProperty("premiereDate")]
-        public DateTime? ReleaseDate { get; set; }
-        [JsonProperty("endDate")]
-        public DateTime? EndDate { get; set; }
+        [JsonProperty("number")]
+        public int Number { get; set; }
         [JsonProperty("image")]
         public TvMazeTinyImage Image { get; set; }
         [JsonProperty("summary")]
