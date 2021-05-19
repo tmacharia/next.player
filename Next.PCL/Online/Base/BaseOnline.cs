@@ -28,7 +28,7 @@ namespace Next.PCL.Online
                     else
                     {
                         Log.Error("http error {0} | {1}", res.StatusCode, res.ReasonPhrase);
-                        throw new OnlineException(string.Format("http error {0} | {1}", res.StatusCode, res.ReasonPhrase));
+                        throw new OnlineException(code, res.ReasonPhrase);
                     }
                 }
             }
