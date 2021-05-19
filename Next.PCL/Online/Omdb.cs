@@ -24,7 +24,7 @@ namespace Next.PCL.Online
                 throw new ApiKeyException();
 
             if (!title.IsValid() && !imdbId.IsValid())
-                throw new ArgumentException("At least one param is required (title or imdbId)");
+                throw new NextArgumentException("At least one param is required (title or imdbId)");
 
             StringBuilder sb = new StringBuilder();
             sb.Append(SiteUrls.OMDB);
