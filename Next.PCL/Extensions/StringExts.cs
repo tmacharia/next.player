@@ -21,8 +21,16 @@ namespace Next.PCL.Extensions
             if (s.IsValid())
             {
                 s = s.Replace(",", "").Trim();
-                if (int.TryParse(s, out int n))
-                    return n;
+                if (!s.Contains('.'))
+                {
+                    if (int.TryParse(s, out int n))
+                        return n;
+                }
+                else
+                {
+                    if (double.TryParse(s, out double d))
+                        return Convert.ToInt32(d);
+                }
             }
             return null;
         }

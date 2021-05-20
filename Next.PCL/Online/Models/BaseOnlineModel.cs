@@ -29,5 +29,10 @@ namespace Next.PCL.Online.Models
         public virtual DateTime? ReleaseDate { get; set; }
 
         public virtual List<string> Genres { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} | {1}, {2} mins | {3}", Name, ImdbId, Runtime, Source);
+        }
     }
 }

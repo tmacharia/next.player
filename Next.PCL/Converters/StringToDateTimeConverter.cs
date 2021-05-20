@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Next.PCL.Extensions;
@@ -20,7 +22,7 @@ namespace Next.PCL.Converters
                 if (s.IsNotEmptyOr())
                 {
                     s = s.Trim();
-                    if (DateTime.TryParse(s, out DateTime date))
+                    if (DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                         return date;
                 }
             }
