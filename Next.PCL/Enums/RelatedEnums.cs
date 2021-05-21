@@ -11,6 +11,12 @@ namespace Next.PCL.Entities
         [Description("TV Maze")]        TVMAZE = 0X471,
         [Description("YTS")]            YTS_MX = 0X421
     }
+    public enum MetaType
+    {
+        Movie   = 1,
+        TvShow  = 2,
+        Unknown = 0
+    }
     public enum Resolution
     {
         /// <summary>

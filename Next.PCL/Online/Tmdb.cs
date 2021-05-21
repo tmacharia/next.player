@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using Next.PCL.Extensions;
 using TMDbLib.Client;
 using TMDbLib.Objects.Search;
+using Next.PCL.Entities;
+using TMDbLib.Objects.General;
+using Next.PCL.Online.Models;
+using System.Linq;
 
 namespace Next.PCL.Online
 {
@@ -14,6 +18,35 @@ namespace Next.PCL.Online
         public Tmdb(string apiKey)
         {
             _client = new TMDbClient(apiKey);
+        }
+
+        public async Task<List<Crew>> GetCrewAsync(int id, MetaType type, CancellationToken token = default)
+        {
+            if (type == MetaType.Movie)
+            {
+                var res = await _client.GetMovieCreditsAsync(id, token);
+                return res.Crew;
+            }
+            else if (type == MetaType.TvShow)
+            {
+                var res = await _client.GetTvShowCreditsAsync(id, null, token);
+                return res.Crew;
+            }
+            return null;
+        }
+        public async Task<List<TmdbCast>> GetCastAsync(int id, MetaType type, CancellationToken token = default)
+        {
+            if(type == MetaType.Movie)
+            {
+                var res = await _client.GetMovieCreditsAsync(id, token);
+                return res.Cast.Select(x => (TmdbCast)x).ToList();
+            }
+            else if (type == MetaType.TvShow)
+            {
+                var res = await _client.GetTvShowCreditsAsync(id, null, token);
+                return res.Cast.Select(x => x.ToTmdbCast()).ToList();
+            }
+            return null;
         }
 
         #region Search & Lookup
