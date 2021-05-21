@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using Next.PCL.Enums;
 
 namespace Next.PCL.Entities
 {

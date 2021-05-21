@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Next.PCL.Enums;
 
 namespace Next.PCL.Entities
 {

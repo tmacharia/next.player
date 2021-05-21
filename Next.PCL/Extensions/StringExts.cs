@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Next.PCL.Entities;
+using Next.PCL.Enums;
 
 namespace Next.PCL.Extensions
 {

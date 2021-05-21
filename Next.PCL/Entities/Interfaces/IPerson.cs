@@ -1,4 +1,6 @@
-﻿namespace Next.PCL.Entities
+﻿using Next.PCL.Enums;
+
+namespace Next.PCL.Entities
 {
     public interface IPerson : INamedEntity, IUrls, IMetaImages
     {

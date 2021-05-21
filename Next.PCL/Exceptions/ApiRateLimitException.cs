@@ -1,5 +1,5 @@
 ﻿using System;
-using Next.PCL.Entities;
+using Next.PCL.Enums;
 
 namespace Next.PCL.Exceptions
 {

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common;
 using Next.PCL.Entities;
+using Next.PCL.Enums;
 using Next.PCL.Exceptions;
 using Next.PCL.Online.Models;
 

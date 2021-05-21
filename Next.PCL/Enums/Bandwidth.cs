@@ -1,4 +1,4 @@
-﻿namespace Next.PCL.Entities
+﻿namespace Next.PCL.Enums
 {
     public enum Bandwidth
     {

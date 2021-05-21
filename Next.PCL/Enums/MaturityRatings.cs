@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Next.PCL.Entities
+namespace Next.PCL.Enums
 {
     /// <summary>
     /// Movies Maturity Ratings

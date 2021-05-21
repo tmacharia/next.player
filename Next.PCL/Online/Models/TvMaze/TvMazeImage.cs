@@ -1,6 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Next.PCL.Entities;
+using Next.PCL.Enums;
 using Next.PCL.Extensions;
 
 namespace Next.PCL.Online.Models

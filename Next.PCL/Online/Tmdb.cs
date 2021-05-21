@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Next.PCL.Extensions;
 using TMDbLib.Client;
 using TMDbLib.Objects.Search;
-using Next.PCL.Entities;
+using Next.PCL.Enums;
 using TMDbLib.Objects.General;
 using Next.PCL.Online.Models;
 using System.Linq;
 using System.IO;
 using Common;
+using TMDbLib.Objects.Companies;
 
 namespace Next.PCL.Online
 {
@@ -49,6 +50,12 @@ namespace Next.PCL.Online
                 return res.Cast.Select(x => x.ToTmdbCast()).ToList();
             }
             return null;
+        }
+
+        public async Task<Company> GetCompanyAsync(int id, CancellationToken token = default)
+        {
+            var res = await _client.GetCompanyAsync(id, cancellationToken: token);
+            return res;
         }
 
         #region Search & Lookup

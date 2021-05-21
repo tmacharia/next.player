@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Next.PCL.Enums;
 
 namespace Next.PCL.Entities
 {

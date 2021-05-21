@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Next.PCL.Entities;
+using Next.PCL.Enums;
 
 namespace Next.PCL.Online.Models
 {

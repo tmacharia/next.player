@@ -2,7 +2,7 @@
 using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Next.PCL.Entities;
+using Next.PCL.Enums;
 using Next.PCL.Extensions;
 
 namespace Next.PCL.Converters
