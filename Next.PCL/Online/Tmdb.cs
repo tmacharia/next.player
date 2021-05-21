@@ -8,6 +8,8 @@ using Next.PCL.Entities;
 using TMDbLib.Objects.General;
 using Next.PCL.Online.Models;
 using System.Linq;
+using System.IO;
+using Common;
 
 namespace Next.PCL.Online
 {
@@ -73,5 +75,26 @@ namespace Next.PCL.Online
         }
         #endregion
 
+
+        #region Private Section
+        private async Task<TMDbConfig> GetConfigAsync()
+        {
+            string path = Path.Combine(FileSys.SettingsFolder, "tmdb.json");
+            FileInfo file = new FileInfo(path);
+
+            if (file.Exists && file.LastWriteTime >= GlobalClock.Now.AddHours(-24))
+            {
+                var config = File.ReadAllText(path).DeserializeTo<TMDbConfig>();
+                _client.SetConfig(config);
+                return config;
+            }
+            else
+            {
+                var config = await _client.GetConfigAsync();
+                File.WriteAllText(path, config.ToJson());
+                return config;
+            }
+        }
+        #endregion
     }
 }
