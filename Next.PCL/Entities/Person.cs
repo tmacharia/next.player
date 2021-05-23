@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Next.PCL.Metas;
 
 namespace Next.PCL.Entities
 {
