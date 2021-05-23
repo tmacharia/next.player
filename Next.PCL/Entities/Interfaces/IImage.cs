@@ -4,8 +4,8 @@ namespace Next.PCL.Entities
 {
     public interface IResolution
     {
-        int Width { get; set; }
-        int Height { get; set; }
+        ushort Width { get; set; }
+        ushort Height { get; set; }
         Resolution Resolution { get; set; }
     }
     public interface IImage : IResolution
