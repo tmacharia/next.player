@@ -15,14 +15,12 @@ namespace Next.PCL.Online
 
         public Omdb(string apiKey)
         {
-            API_KEY = apiKey;
+            if (!apiKey.IsValid())
+                throw new ApiKeyException("OMdb Api key is required.");
         }
 
         public async Task<OmdbModel> FindAsync(string imdbId = default, string title = default, CancellationToken token = default, bool fullPlot = false, string type = "movie", int? year = default)
         {
-            if (!API_KEY.IsValid())
-                throw new ApiKeyException();
-
             if (!title.IsValid() && !imdbId.IsValid())
                 throw new NextArgumentException("At least one param is required (title or imdbId)");
 
