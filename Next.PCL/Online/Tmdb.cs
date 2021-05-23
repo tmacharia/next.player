@@ -11,6 +11,9 @@ using System.Linq;
 using System.IO;
 using Common;
 using TMDbLib.Objects.Companies;
+using Next.PCL.Exceptions;
+using TMDbLib.Objects.Movies;
+using TMDbLib.Objects.TvShows;
 
 namespace Next.PCL.Online
 {
@@ -20,20 +23,37 @@ namespace Next.PCL.Online
 
         public Tmdb(string apiKey)
         {
+            if (!apiKey.IsValid())
+                throw new ApiKeyException("TMdb Api key is required.");
             _client = new TMDbClient(apiKey);
         }
 
-        public async Task<List<Crew>> GetCrewAsync(int id, MetaType type, CancellationToken token = default)
+        public async Task<Movie> GetMovieAsync(int id = 0, string imdbId = default, CancellationToken token = default)
+        {
+            Movie mov = null;
+            if (id > 0)
+                mov = await _client.GetMovieAsync(id, cancellationToken: token);
+            else if(imdbId.IsValid())
+                mov = await _client.GetMovieAsync(imdbId, cancellationToken: token);
+            return mov;
+        }
+        public async Task<TvShow> GetShowAsync(int id, CancellationToken token = default)
+        {
+            TvShow tv = await _client.GetTvShowAsync(id, cancellationToken: token);
+            return tv;
+        }
+
+        public async Task<List<TmdbCrew>> GetCrewAsync(int id, MetaType type, CancellationToken token = default)
         {
             if (type == MetaType.Movie)
             {
                 var res = await _client.GetMovieCreditsAsync(id, token);
-                return res.Crew;
+                return res.Crew.ToList2();
             }
             else if (type == MetaType.TvShow)
             {
                 var res = await _client.GetTvShowCreditsAsync(id, null, token);
-                return res.Crew;
+                return res.Crew.ToList2();
             }
             return null;
         }
@@ -81,7 +101,6 @@ namespace Next.PCL.Online
             return res.GetList();
         }
         #endregion
-
 
         #region Private Section
         private async Task<TMDbConfig> GetConfigAsync()
