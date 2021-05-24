@@ -32,14 +32,14 @@ namespace Next.PCL.Online
         {
             Movie mov = null;
             if (id > 0)
-                mov = await _client.GetMovieAsync(id, cancellationToken: token);
+                mov = await _client.GetMovieAsync(id, extraMethods: MovieMethods.ExternalIds, cancellationToken: token);
             else if(imdbId.IsValid())
-                mov = await _client.GetMovieAsync(imdbId, cancellationToken: token);
+                mov = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: token);
             return mov;
         }
         public async Task<TvShow> GetShowAsync(int id, CancellationToken token = default)
         {
-            TvShow tv = await _client.GetTvShowAsync(id, cancellationToken: token);
+            TvShow tv = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: token);
             return tv;
         }
 
