@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using Common;
 using Tests.TestModels;
 
 namespace Tests
 {
     class TestsBase : TestVariables
     {
-        internal (string ImdbID, int TvDbID, int MazeID) GOT => ("tt0944947", 121361, 82);
-
+        internal static TestSettingsModel Settings => ReadPrivateSettingsFile();
+        internal static MetaTestModel GOT => new("tt0944947", 82, 121361, 1399, "Game of Thrones");
         internal static List<string> Genres => new()
         {
             "Comedy,Drama",
@@ -25,6 +27,12 @@ namespace Tests
             new Tuple<string, int>("NA", 0),
             new Tuple<string, int>("N/A", 0),
         };
+
+        private static TestSettingsModel ReadPrivateSettingsFile()
+        {
+            string json = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "settings.json"));
+            return json.DeserializeTo<TestSettingsModel>();
+        }
 
         internal virtual void Log(object o) => Console.WriteLine(o);
     }
