@@ -118,7 +118,7 @@ namespace Next.PCL.Extensions
                 {
                     Height = (ushort)x.Size,
                     Source = MetaSource.TMDB,
-                    Type = ParseVideoType(x.Type),
+                    Type = StringExts.ParseToMetaVideoType(x.Type),
                     Platform = StreamingPlatform.Youtube,
                     Resolution = EstimateResolution(x.Size),
                     Url = SocialExts.GetYoubetubeUrl(x.Key),
@@ -200,15 +200,6 @@ namespace Next.PCL.Extensions
         internal static Resolution EstimateResolution(int h, int w = 0)
         {
             return Resolution.HD;
-        }
-        internal static MetaVideoType ParseVideoType(string type)
-        {
-            if (type.IsValid())
-            {
-                if (type.EqualsOIC("trailer"))
-                    return MetaVideoType.Trailer;
-            }
-            return MetaVideoType.Clip;
         }
     }
 }

@@ -49,6 +49,15 @@ namespace Next.PCL.Extensions
             }
             return MetaImageType.Image;
         }
+        internal static MetaVideoType ParseToMetaVideoType(string type)
+        {
+            if (type.IsValid())
+            {
+                if (type.EqualsOIC("trailer"))
+                    return MetaVideoType.Trailer;
+            }
+            return MetaVideoType.Clip;
+        }
         internal static IEnumerable<string> SplitByAndTrim(this string s, params string[] args)
         {
             if (s.IsValid())
