@@ -116,6 +116,7 @@ namespace Next.PCL.Extensions
             if (model != null && model.Results.IsNotNullOrEmpty())
                 return model.Results.Select(x => new MetaVideo()
                 {
+                    Key = x.Key,
                     Height = (ushort)x.Size,
                     Source = MetaSource.TMDB,
                     Type = StringExts.ParseToMetaVideoType(x.Type),

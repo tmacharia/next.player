@@ -15,18 +15,21 @@ using Next.PCL.Exceptions;
 using TMDbLib.Objects.Movies;
 using TMDbLib.Objects.TvShows;
 using Next.PCL.Metas;
+using AutoMapper;
 
 namespace Next.PCL.Online
 {
     public class Tmdb : BaseOnline
     {
+        private readonly IMapper _mapper;
         private readonly TMDbClient _client;
 
-        public Tmdb(string apiKey)
+        public Tmdb(string apiKey, IMapper mapper)
         {
             if (!apiKey.IsValid())
                 throw new ApiKeyException("TMdb Api key is required.");
             _client = new TMDbClient(apiKey);
+            _mapper = mapper;
         }
 
         public async Task<Movie> GetMovieAsync(int id = 0, string imdbId = default, CancellationToken token = default)
@@ -104,15 +107,18 @@ namespace Next.PCL.Online
             return null;
         }
 
-        public async Task<Company> GetCompanyAsync(int id, CancellationToken token = default)
+        public async Task<TmdbCompany> GetCompanyAsync(int id, CancellationToken token = default)
         {
             var res = await _client.GetCompanyAsync(id, cancellationToken: token);
-            return res;
+            return _mapper.Map<TmdbCompany>(res);
         }
-        public async Task<Network> GetNetworkAsync(int id, CancellationToken token = default)
+        public async Task<TmdbCompany> GetNetworkAsync(int id, CancellationToken token = default)
         {
             var res = await _client.GetNetworkAsync(id, cancellationToken: token);
-            return res;
+            var comp = _mapper.Map<TmdbCompany>(res);
+            var imgs = await _client.GetNetworkImagesAsync(id);
+            comp.Logos.AddRange(imgs.Logos.AsMetaImages(MetaImageType.Logo, _client));
+            return comp;
         }
 
         #region Search & Lookup
