@@ -14,6 +14,7 @@ using TMDbLib.Objects.Companies;
 using Next.PCL.Exceptions;
 using TMDbLib.Objects.Movies;
 using TMDbLib.Objects.TvShows;
+using Next.PCL.Metas;
 
 namespace Next.PCL.Online
 {
@@ -30,17 +31,48 @@ namespace Next.PCL.Online
 
         public async Task<Movie> GetMovieAsync(int id = 0, string imdbId = default, CancellationToken token = default)
         {
-            Movie mov = null;
+            Movie res = null;
             if (id > 0)
-                mov = await _client.GetMovieAsync(id, extraMethods: MovieMethods.ExternalIds, cancellationToken: token);
+                res = await _client.GetMovieAsync(id, extraMethods: MovieMethods.ExternalIds, cancellationToken: token);
             else if(imdbId.IsValid())
-                mov = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: token);
-            return mov;
+                res = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: token);
+            return res;
         }
+        public async Task<List<MetaImage>> GetMovieImagesAsync(int id, CancellationToken token = default)
+        {
+            ImagesWithId res = await _client.GetMovieImagesAsync(id, cancellationToken: token);
+            return res.GetAllImages(_client);
+        }
+        public async Task<List<MetaVideo>> GetMovieVideosAsync(int id, CancellationToken token = default)
+        {
+            var res = await _client.GetMovieVideosAsync(id, cancellationToken: token);
+            return res.GetVideos();
+        }
+
         public async Task<TvShow> GetShowAsync(int id, CancellationToken token = default)
         {
-            TvShow tv = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: token);
-            return tv;
+            TvShow res = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: token);
+            return res;
+        }
+        public async Task<List<MetaImage>> GetShowImagesAsync(int id, CancellationToken token = default)
+        {
+            ImagesWithId res = await _client.GetTvShowImagesAsync(id, cancellationToken: token);
+            return res.GetAllImages(_client);
+        }
+        public async Task<List<MetaVideo>> GetShowVideosAsync(int id, CancellationToken token = default)
+        {
+            var res = await _client.GetTvShowVideosAsync(id, cancellationToken: token);
+            return res.GetVideos();
+        }
+        public async Task<List<MetaImage>> GetSeasonImagesAsync(int showId, int season, CancellationToken token = default)
+        {
+            PosterImages res = await _client.GetTvSeasonImagesAsync(showId,season, cancellationToken: token);
+            return res.GetPosters(_client);
+        }
+        public async Task<List<MetaImage>> GetEpisodeImagesAsync(int showId, int season, int episode, CancellationToken token = default)
+        {
+            StillImages res = await _client.GetTvEpisodeImagesAsync(showId, season,episode, cancellationToken: token);
+            return res.GetStills(_client);
         }
 
         public async Task<List<TmdbCrew>> GetCrewAsync(int id, MetaType type, CancellationToken token = default)
@@ -75,6 +107,11 @@ namespace Next.PCL.Online
         public async Task<Company> GetCompanyAsync(int id, CancellationToken token = default)
         {
             var res = await _client.GetCompanyAsync(id, cancellationToken: token);
+            return res;
+        }
+        public async Task<Network> GetNetworkAsync(int id, CancellationToken token = default)
+        {
+            var res = await _client.GetNetworkAsync(id, cancellationToken: token);
             return res;
         }
 

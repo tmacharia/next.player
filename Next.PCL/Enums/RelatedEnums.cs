@@ -59,7 +59,8 @@ namespace Next.PCL.Enums
         Icon        = 6,
         Logo        = 7,
         Typography  = 8,
-        Profile     = 9
+        Profile     = 9,
+        Still       = 10
     }
     public enum MetaVideoType
     {

@@ -11,6 +11,7 @@ using TMDbLib.Client;
 using TMDbLib.Objects.Companies;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.Movies;
+using TMDbLib.Objects.TvShows;
 
 namespace Next.PCL.Extensions
 {
@@ -41,19 +42,110 @@ namespace Next.PCL.Extensions
             return null;
         }
 
-        internal static List<MetaImage> GetPosters(this Movie mov, TMDbClient client)
+        internal static List<MetaImage> GetAllImages(this Movie model, TMDbClient client)
         {
-            if(mov.Images == null)
-                return client.ExtractImages(mov, MetaImageType.Poster, x => x.PosterPath, x => x.Config.Images.PosterSizes);
+            var images = new List<MetaImage>();
 
-            return mov.Images.Posters.AsMetaImages(MetaImageType.Poster, client);
+            var posters = model.GetPosters(client);
+            if (posters.IsNotNullOrEmpty())
+                images.AddRange(posters);
+
+            var backdrops = model.GetBackdrops(client);
+            if (backdrops.IsNotNullOrEmpty())
+                images.AddRange(backdrops);
+
+            return images;
         }
-        internal static List<MetaImage> GetBackdrops(this Movie mov, TMDbClient client)
+        internal static List<MetaImage> GetPosters(this Movie model, TMDbClient client)
         {
-            if (mov.Images == null)
-                return client.ExtractImages(mov, MetaImageType.Backdrop, x => x.BackdropPath, x => x.Config.Images.BackdropSizes);
+            if (model.Images == null)
+                return client.ExtractImages(model, MetaImageType.Poster, x => x.PosterPath, x => x.Config.Images.PosterSizes);
+            return model.Images.Posters.AsMetaImages(MetaImageType.Poster, client);
+        }
+        internal static List<MetaImage> GetBackdrops(this Movie model, TMDbClient client)
+        {
+            if (model.Images == null)
+                return client.ExtractImages(model, MetaImageType.Backdrop, x => x.BackdropPath, x => x.Config.Images.BackdropSizes);
 
-            return mov.Images.Backdrops.AsMetaImages(MetaImageType.Backdrop, client);
+            return model.Images.Backdrops.AsMetaImages(MetaImageType.Backdrop, client);
+        }
+
+        internal static List<MetaImage> GetAllImages(this TvShow model, TMDbClient client)
+        {
+            var images = new List<MetaImage>();
+
+            var posters = model.GetPosters(client);
+            if (posters.IsNotNullOrEmpty())
+                images.AddRange(posters);
+
+            var backdrops = model.GetBackdrops(client);
+            if (backdrops.IsNotNullOrEmpty())
+                images.AddRange(backdrops);
+
+            return images;
+        }
+        internal static List<MetaImage> GetPosters(this TvShow model, TMDbClient client)
+        {
+            if (model.Images == null)
+                return client.ExtractImages(model, MetaImageType.Poster, x => x.PosterPath, x => x.Config.Images.PosterSizes);
+
+            return model.Images.Posters.AsMetaImages(MetaImageType.Poster, client);
+        }
+        internal static List<MetaImage> GetBackdrops(this TvShow model, TMDbClient client)
+        {
+            if (model.Images == null)
+                return client.ExtractImages(model, MetaImageType.Backdrop, x => x.BackdropPath, x => x.Config.Images.BackdropSizes);
+
+            return model.Images.Backdrops.AsMetaImages(MetaImageType.Backdrop, client);
+        }
+
+        internal static List<MetaImage> GetPosters(this PosterImages model, TMDbClient client)
+        {
+            if (model.Posters.IsNotNullOrEmpty())
+                return model.Posters.AsMetaImages(MetaImageType.Poster, client);
+            return new List<MetaImage>();
+        }
+        internal static List<MetaImage> GetStills(this StillImages model, TMDbClient client)
+        {
+            if (model.Stills.IsNotNullOrEmpty())
+                return model.Stills.AsMetaImages(MetaImageType.Still, client);
+            return new List<MetaImage>();
+        }
+        internal static List<MetaVideo> GetVideos(this ResultContainer<Video> model)
+        {
+            if (model != null && model.Results.IsNotNullOrEmpty())
+                return model.Results.Select(x => new MetaVideo()
+                {
+                    Height = (ushort)x.Size,
+                    Source = MetaSource.TMDB,
+                    Type = ParseVideoType(x.Type),
+                    Platform = StreamingPlatform.Youtube,
+                    Resolution = EstimateResolution(x.Size),
+                    Url = SocialExts.GetYoubetubeUrl(x.Key),
+                }).ToList();
+            return new List<MetaVideo>();
+        }
+
+        internal static List<MetaImage> GetAllImages(this ImagesWithId model, TMDbClient client)
+        {
+            var images = new List<MetaImage>();
+
+            if(model != null)
+            {
+                if (model.Posters.IsNotNullOrEmpty())
+                {
+                    var posters = model.Posters.AsMetaImages(MetaImageType.Poster, client);
+                    if (posters.IsNotNullOrEmpty())
+                        images.AddRange(posters);
+                }
+                if (model.Backdrops.IsNotNullOrEmpty())
+                {
+                    var backdrops = model.Backdrops.AsMetaImages(MetaImageType.Backdrop, client);
+                    if (backdrops.IsNotNullOrEmpty())
+                        images.AddRange(backdrops);
+                }
+            }
+            return images;
         }
 
         internal static List<MetaImage> AsMetaImages(this List<ImageData> images, MetaImageType type, TMDbClient client)
@@ -64,7 +156,7 @@ namespace Next.PCL.Extensions
             {
                 Width = (ushort)x.Width,
                 Height = (ushort)x.Height,
-                Resolution = EstimateResolution(x.Width, x.Height),
+                Resolution = EstimateResolution(x.Height, x.Width),
                 Url = client.GetImageUrl("{RM_TO_SET}", x.FilePath)
             }).ToList();
             return null;
@@ -105,9 +197,18 @@ namespace Next.PCL.Extensions
             }).ToList();
         }
 
-        internal static Resolution EstimateResolution(int w, int h)
+        internal static Resolution EstimateResolution(int h, int w = 0)
         {
             return Resolution.HD;
+        }
+        internal static MetaVideoType ParseVideoType(string type)
+        {
+            if (type.IsValid())
+            {
+                if (type.EqualsOIC("trailer"))
+                    return MetaVideoType.Trailer;
+            }
+            return MetaVideoType.Clip;
         }
     }
 }
