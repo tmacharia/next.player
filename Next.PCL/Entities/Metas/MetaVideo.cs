@@ -7,6 +7,7 @@ namespace Next.PCL.Metas
 {
     public class MetaVideo : IMetaVideo
     {
+        public string Key { get; set; }
         public Uri Url { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public ushort Width { get; set; }
