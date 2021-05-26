@@ -1,8 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Next.PCL.Entities;
 using Next.PCL.Enums;
 
-namespace Next.PCL.Entities
+namespace Next.PCL.Metas
 {
     public class MetaVideo : IMetaVideo
     {
