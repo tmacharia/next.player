@@ -167,7 +167,11 @@ namespace Next.PCL.Extensions
         {
             return client.ExtractImages(profile, MetaImageType.Profile, x => x.ProfilePath, x => x.Config.Images.ProfileSizes);
         }
-        internal static List<MetaImage> GetLogos(this Company company, TMDbClient client)
+        internal static List<MetaImage> GetLogos(this TmdbCompany company, TMDbClient client)
+        {
+            return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, x => x.Config.Images.LogoSizes);
+        }
+        internal static List<MetaImage> GetLogos(this ProductionCompany company, TMDbClient client)
         {
             return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, x => x.Config.Images.LogoSizes);
         }

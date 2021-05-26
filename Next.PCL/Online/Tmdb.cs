@@ -32,14 +32,16 @@ namespace Next.PCL.Online
             _mapper = mapper;
         }
 
-        public async Task<Movie> GetMovieAsync(int id = 0, string imdbId = default, CancellationToken token = default)
+        public async Task<TmdbMovie> GetMovieAsync(int id = 0, string imdbId = default, CancellationToken token = default)
         {
             Movie res = null;
             if (id > 0)
                 res = await _client.GetMovieAsync(id, extraMethods: MovieMethods.ExternalIds, cancellationToken: token);
             else if(imdbId.IsValid())
                 res = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: token);
-            return res;
+
+            var mov = _mapper.Map<TmdbMovie>(res);
+            return mov;
         }
         public async Task<List<MetaImage>> GetMovieImagesAsync(int id, CancellationToken token = default)
         {
@@ -52,10 +54,11 @@ namespace Next.PCL.Online
             return res.GetVideos();
         }
 
-        public async Task<TvShow> GetShowAsync(int id, CancellationToken token = default)
+        public async Task<TmdbShow> GetShowAsync(int id, CancellationToken token = default)
         {
             TvShow res = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: token);
-            return res;
+            var show = _mapper.Map<TmdbShow>(res);
+            return show;
         }
         public async Task<List<MetaImage>> GetShowImagesAsync(int id, CancellationToken token = default)
         {
@@ -110,7 +113,9 @@ namespace Next.PCL.Online
         public async Task<TmdbCompany> GetCompanyAsync(int id, CancellationToken token = default)
         {
             var res = await _client.GetCompanyAsync(id, cancellationToken: token);
-            return _mapper.Map<TmdbCompany>(res);
+            var comp = _mapper.Map<TmdbCompany>(res);
+            comp.Logos.AddRange(comp.GetLogos(_client));
+            return comp;
         }
         public async Task<TmdbCompany> GetNetworkAsync(int id, CancellationToken token = default)
         {
