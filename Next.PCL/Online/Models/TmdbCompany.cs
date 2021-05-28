@@ -33,7 +33,7 @@ namespace Next.PCL.Online.Models
 
         public List<MetaImage> Posters { get; set; }
     }
-    public interface IPosterPath : INamedEntity
+    public interface IPosterPath
     {
         string PosterPath { get; set; }
     }

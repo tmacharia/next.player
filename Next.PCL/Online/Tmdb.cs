@@ -40,8 +40,9 @@ namespace Next.PCL.Online
             else if(imdbId.IsValid())
                 res = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: token);
 
-            var mov = _mapper.Map<TmdbMovie>(res);
-            return mov;
+            var map = _mapper.Map<TmdbMovie>(res);
+            map.Posters.AddRange(map.GetPosters(_client));
+            return map;
         }
         public async Task<List<MetaImage>> GetMovieImagesAsync(int id, CancellationToken token = default)
         {
@@ -57,8 +58,9 @@ namespace Next.PCL.Online
         public async Task<TmdbShow> GetShowAsync(int id, CancellationToken token = default)
         {
             TvShow res = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: token);
-            var show = _mapper.Map<TmdbShow>(res);
-            return show;
+            var map = _mapper.Map<TmdbShow>(res);
+            map.Posters.AddRange(map.GetPosters(_client));
+            return map;
         }
         public async Task<List<MetaImage>> GetShowImagesAsync(int id, CancellationToken token = default)
         {
