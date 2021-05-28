@@ -23,6 +23,12 @@ namespace Next.PCL.Extensions
                 return container.Results;
             return null;
         }
+        internal static List<T> GetList<T>(this SearchContainerWithId<T> container)
+        {
+            if (container != null && container.Results != null)
+                return container.Results;
+            return null;
+        }
         internal static TmdbCast ToTmdbCast(this TMDbLib.Objects.TvShows.Cast cast)
         {
             if (cast != null)

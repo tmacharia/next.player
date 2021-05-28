@@ -16,6 +16,7 @@ using TMDbLib.Objects.Movies;
 using TMDbLib.Objects.TvShows;
 using Next.PCL.Metas;
 using AutoMapper;
+using TMDbLib.Objects.Reviews;
 
 namespace Next.PCL.Online
 {
@@ -106,6 +107,20 @@ namespace Next.PCL.Online
             {
                 var res = await _client.GetTvShowCreditsAsync(id, null, token);
                 return res.Cast.Select(x => x.ToTmdbCast()).ToList();
+            }
+            return null;
+        }
+        public async Task<List<ReviewBase>> GetReviewsAsync(int id, MetaType type, CancellationToken token = default)
+        {
+            if (type == MetaType.Movie)
+            {
+                var res = await _client.GetMovieReviewsAsync(id, cancellationToken: token);
+                return res.GetList();
+            }
+            else if (type == MetaType.TvShow)
+            {
+                var res = await _client.GetTvShowReviewsAsync(id, cancellationToken: token);
+                return res.GetList();
             }
             return null;
         }
