@@ -111,6 +111,11 @@ namespace Next.PCL.Extensions
                 return model.Posters.AsMetaImages(MetaImageType.Poster, client);
             return new List<MetaImage>();
         }
+        internal static List<MetaImage> GetPosters<TPoster>(this TPoster poster, TMDbClient client)
+            where TPoster : class, IPosterPath
+        {
+            return client.ExtractImages(poster, MetaImageType.Logo, x => x.PosterPath, x => x.Config.Images.PosterSizes);
+        }
         internal static List<MetaImage> GetStills(this StillImages model, TMDbClient client)
         {
             if (model.Stills.IsNotNullOrEmpty())
@@ -177,6 +182,7 @@ namespace Next.PCL.Extensions
         {
             return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, x => x.Config.Images.LogoSizes);
         }
+        
         internal static List<MetaImage> GetLogos(this ProductionCompany company, TMDbClient client)
         {
             return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, x => x.Config.Images.LogoSizes);

@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Next.PCL.Entities;
 using Next.PCL.Metas;
+using TMDbLib.Objects.Search;
 
 namespace Next.PCL.Online.Models
 {
-    public class TmdbCompany
+    public class TmdbCompany : INamedEntity
     {
         public TmdbCompany()
         {
@@ -18,5 +21,20 @@ namespace Next.PCL.Online.Models
         public string OriginCountry { get; set; }
 
         public List<MetaImage> Logos { get; set; }
+    }
+    public class TmdbSearch : SearchMovieTvBase, INamedEntity, IPosterPath
+    {
+        public TmdbSearch()
+        {
+            Posters = new List<MetaImage>();
+        }
+        public string Name { get; set; }
+        public DateTime? ReleaseDate { get; set; }
+
+        public List<MetaImage> Posters { get; set; }
+    }
+    public interface IPosterPath : INamedEntity
+    {
+        string PosterPath { get; set; }
     }
 }

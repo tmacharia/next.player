@@ -11,7 +11,7 @@ namespace Next.PCL.Online.Models
     {
 
     }
-    public interface ITmdbProfile
+    public interface ITmdbProfile : Entities.INamedEntity
     {
         string ProfilePath { get; set; }
     }
