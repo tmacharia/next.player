@@ -152,12 +152,22 @@ namespace Next.PCL.Online
             var res = await _client.SearchTvShowAsync(q, firstAirDateYear: year, includeAdult: nsfw, cancellationToken: token);
             return res.GetList();
         }
+        public async Task<List<SearchTv>> SimilarShowsAsync(int id, CancellationToken token = default)
+        {
+            var res = await _client.GetTvShowSimilarAsync(id, cancellationToken: token);
+            return res.GetList();
+        }
         public async Task<List<SearchMovie>> SearchMovieAsync(string q, int year = 0, bool nsfw = false, CancellationToken token = default)
         {
             var res = await _client.SearchMovieAsync(q, year: year, includeAdult: nsfw, cancellationToken: token);
             return res.GetList();
         }
-        
+        public async Task<List<SearchMovie>> SimilarMoviesAsync(int id, CancellationToken token = default)
+        {
+            var res = await _client.GetMovieSimilarAsync(id, cancellationToken: token);
+            return res.GetList();
+        }
+
         internal async Task<List<SearchBase>> SearchAsync(string q, int year = 0, bool nsfw = false, CancellationToken token = default)
         {
             var res = await _client.SearchMultiAsync(q, year: year, includeAdult: nsfw, cancellationToken: token);
