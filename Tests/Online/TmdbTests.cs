@@ -26,9 +26,11 @@ namespace Tests.Online
             var show = await _tmdb.GetShowAsync(GOT.TmDbID);
 
             Assert.NotNull(show);
+            Assert.NotNull(show.Posters);
             Assert.NotNull(show.ExternalIds);
             Assert.AreEqual(GOT.TmDbID, show.Id);
             Assert.AreEqual(GOT.ImdbID, show.ExternalIds.ImdbId);
+            Assert.Greater(0, show.Posters.Count);
         }
 
         [TestCase(Category = TMDB_TESTS)]
@@ -59,7 +61,7 @@ namespace Tests.Online
 
             Assert.NotNull(movies);
             Assert.Greater(movies.Count, 0);
-            Assert.AreEqual(SocialNetwork.Name, movies[0].Title);
+            Assert.AreEqual(SocialNetwork.Name, movies[0].Name);
             Assert.AreEqual(SocialNetwork.TmDbID, movies[0].Id);
         }
     }
