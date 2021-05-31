@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
@@ -9,6 +10,16 @@ namespace Next.PCL.Online
 {
     public class Yts : BaseOnline
     {
+        public async Task<YtsMovie> GetMovieByIdAsync(int id, CancellationToken token = default)
+        {
+            var res = await RequestAsync<YtsMovieSingleResponse>($"/movie_details.json?movie_id={id}&with_images=true", token);
+            return res.Movie;
+        }
+        public async Task<List<YtsMovie>> SearchAsync(string query, CancellationToken token = default)
+        {
+            var res = await RequestAsync<YtsMovieListResponse>($"/list_movies.json?query_term={query}", token);
+            return res.Movies;
+        }
         internal async Task<TResponse> RequestAsync<TResponse>(string route, CancellationToken token = default) 
             where TResponse : class
         {
