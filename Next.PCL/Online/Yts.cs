@@ -15,11 +15,19 @@ namespace Next.PCL.Online
             var res = await RequestAsync<YtsMovieSingleResponse>($"/movie_details.json?movie_id={id}&with_images=true", token);
             return res.Movie;
         }
+        public async Task<List<YtsMovie>> GetSuggestionsAsync(int id, CancellationToken token = default)
+        {
+            var res = await RequestAsync<YtsMovieListResponse>($"/movie_suggestions.json?movie_id={id}", token);
+            return res.Movies;
+        }
         public async Task<List<YtsMovie>> SearchAsync(string query, CancellationToken token = default)
         {
             var res = await RequestAsync<YtsMovieListResponse>($"/list_movies.json?query_term={query}", token);
             return res.Movies;
         }
+
+
+
         internal async Task<TResponse> RequestAsync<TResponse>(string route, CancellationToken token = default) 
             where TResponse : class
         {
