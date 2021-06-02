@@ -1,10 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Common;
+using HtmlAgilityPack;
 
 namespace Next.PCL.Html
 {
-    internal class BaseParser
+    public class BaseParser
     {
+        protected virtual HtmlDocument ConvertToHtmlDoc(string html)
+        {
+            if (html.IsValid())
+            {
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(html);
+                return doc;
+            }
+            return null;
+        }
     }
 }

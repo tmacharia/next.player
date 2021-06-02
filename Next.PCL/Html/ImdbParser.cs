@@ -1,6 +1,6 @@
 ﻿namespace Next.PCL.Html
 {
-    internal class ImdbParser : BaseParser
+    public class ImdbParser : BaseParser
     {
 
     }
