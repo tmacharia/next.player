@@ -12,18 +12,44 @@ namespace Next.PCL.Html
 {
     public class ImdbParser : BaseParser
     {
+        internal async Task<List<string>> GetImageIds(string imdbId, CancellationToken token = default)
+        {
+            var list = new List<string>();
+            if (!imdbId.IsValid())
+                return list;
+
+            var uri = new Uri(string.Format("{0}/title/{1}/mediaindex", SiteUrls.IMDB, imdbId));
+            var doc = await GetHtmlDocumentAsync(uri, token);
+
+            var nodes = doc.FindAll("//div[@id='media_index_thumbnail_grid']/a");
+            if (nodes.IsNotNullOrEmpty())
+            {
+                foreach (var node in nodes)
+                {
+                    string href = node.GetHref();
+                    if (href.IsValid() && href.StartsWith("/title"))
+                    {
+                        string id = href.SplitByAndTrim("?").First().Split('/').Last();
+                        if (id.IsValid())
+                            list.Add(id);
+                    }
+                }
+            }
+            return list;
+        }
+
+
         public async Task<List<ImdbReview>> GetReviewsAsync(string imdbId, CancellationToken token = default)
         {
             var reviews = new List<ImdbReview>();
             if (!imdbId.IsValid())
                 return reviews;
 
-            string url = string.Format("{0}/title/{1}/reviews", SiteUrls.IMDB, imdbId);
-            string html = await GetAsync(new Uri(url), token);
+            var uri = new Uri(string.Format("{0}/title/{1}/reviews", SiteUrls.IMDB, imdbId));
+            var doc = await GetHtmlDocumentAsync(uri, token);
 
-            var doc = ConvertToHtmlDoc(html);
             var nodes = doc.FindAll("//div[@class='lister-item-content']");
-            if (nodes.IsNotEmpty())
+            if (nodes.IsNotNullOrEmpty())
             {
                 foreach (var node in nodes)
                 {
@@ -51,7 +77,7 @@ namespace Next.PCL.Html
                 Review = revw.ParseText(),
                 Timestamp = date.ParseDateTime()
             };
-            if (spns.IsNotEmpty())
+            if (spns.IsNotNullOrEmpty())
             {
                 var a = spns.FirstOrDefault(x => !x.HasAttributes);
                 var d = a.ParseDouble();
