@@ -16,6 +16,12 @@ namespace Next.PCL.Extensions
             }
             return false;
         }
+        internal static double? ParseToDouble(this string s)
+        {
+            if (s.IsValid() && double.TryParse(s, out double d))
+                return d;
+            return null;
+        }
         internal static int? ParseToInt(this string s)
         {
             if (s.IsValid())
@@ -31,6 +37,14 @@ namespace Next.PCL.Extensions
                     if (double.TryParse(s, out double d))
                         return Convert.ToInt32(d);
                 }
+            }
+            return null;
+        }
+        internal static DateTime? ParseToDateTime(this string s)
+        {
+            if (s.IsValid() && DateTime.TryParse(s, out DateTime d))
+            {
+                return d;
             }
             return null;
         }
