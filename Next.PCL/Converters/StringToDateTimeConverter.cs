@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Next.PCL.Extensions;
