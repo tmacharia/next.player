@@ -20,9 +20,7 @@ namespace Next.PCL.Converters
                 string s = token.Value<string>();
                 if (s.IsNotEmptyOr())
                 {
-                    s = s.Split(' ').First().Trim();
-                    if (int.TryParse(s, out int n))
-                        return n;
+                    return s.ParseToRuntime();
                 }
             }
             return null;

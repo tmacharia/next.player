@@ -20,8 +20,9 @@ namespace Next.PCL.Converters
                 if (s.IsNotEmptyOr())
                 {
                     s = s.Trim();
-                    if (double.TryParse(s, out double n))
-                        return n;
+                    var r = s.ParseToDouble();
+                    if (r.HasValue)
+                        return r.Value;
                 }
             }
             return default(double);

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Common;
 using Next.PCL.Enums;
+using Serilog;
 
 namespace Next.PCL.Extensions
 {
@@ -20,6 +22,17 @@ namespace Next.PCL.Extensions
         {
             if (s.IsValid() && double.TryParse(s, out double d))
                 return d;
+            return null;
+        }
+        internal static bool? ParseToBool(this string s)
+        {
+            if (s.IsValid())
+            {
+                if (s.EqualsOIC("true"))
+                    return true;
+                else if (s.EqualsOIC("false"))
+                    return false;
+            }
             return null;
         }
         internal static int? ParseToInt(this string s)
@@ -42,12 +55,34 @@ namespace Next.PCL.Extensions
         }
         internal static DateTime? ParseToDateTime(this string s)
         {
-            if (s.IsValid() && DateTime.TryParse(s, out DateTime d))
+            if (s.IsValid() && DateTime
+                .TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
             {
-                return d;
+                return date;
             }
             return null;
         }
+        internal static Uri ParseToUri(this string s, UriKind uriKind = UriKind.RelativeOrAbsolute)
+        {
+            if (s.IsValid())
+            {
+                if (Uri.TryCreate(s, uriKind, out Uri uri))
+                    return uri;
+                else
+                    Log.Warning("Failed to parse '{0}' to Uri.", s);
+            }
+            return null;
+        }
+        internal static int? ParseToRuntime(this string s)
+        {
+            if (s.IsValid())
+            {
+                s = s.Split(' ').First().Trim();
+                return s.ParseToInt();
+            }
+            return null;
+        }
+
         internal static MetaImageType ParseToMetaImageType(string s)
         {
             if (s.IsValid())

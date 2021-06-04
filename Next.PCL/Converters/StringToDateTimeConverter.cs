@@ -22,8 +22,9 @@ namespace Next.PCL.Converters
                 if (s.IsNotEmptyOr())
                 {
                     s = s.Trim();
-                    if (DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                        return date;
+                    var r = s.ParseToDateTime();
+                    if (r.HasValue)
+                        return r.Value;
                 }
             }
             return null;

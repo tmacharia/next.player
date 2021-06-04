@@ -21,10 +21,9 @@ namespace Next.PCL.Converters
                 if (s.IsNotEmptyOr())
                 {
                     s = s.Trim();
-                    if (s.EqualsOIC("true"))
-                        return true;
-                    else if (s.EqualsOIC("false"))
-                        return false;
+                    var r = s.ParseToBool();
+                    if (r.HasValue)
+                        return r.Value;
                 }
             }
             return default(bool);

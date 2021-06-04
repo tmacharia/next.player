@@ -19,8 +19,7 @@ namespace Next.PCL.Converters
                 string s = token.Value<string>();
                 if (s.IsNotEmptyOr())
                 {
-                    if (Uri.TryCreate(s, UriKind.Absolute, out Uri uri))
-                        return uri;
+                    return s.ParseToUri();
                 }
             }
             return null;
