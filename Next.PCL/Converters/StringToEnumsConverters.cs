@@ -49,12 +49,7 @@ namespace Next.PCL.Converters
                 string s = token.Value<string>();
                 if (s.IsNotEmptyOr())
                 {
-                    if (s.Matches("Director"))
-                        return Profession.Director;
-                    else if (s.Matches("Writer"))
-                        return Profession.Writer;
-                    else if (s.Matches("Producer"))
-                        return Profession.Producer;
+                    return s.ParseToProfession();
                 }
             }
             return Profession.Other;

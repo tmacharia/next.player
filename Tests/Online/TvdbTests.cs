@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Common;
 using Next.PCL.Online;
@@ -36,7 +37,7 @@ namespace Tests.Online
         }
 
         [TestCase(Category = TVDB_TESTS)]
-        public async Task Get_Episode_FromSeaonsList()
+        public async Task Get_Episode_ByNumber()
         {
             var ep = await _tvdb.GetEpisodeAsync(SHOW_SLUG, 1, 1);
 
@@ -77,6 +78,23 @@ namespace Tests.Online
             Assert.AreEqual(13, sn.AirDate.Value.Day);
             Assert.AreEqual(1, sn.AirDate.Value.Month);
             Assert.AreEqual(2019, sn.AirDate.Value.Year);
+        }
+
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Episode_WithCastAndCrew()
+        {
+            var ep = await _tvdb.GetEpisodeAsync("true-detective", 4592328);
+
+            Assert.NotNull(ep);
+            Assert.NotNull(ep.Crews);
+            Assert.NotNull(ep.Guests);
+            Assert.GreaterOrEqual(ep.Crews.Count, 1);
+            Assert.GreaterOrEqual(ep.Guests.Count, 1);
+
+            Assert.True(ep.Crews.All(x => x.Id > 0));
+            Assert.True(ep.Crews.All(x => x.Name.IsValid()));
+            Assert.True(ep.Guests.All(x => x.Id > 0));
+            Assert.True(ep.Guests.All(x => x.Name.IsValid()));
         }
     }
 }

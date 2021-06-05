@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using HtmlAgilityPack;
+using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Online.Models.Tvdb;
 
@@ -69,6 +71,32 @@ namespace Next.PCL.Html
             ep.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
                          ?.GetAttrib("data-id")
                          ?.ParseToInt() ?? 0;
+
+            var rows = doc.FindAll("//table/tbody/tr");
+            foreach (var row in rows)
+            {
+                HtmlNode[] tds = row.Elements("td").ToArray();
+                HtmlNode link = tds[0].Element("a");
+                string href = link.GetHref();
+                Uri url = (SiteUrls.TVDB + href).ParseToUri();
+                int id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0;
+
+                var person = new TvdbPerson
+                {
+                    Id = id,
+                    Url = url,
+                    Name = link.ParseText()
+                };
+                string type = tds[1].ParseText();
+                var prf = type.ParseToProfession();
+                if(prf != Profession.Other)
+                    ep.Crews.Add(new TvdbCrew(person) { Role = prf });
+                else
+                {
+                    string role = tds[2].ParseText();
+                    ep.Guests.Add(new TvdbCast(person) { Role = role.IsValid() ? role : type });
+                }
+            }
 
             return ep;
         }

@@ -35,14 +35,19 @@ namespace Next.PCL.Online
                             .ParseToUri();
             return GetEpisodeAsync(url, token);
         }
-        public async Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int season, int episode, CancellationToken token = default)
+        public async Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int season, int episode, bool fullGet = false, CancellationToken token = default)
         {
             var url = string.Format("{0}/series/{1}/seasons/official/{2}", SiteUrls.TVDB, tvSlugName, season)
                             .ParseToUri();
             string html = await GetAsync(url, token);
 
-            return _parser.ParseSeasonEpisodes(html)
+            var ep = _parser.ParseSeasonEpisodes(html)
                           .FirstOrDefault(x => x.Number == episode);
+
+            if (fullGet)
+                return await GetEpisodeAsync(ep.Url, token);
+
+            return ep;
         }
         public async Task<TvdbEpisode> GetEpisodeAsync(Uri episodeUrl, CancellationToken token = default)
         {

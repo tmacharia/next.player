@@ -105,6 +105,19 @@ namespace Next.PCL.Extensions
             }
             return MetaImageType.Image;
         }
+        internal static Profession ParseToProfession(this string s)
+        {
+            if (s.IsValid())
+            {
+                if (s.Matches("Director"))
+                    return Profession.Director;
+                else if (s.Matches("Writer"))
+                    return Profession.Writer;
+                else if (s.Matches("Producer"))
+                    return Profession.Producer;
+            }
+            return Profession.Other;
+        }
         internal static MetaVideoType ParseToMetaVideoType(string type)
         {
             if (type.IsValid())
