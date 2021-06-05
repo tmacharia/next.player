@@ -9,6 +9,36 @@ namespace Next.PCL.Html
 {
     internal class TvDbParser : BaseParser
     {
+        public IEnumerable<TvdbEpisode> ParseSeasonEpisodes(string html)
+        {
+            var doc = ConvertToHtmlDoc(html);
+            
+            var rows = doc.FindAll("//table/tbody/tr");
+
+            int index = 0;
+            foreach (var row in rows)
+            {
+                var tds = row.Elements("td").ToArray();
+                var link = tds[1].Element("a");
+                var href = link.GetHref();
+                index++;
+
+                TvdbEpisode ep = new TvdbEpisode
+                {
+                    Number = index,
+                    Name = link.ParseText(),
+                    Notation = tds[0].ParseText(),
+                    Url = (SiteUrls.TVDB + href).ParseToUri(),
+                    Runtime = tds[3].ParseText().ParseToRuntime(),
+                    AirDate = tds[2].Element("div").ParseDateTime(),
+                    Id = href.SplitByAndTrim("/")
+                             .Last()
+                             .ParseToInt()
+                             .GetValueOrDefault()
+                };
+                yield return ep;
+            }
+        }
         public TvdbEpisode ParseEpisode(string html, Uri episodeUrl)
         {
             HtmlDocument doc = ConvertToHtmlDoc(html);
