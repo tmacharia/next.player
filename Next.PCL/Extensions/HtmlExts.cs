@@ -28,7 +28,7 @@ namespace Next.PCL.Extensions
         {
             string s = node.ParseText();
             if (s.IsValid())
-                return s.Contains(value);
+                return s.Matches(value);
             return false;
         }
         internal static int? ParseInt(this HtmlNode node)

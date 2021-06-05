@@ -9,10 +9,11 @@ namespace Next.PCL.Html
 {
     internal class TvDbParser : BaseParser
     {
-        public TvdbEpisode ParseEpisode(HtmlDocument doc)
+        public TvdbEpisode ParseEpisode(string html, Uri episodeUrl)
         {
+            HtmlDocument doc = ConvertToHtmlDoc(html);
             TvdbEpisode ep = new TvdbEpisode();
-
+            ep.Url=episodeUrl;
             ep.Name = doc.Find("//h1[@class='translated_title']").ParseText();
             ep.Plot = doc.FindAll("//div[@class='change_translation_text']")
                            .FirstContainingAttrib("data-language", "eng")
@@ -21,9 +22,13 @@ namespace Next.PCL.Html
 
             var run = doc.FindAll("//ul/li/strong").Where(x => x.TextEquals("runtime")).FirstOrDefault();
             var air = doc.FindAll("//ul/li/strong").Where(x => x.TextContains("aired")).FirstOrDefault();
+            var idt = doc.GetElementbyId("episode_deleted_reason_confirm").GetAttrib("data-id").ParseToInt();
+
+            if (idt.HasValue)
+                ep.Id = idt.Value;
 
             if (run != null)
-                ep.Runtime = run.ParentNode.Element("span").ParseInt();
+                ep.Runtime = run.ParentNode.Element("span").ParseText().ParseToRuntime();
             if (air != null)
                 ep.AirDate = run.ParentNode.SelectSingleNode("//span/a").ParseDateTime();
 
