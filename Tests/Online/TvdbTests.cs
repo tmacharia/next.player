@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Common;
 using Next.PCL.Online;
 using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace Tests.Online
             Assert.AreEqual(8221744, ep.Id);
             Assert.AreEqual(SHOW_EP_URL, ep.Url);
             Assert.NotNull(ep.Poster);
-            Assert.IsNotEmpty(ep.Plot);
+            Assert.True(ep.Plot.IsValid());
             Assert.AreEqual("Bool Hunt", ep.Name);
             Assert.AreEqual(50, ep.Runtime);
             Assert.AreEqual(4, ep.AirDate.Value.Day);
@@ -48,6 +49,34 @@ namespace Tests.Online
             Assert.AreEqual(4, ep.AirDate.Value.Day);
             Assert.AreEqual(6, ep.AirDate.Value.Month);
             Assert.AreEqual(2021, ep.AirDate.Value.Year);
+        }
+
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Season_ByUrl()
+        {
+            var uri = new Uri("https://www.thetvdb.com/series/true-detective/seasons/official/1");
+            var sn = await _tvdb.GetSeasonAsync(uri);
+
+            Assert.NotNull(sn);
+            Assert.AreEqual(522572, sn.Id);
+            Assert.AreEqual(uri, sn.Url);
+            Assert.True(sn.Plot.IsValid());
+            Assert.GreaterOrEqual(sn.Posters.Count, 1);
+            Assert.AreEqual(12, sn.AirDate.Value.Day);
+            Assert.AreEqual(1, sn.AirDate.Value.Month);
+            Assert.AreEqual(2014, sn.AirDate.Value.Year);
+        }
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Season_ByNumber()
+        {
+            var sn = await _tvdb.GetSeasonAsync("true-detective", 3);
+
+            Assert.NotNull(sn);
+            Assert.AreEqual(782266, sn.Id);
+            Assert.GreaterOrEqual(sn.Posters.Count, 1);
+            Assert.AreEqual(13, sn.AirDate.Value.Day);
+            Assert.AreEqual(1, sn.AirDate.Value.Month);
+            Assert.AreEqual(2019, sn.AirDate.Value.Year);
         }
     }
 }

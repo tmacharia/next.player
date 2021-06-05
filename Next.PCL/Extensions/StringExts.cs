@@ -8,6 +8,13 @@ using Serilog;
 
 namespace Next.PCL.Extensions
 {
+    internal static class PrimitiveExts
+    {
+        internal static int GetValOrDef(this int? val)
+        {
+            return val.GetValueOrDefault();
+        }
+    }
     internal static class StringExts
     {
         internal static bool IsNotEmptyOr(this string s, string defaultValue = "N/A")

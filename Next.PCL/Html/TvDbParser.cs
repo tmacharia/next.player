@@ -9,9 +9,16 @@ namespace Next.PCL.Html
 {
     internal class TvDbParser : BaseParser
     {
-        public IEnumerable<TvdbEpisode> ParseSeasonEpisodes(string html)
+        private readonly string Language;
+
+        public TvDbParser(string language = "eng")
         {
-            var doc = ConvertToHtmlDoc(html);
+            Language = language;
+        }
+
+        public IEnumerable<TvdbEpisode> ParseSeasonEpisodes(string html, HtmlDocument document = default)
+        {
+            var doc = document ?? ConvertToHtmlDoc(html);
             
             var rows = doc.FindAll("//table/tbody/tr");
 
@@ -41,48 +48,49 @@ namespace Next.PCL.Html
         }
         public TvdbEpisode ParseEpisode(string html, Uri episodeUrl)
         {
-            HtmlDocument doc = ConvertToHtmlDoc(html);
-            TvdbEpisode ep = new TvdbEpisode();
-            ep.Url=episodeUrl;
-            ep.Name = doc.Find("//h1[@class='translated_title']").ParseText();
-            ep.Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstContainingAttrib("data-language", "eng")
+            var doc = ConvertToHtmlDoc(html);
+            var ep = new TvdbEpisode
+            {
+                Url = episodeUrl,
+                Name = doc.Find("//h1[@class='translated_title']").ParseText(),
+                Plot = doc.FindAll("//div[@class='change_translation_text']")
+                           .FirstContainingAttrib("data-language", Language)
                            ?.Element("p")
-                           ?.ParseText();
+                           ?.ParseText(),
+                Poster = doc.GetArtworksOfType("image")
+                           .FirstOrDefault()
+            };
+            ep.Runtime = doc.FindAll("//ul/li/strong").Where(x => x.TextEquals("runtime")).FirstOrDefault()
+                         ?.ParentNode.Element("span")
+                         ?.ParseText().ParseToRuntime();
+            ep.AirDate = doc.FindAll("//ul/li/strong").Where(x => x.TextContains("aired")).FirstOrDefault()
+                         ?.ParentNode.SelectSingleNode("//span/a")
+                         ?.ParseDateTime();
+            ep.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
+                         ?.GetAttrib("data-id")
+                         ?.ParseToInt() ?? 0;
 
-            var run = doc.FindAll("//ul/li/strong").Where(x => x.TextEquals("runtime")).FirstOrDefault();
-            var air = doc.FindAll("//ul/li/strong").Where(x => x.TextContains("aired")).FirstOrDefault();
-            var idt = doc.GetElementbyId("episode_deleted_reason_confirm").GetAttrib("data-id").ParseToInt();
-
-            if (idt.HasValue)
-                ep.Id = idt.Value;
-
-            if (run != null)
-                ep.Runtime = run.ParentNode.Element("span").ParseText().ParseToRuntime();
-            if (air != null)
-                ep.AirDate = run.ParentNode.SelectSingleNode("//span/a").ParseDateTime();
-
-            var imgs = GetImages(doc, "image");
-            if (imgs.IsNotNullOrEmpty())
-                ep.Poster = imgs[0];
-            
             return ep;
         }
-
-        private static List<Uri> GetImages(HtmlDocument doc, string suffix)
+        public TvdbSeason ParseSeason(string html, Uri seasonUrl)
         {
-            var list = new List<Uri>();
-
-            var urls = doc.FindAll($"//a[@rel='artwork_{suffix}']")
-                           .GetAllAttribs("href")
-                           .ToList();
-
-            foreach (var item in urls)
+            var doc = ConvertToHtmlDoc(html);
+            var sn = new TvdbSeason
             {
-                list.Add(new Uri(item));
-            }
+                Url = seasonUrl,
+                Name = doc.Find("//h1[@class='translated_title']").ParseText(),
+                Plot = doc.FindAll("//div[@class='change_translation_text']")
+                           .FirstContainingAttrib("data-language", "eng")
+                           ?.ParseText(),
+                Posters = doc.GetArtworksOfType("posters"),
+                Episodes = ParseSeasonEpisodes(null, doc).ToList()
+            };
+            sn.Id = doc.GetElementbyId("season_deleted_reason_confirm")
+                       ?.GetAttrib("data-id")
+                       ?.ParseToInt() ?? 0;
+            sn.AirDate = sn.Episodes.FirstOrDefault()?.AirDate;
 
-            return list;
+            return sn;
         }
     }
 }
