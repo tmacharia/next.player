@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
+using Next.PCL.Enums;
 using Next.PCL.Online;
 using NUnit.Framework;
 
@@ -95,6 +96,26 @@ namespace Tests.Online
             Assert.True(ep.Crews.All(x => x.Name.IsValid()));
             Assert.True(ep.Guests.All(x => x.Id > 0));
             Assert.True(ep.Guests.All(x => x.Name.IsValid()));
+        }
+
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Show_BySlug()
+        {
+            var tv = await _tvdb.GetShowAsync("true-detective");
+
+            Assert.NotNull(tv);
+            Assert.AreEqual("True Detective", tv.Name);
+            Assert.AreEqual(270633, tv.Id);
+            Assert.AreEqual("HBO", tv.Network);
+            Assert.AreEqual(MetaStatus.Airing, tv.Status);
+
+            Assert.NotNull(tv.AirsOn);
+            Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);
+            Assert.True(tv.Runtime.HasValue);
+            Assert.AreEqual(59, tv.Runtime);
+
+            Assert.NotNull(tv.Genres);
+            Assert.True(tv.Genres.Contains("Crime"));
         }
     }
 }

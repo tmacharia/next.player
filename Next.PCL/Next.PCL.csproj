@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <Folder Include="Entities\System\" />
-    <Folder Include="Static\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

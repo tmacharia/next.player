@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using HtmlAgilityPack;
+using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Metas;
 using Next.PCL.Online.Models.Tvdb;
@@ -10,6 +12,25 @@ namespace Next.PCL.Extensions
 {
     internal static class TvdbExts
     {
+        internal static AirShedule ParseToAirShedule(this string s)
+        {
+            if (s.IsValid())
+            {
+                bool a = Enum.TryParse(s.Split(',').First(), out DayOfWeek wk);
+                bool b = DateTime.TryParse(s.Split(' ').Last(), out DateTime tm);
+
+                if (a && b)
+                {
+                    return new AirShedule()
+                    {
+                        DayOfWeek = wk,
+                        Time = tm.TimeOfDay
+                    };
+                }
+            }
+            return null;
+        }
+
         internal static List<MetaImage> GetPosters(this TvdbSeason sn)
         {
             var metas = new List<MetaImage>();

@@ -46,6 +46,7 @@ namespace Next.PCL.Extensions
         {
             if (s.IsValid())
             {
+                s = s.Trim();
                 s = s.Replace(",", "").Trim();
                 if (!s.Contains('.'))
                 {
@@ -126,6 +127,19 @@ namespace Next.PCL.Extensions
                     return MetaVideoType.Trailer;
             }
             return MetaVideoType.Clip;
+        }
+        internal static MetaStatus ParseToMetaStatus(this string s)
+        {
+            if (s.IsValid())
+            {
+                if (s.MatchesAny("airing", "continuing"))
+                    return MetaStatus.Airing;
+                if (s.Matches("ended"))
+                    return MetaStatus.Ended;
+                if (s.Matches("production"))
+                    return MetaStatus.InProduction;
+            }
+            return MetaStatus.Released;
         }
         internal static IEnumerable<string> SplitByAndTrim(this string s, params string[] args)
         {
