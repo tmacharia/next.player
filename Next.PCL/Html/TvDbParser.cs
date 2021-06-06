@@ -145,14 +145,11 @@ namespace Next.PCL.Html
             model.Status = GetListItem(lists, TvDbKeys.Status).ParseToMetaStatus();
             model.AirsOn = GetListItem(lists, TvDbKeys.Airs).ParseToAirShedule();
             model.Network = GetListItem(lists, TvDbKeys.Networks);
-            model.Runtime = GetListItem(lists, TvDbKeys.Runtimes)
-                                               .Split('(').First()
-                                               .Split(' ').First()
-                                               .ParseToInt();
             model.Genres = GetListItems(lists, TvDbKeys.Genres).Select(x => x.ParseText()).ToList();
             model.Settings = GetListItems(lists, TvDbKeys.Setting).Select(x => x.ParseText()).ToList();
             model.Locations = GetListItems(lists, TvDbKeys.Location).Select(x => x.ParseText()).ToList();
             model.TimePeriods = GetListItems(lists, TvDbKeys.TimePeriod).Select(x => x.ParseText()).ToList();
+            model.Runtime = GetListItem(lists, TvDbKeys.Runtimes).Split('(').First().Split(' ').First().ParseToInt();
 
             return model;
         }
