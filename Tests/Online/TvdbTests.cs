@@ -116,6 +116,9 @@ namespace Tests.Online
 
             Assert.NotNull(tv.Genres);
             Assert.True(tv.Genres.Contains("Crime"));
+
+            Assert.True(tv.Posters.Any());
+            Assert.True(tv.Backdrops.Any());
         }
     }
 }

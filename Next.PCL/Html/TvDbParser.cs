@@ -134,6 +134,11 @@ namespace Next.PCL.Html
                            ?.ParseText(),
             };
 
+            model.Icons = doc.GetArtworksOfType(TvDbKeys.Icons);
+            model.Banners = doc.GetArtworksOfType(TvDbKeys.Banners);
+            model.Posters = doc.GetArtworksOfType(TvDbKeys.Posters);
+            model.Backdrops = doc.GetArtworksOfType(TvDbKeys.Backdrops);
+
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
             model.Id = GetListItem(lists, TvDbKeys.ID).ParseToInt() ?? 0;

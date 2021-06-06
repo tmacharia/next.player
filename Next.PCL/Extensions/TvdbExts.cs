@@ -31,10 +31,10 @@ namespace Next.PCL.Extensions
             return null;
         }
 
-        internal static List<MetaImage> GetPosters(this TvdbSeason sn)
+        internal static List<MetaImage> GetAsPosters(this List<Uri> uris)
         {
             var metas = new List<MetaImage>();
-            foreach (var item in sn.Posters)
+            foreach (var item in uris)
             {
                 var meta = new MetaImage(MetaImageType.Poster, MetaSource.TVDB)
                 {
@@ -47,6 +47,33 @@ namespace Next.PCL.Extensions
 
                 meta.Width = 340;
                 meta.Height = 500;
+                meta.Resolution = Resolution.WVGA;
+
+                string url = item.OriginalString;
+                meta.Url = string.Format("{0}_t{1}", url
+                                  .Substring(0, url.LastIndexOf('.')), url
+                                  .Substring(url.LastIndexOf('.')))
+                                  .ParseToUri();
+                metas.Add(meta);
+            }
+            return metas;
+        }
+        internal static List<MetaImage> GetAsBackdrops(this List<Uri> uris)
+        {
+            var metas = new List<MetaImage>();
+            foreach (var item in uris)
+            {
+                var meta = new MetaImage(MetaImageType.Backdrop, MetaSource.TVDB)
+                {
+                    Url = item,
+                    Width = 1920,
+                    Height = 1080,
+                    Resolution = Resolution.FullHD
+                };
+                metas.Add(meta);
+
+                meta.Width = 640;
+                meta.Height = 360;
                 meta.Resolution = Resolution.WVGA;
 
                 string url = item.OriginalString;

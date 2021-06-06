@@ -5,6 +5,12 @@
     }
     class TvDbKeys
     {
+        internal const string Icons = "icons";
+        internal const string Banners = "banners";
+        internal const string Posters = "posters";
+        internal const string Backdrops = "backgrounds";
+        internal const string EP_IMG = "image";
+
         internal const string ID = "TheTVDB.com Series ID";
         internal const string Airs = "Airs";
         internal const string Status = "Status";
