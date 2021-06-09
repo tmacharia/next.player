@@ -87,12 +87,20 @@ namespace Next.PCL.Extensions
         }
         internal static List<Uri> GetArtworksOfType(this HtmlDocument doc, string imageType)
         {
-            return doc.FindAll($"//a[@rel='artwork_{imageType}']")
-                      ?.GetAllAttribs("href")
-                      .Select(x => x.ParseToUri())
-                      .Where(x => x != null)
-                      .ToList() 
-                      ?? new List<Uri>();
+            var uris = new List<Uri>();
+            var anchors = doc.FindAll($"//a[@rel='artwork_{imageType}']");
+            foreach (var item in anchors)
+            {
+                var link_url = item.GetHref().ParseToUri();
+                var img_url = item.Element("img")?.GetAttrib("src")?.ParseToUri();
+
+                if (img_url != null)
+                    uris.Add(img_url);
+
+                if (link_url != null)
+                    uris.Add(link_url);
+            }
+            return uris;
         }
     }
 }
