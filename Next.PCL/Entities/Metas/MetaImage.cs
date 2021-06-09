@@ -14,10 +14,12 @@ namespace Next.PCL.Metas
             Width = (ushort)w;
             Height = (ushort)h;
         }
-        public MetaImage(MetaImageType type, MetaSource src)
+        public MetaImage(MetaImageType type, MetaSource src, Uri uri = default)
         {
             Type = type;
             Source = src;
+            if (uri != null)
+                Url = uri;
         }
         public Uri Url { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore,

@@ -134,10 +134,10 @@ namespace Next.PCL.Html
                            ?.ParseText(),
             };
 
-            model.Icons = doc.GetArtworksOfType(TvDbKeys.Icons);
-            model.Banners = doc.GetArtworksOfType(TvDbKeys.Banners);
-            model.Posters = doc.GetArtworksOfType(TvDbKeys.Posters);
-            model.Backdrops = doc.GetArtworksOfType(TvDbKeys.Backdrops);
+            model.Icons = doc.GetArtworksOfType(MetaImageType.Icon);
+            model.Banners = doc.GetArtworksOfType(MetaImageType.Banner);
+            model.Posters = doc.GetArtworksOfType(MetaImageType.Poster);
+            model.Backdrops = doc.GetArtworksOfType(MetaImageType.Backdrop);
 
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 

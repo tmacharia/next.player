@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Common;
 using HtmlAgilityPack;
@@ -110,36 +111,42 @@ namespace Next.PCL.Extensions
                     images.Add(img_url.CreateImage(type));
 
                 if (link_url != null)
-                    images.Add(link_url.CreateImage(type));
+                    images.Add(link_url.CreateImage(type, 1));
             }
             return images;
         }
-        private static MetaImage CreateImage(this Uri uri, MetaImageType type)
+        private static MetaImage CreateImage(this Uri uri, MetaImageType type, uint imageType = 0)
         {
-            var meta = new MetaImage(type, MetaSource.TVDB)
-            {
-                Url = uri,
-                Resolution = Resolution.HD
-            };
-            var (w, h) = meta.Type.GetDimensions();
-            meta.Width = w;
-            meta.Height = h;
+            var meta = new MetaImage(type, MetaSource.TVDB, uri);
+            var size = meta.GetDefaultDimensions(imageType);
+            meta.Width = (ushort)size.Width;
+            meta.Height = (ushort)size.Height;
+            meta.Resolution = meta.DetermineResolution();
             return meta;
         }
-        private static (ushort w, ushort h) GetDimensions(this MetaImageType type, bool tinyOrOriginal = false)
+        private static Size GetDefaultDimensions(this MetaImage metaImage, uint imageType = 0)
         {
-            ushort w=0; ushort h=0;
-
-            switch (type)
+            if (imageType == 0)
             {
-                case MetaImageType.Icon:
-                    break;
-                case MetaImageType.Poster:
-                    break;
-                case MetaImageType.Backdrop:
-                    break;
+                switch (metaImage.Type)
+                {
+                    case MetaImageType.Icon: return new Size(512, 512);
+                    case MetaImageType.Poster: return new Size(340, 500);
+                    case MetaImageType.Banner: return new Size(758, 140);
+                    case MetaImageType.Backdrop: return new Size(640, 360);
+                }
             }
-            return (w, h);
+            else
+            {
+                switch (metaImage.Type)
+                {
+                    case MetaImageType.Icon: return new Size(1024, 1024);
+                    case MetaImageType.Poster: return new Size(680, 1000);
+                    case MetaImageType.Banner: return new Size(758, 140);
+                    case MetaImageType.Backdrop: return new Size(1920, 1080);
+                }
+            }
+            return new Size(0, 0);
         }
         internal static string CastImageType(MetaImageType metaImageType)
         {

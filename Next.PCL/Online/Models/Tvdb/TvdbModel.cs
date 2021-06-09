@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
+using Next.PCL.Metas;
 
 namespace Next.PCL.Online.Models.Tvdb
 {
@@ -16,24 +17,24 @@ namespace Next.PCL.Online.Models.Tvdb
             Locations = new List<string>();
             TimePeriods = new List<string>();
 
-            Icons = new List<Uri>();
-            Banners = new List<Uri>();
-            Posters = new List<Uri>();
-            Backdrops = new List<Uri>();
+            Icons = new List<MetaImage>();
+            Banners = new List<MetaImage>();
+            Posters = new List<MetaImage>();
+            Backdrops = new List<MetaImage>();
         }
         public int Id { get; set; }
         public AirShedule AirsOn { get; set; }
         public MetaStatus Status { get; set; }
         public string Network { get; set; }
-        public override Uri Poster => Posters?.FirstOrDefault();
+        public override Uri Poster => Posters?.FirstOrDefault()?.Url;
 
         public List<string> Settings { get; set; }
         public List<string> Locations { get; set; }
         public List<string> TimePeriods { get; set; }
 
-        public List<Uri> Icons { get; set; }
-        public List<Uri> Banners { get; set; }
-        public List<Uri> Posters { get; set; }
-        public List<Uri> Backdrops { get; set; }
+        public List<MetaImage> Icons { get; set; }
+        public List<MetaImage> Banners { get; set; }
+        public List<MetaImage> Posters { get; set; }
+        public List<MetaImage> Backdrops { get; set; }
     }
 }
