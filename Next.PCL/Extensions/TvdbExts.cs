@@ -7,6 +7,7 @@ using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Metas;
 using Next.PCL.Online.Models.Tvdb;
+using Next.PCL.Static;
 
 namespace Next.PCL.Extensions
 {
@@ -87,7 +88,18 @@ namespace Next.PCL.Extensions
         }
         internal static List<Uri> GetArtworksOfType(this HtmlDocument doc, string imageType)
         {
-            var uris = new List<Uri>();
+            return doc.FindAll($"//a[@rel='artwork_{imageType}']")
+                      ?.GetAllAttribs("href")
+                      .Select(x => x.ParseToUri())
+                      .Where(x => x != null)
+                      .ToList() 
+                      ?? new List<Uri>();
+        }
+        internal static List<MetaImage> GetArtworksOfType(this HtmlDocument doc, MetaImageType type)
+        {
+            string imageType = CastImageType(type);
+
+            var images = new List<MetaImage>();
             var anchors = doc.FindAll($"//a[@rel='artwork_{imageType}']");
             foreach (var item in anchors)
             {
@@ -95,12 +107,50 @@ namespace Next.PCL.Extensions
                 var img_url = item.Element("img")?.GetAttrib("src")?.ParseToUri();
 
                 if (img_url != null)
-                    uris.Add(img_url);
+                    images.Add(img_url.CreateImage(type));
 
                 if (link_url != null)
-                    uris.Add(link_url);
+                    images.Add(link_url.CreateImage(type));
             }
-            return uris;
+            return images;
+        }
+        private static MetaImage CreateImage(this Uri uri, MetaImageType type)
+        {
+            var meta = new MetaImage(type, MetaSource.TVDB)
+            {
+                Url = uri,
+                Resolution = Resolution.HD
+            };
+            var (w, h) = meta.Type.GetDimensions();
+            meta.Width = w;
+            meta.Height = h;
+            return meta;
+        }
+        private static (ushort w, ushort h) GetDimensions(this MetaImageType type, bool tinyOrOriginal = false)
+        {
+            ushort w=0; ushort h=0;
+
+            switch (type)
+            {
+                case MetaImageType.Icon:
+                    break;
+                case MetaImageType.Poster:
+                    break;
+                case MetaImageType.Backdrop:
+                    break;
+            }
+            return (w, h);
+        }
+        internal static string CastImageType(MetaImageType metaImageType)
+        {
+            switch (metaImageType)
+            {
+                case MetaImageType.Icon: return TvDbKeys.Icons;
+                case MetaImageType.Poster: return TvDbKeys.Posters;
+                case MetaImageType.Banner: return TvDbKeys.Banners;
+                case MetaImageType.Backdrop: return TvDbKeys.Backdrops;
+                default: return TvDbKeys.Images;
+            }
         }
     }
 }
