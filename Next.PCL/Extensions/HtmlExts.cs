@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Common;
 using HtmlAgilityPack;
 
@@ -102,14 +103,17 @@ namespace Next.PCL.Extensions
         }
         internal static string CombineXPath(this HtmlNode node, string xpath)
         {
+            var sb = new StringBuilder();
             if(node != null && xpath.IsValid())
             {
-                if (xpath.StartsWith("/"))
-                    xpath = xpath.TrimStart('/');
+                sb.Append(node.XPath);
 
-                return string.Format("{0}/{1}", node.XPath, xpath);
+                if (!xpath.StartsWith("/"))
+                    sb.Append("/");
+
+                sb.Append(xpath);
             }
-            return xpath;
+            return sb.ToString();
         }
         internal static HtmlNode GetAdjacent(this HtmlNode node, string tagName, int maxTraversals = 2)
         {
