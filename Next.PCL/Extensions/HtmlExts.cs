@@ -9,6 +9,7 @@ namespace Next.PCL.Extensions
 {
     internal static class HtmlExts
     {
+        #region Parsing to DataType
         internal static string ParseText(this HtmlNode node, params char[] trimChars)
         {
             if (node != null)
@@ -16,20 +17,6 @@ namespace Next.PCL.Extensions
                 return node.InnerText.Trim(trimChars);
             }
             return string.Empty;
-        }
-        internal static bool TextEquals(this HtmlNode node, string value)
-        {
-            string s = node.ParseText();
-            if (s.IsValid())
-                return s.EqualsOIC(value);
-            return false;
-        }
-        internal static bool TextContains(this HtmlNode node, string value)
-        {
-            string s = node.ParseText();
-            if (s.IsValid())
-                return s.Matches(value);
-            return false;
         }
         internal static int? ParseInt(this HtmlNode node)
         {
@@ -43,8 +30,9 @@ namespace Next.PCL.Extensions
         {
             return node.ParseText().ParseToDateTime();
         }
+        #endregion
 
-
+        #region Attribute Related
         internal static string GetAttrib(this HtmlNode node, string name, string defaultValue = default)
         {
             if (node.ContainsAttrib(name))
@@ -83,8 +71,71 @@ namespace Next.PCL.Extensions
         {
             return node.GetAttrib("href", string.Empty);
         }
+        #endregion
 
+        #region Single Node
+        internal static bool TextEquals(this HtmlNode node, string value)
+        {
+            string s = node.ParseText();
+            if (s.IsValid())
+                return s.EqualsOIC(value);
+            return false;
+        }
+        internal static bool TextContains(this HtmlNode node, string value)
+        {
+            string s = node.ParseText();
+            if (s.IsValid())
+                return s.Matches(value);
+            return false;
+        }
+        internal static HtmlNode ExtendFind(this HtmlNode node, string xpath)
+        {
+            if(node != null)
+                return node.SelectSingleNode(node.CombineXPath(xpath));
+            return null;
+        }
+        internal static HtmlNodeCollection ExtendFindAll(this HtmlNode node, string xpath)
+        {
+            if (node != null)
+                return node.SelectNodes(node.CombineXPath(xpath));
+            return null;
+        }
+        internal static string CombineXPath(this HtmlNode node, string xpath)
+        {
+            if(node != null && xpath.IsValid())
+            {
+                if (xpath.StartsWith("/"))
+                    xpath = xpath.TrimStart('/');
 
+                return string.Format("{0}/{1}", node.XPath, xpath);
+            }
+            return xpath;
+        }
+        internal static HtmlNode GetAdjacent(this HtmlNode node, string tagName, int maxTraversals = 2)
+        {
+            if (node != null)
+            {
+                if (node.NextSibling != null)
+                {
+                    if (node.NextSibling.Name.Equals(tagName))
+                        return node.NextSibling;
+
+                    if (maxTraversals > 0)
+                        return node.NextSibling.GetAdjacent(tagName, maxTraversals - 1);
+                }
+            }
+            return null;
+        }
+        #endregion
+
+        #region Nodes Collection
+        internal static HtmlNode WhereTextEquals(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.FirstOrDefault(x => x.TextEquals(value));
+        }
+        #endregion
+
+        #region Html Document
         internal static HtmlNode Find(this HtmlDocument node, string xpath)
         {
             return node.DocumentNode.SelectSingleNode(xpath);
@@ -93,5 +144,10 @@ namespace Next.PCL.Extensions
         {
             return node.DocumentNode.SelectNodes(xpath);
         }
+        internal static HtmlNodeCollection FindByTag(this HtmlDocument node, string tagName)
+        {
+            return node.DocumentNode.SelectNodes($"//{tagName}");
+        }
+        #endregion
     }
 }
