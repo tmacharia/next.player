@@ -8,14 +8,16 @@ using NUnit.Framework;
 
 namespace Tests.Online
 {
-    class TvdbTests : TestsBase
+    internal class TvdbTests : TestsBase
     {
-        private readonly Tvdb _tvdb;
+        private Tvdb _tvdb;
 
         private const string SHOW_SLUG = "liseys-story";
+        private static readonly Uri SHOW_URL = new("https://thetvdb.com/series/true-detective");
         private static readonly Uri SHOW_EP_URL = new("https://thetvdb.com/series/liseys-story/episodes/8221744");
 
-        public TvdbTests()
+        [OneTimeSetUp]
+        public void Tvdb_Tests()
         {
             _tvdb = new Tvdb();
         }
@@ -119,6 +121,20 @@ namespace Tests.Online
 
             Assert.True(tv.Posters.Any());
             Assert.True(tv.Backdrops.Any());
+        }
+
+        
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_All_Artworks()
+        {
+            var imgs = await _tvdb.GetArtworksAsync(SHOW_URL);
+
+            Assert.NotNull(imgs);
+            Assert.That(imgs.Count > 0);
+            Assert.That(imgs.Any(x => x.Type == MetaImageType.Icon));
+            Assert.That(imgs.Any(x => x.Type == MetaImageType.Banner));
+            Assert.That(imgs.Any(x => x.Type == MetaImageType.Poster));
+            Assert.That(imgs.Any(x => x.Type == MetaImageType.Backdrop));
         }
     }
 }
