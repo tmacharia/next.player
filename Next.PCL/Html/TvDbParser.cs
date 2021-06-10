@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Common;
 using HtmlAgilityPack;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
+using Next.PCL.Metas;
 using Next.PCL.Online.Models.Tvdb;
 using Next.PCL.Static;
 
@@ -13,6 +16,8 @@ namespace Next.PCL.Html
     internal class TvDbParser : BaseParser
     {
         private readonly string Language;
+        internal const char RETURN_CHAR = '\r';
+        internal const char NEWLINE_CHAR = '\n';
 
         public TvDbParser(string language = "eng")
         {
@@ -122,7 +127,7 @@ namespace Next.PCL.Html
             }
         }
 
-        public TvdbModel ParseShow(string html, Uri showUrl)
+        internal TvdbModel ParseShow(string html, Uri showUrl)
         {
             var doc = ConvertToHtmlDoc(html);
             var model = new TvdbModel
@@ -152,6 +157,99 @@ namespace Next.PCL.Html
             model.Runtime = GetListItem(lists, TvDbKeys.Runtimes).Split('(').First().Split(' ').First().ParseToInt();
 
             return model;
+        }
+        internal List<TvdbCrew> ParseCrew(string html, HtmlDocument document = default)
+        {
+            var crews = new List<TvdbCrew>();
+
+            var doc = document ?? ConvertToHtmlDoc(html);
+
+            var writers = doc.FindByTag("h2").WhereTextEquals("Writers")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+            var directors = doc.FindByTag("h2").WhereTextEquals("Directors")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+
+            crews.AddRange(ParseAllCrew(writers, Profession.Writer));
+            crews.AddRange(ParseAllCrew(directors, Profession.Director));
+
+            return crews;
+        }
+        internal List<TvdbCast> ParseCast(string html, HtmlDocument document = default)
+        {
+            var casts = new List<TvdbCast>();
+
+            var doc = document ?? ConvertToHtmlDoc(html);
+
+            var nodes = doc.FindAll("//div[@class='thumbnail']");
+
+            casts.AddRange(ParseAllCast(nodes));
+
+            return casts;
+        }
+        private IEnumerable<TvdbCrew> ParseAllCrew(HtmlNodeCollection nodes, Profession profession)
+        {
+            if (nodes != null)
+            {
+                foreach (var item in nodes)
+                {
+                    var cr = ParseSingleCrew(item, profession);
+                    if (cr != null)
+                        yield return cr;
+                }
+            }
+        }
+        private IEnumerable<TvdbCast> ParseAllCast(HtmlNodeCollection nodes)
+        {
+            if (nodes != null)
+            {
+                foreach (var item in nodes)
+                {
+                    var cr = ParseSingleCast(item);
+                    if (cr != null)
+                        yield return cr;
+                }
+            }
+        }
+        private TvdbCrew ParseSingleCrew(HtmlNode node, Profession profession)
+        {
+            string href = node.GetHref();
+
+            if (!href.IsValid())
+                return null;
+
+            return new TvdbCrew(profession)
+            {
+                Name = node.ParseText(),
+                Url = (SiteUrls.TVDB + href).ParseToUri(),
+                Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0,
+            };
+        }
+        private TvdbCast ParseSingleCast(HtmlNode node)
+        {
+            string name = node.Element("h3")?.Element("#text").ParseText();
+            string character = node.Element("h3")?.Element("small").ParseText().Substring(2).Trim();
+            string imgUrl = node.Element("img").GetAttrib("src");
+
+            if (!imgUrl.IsValid())
+                return null;
+
+            var vs = imgUrl.Split('/');
+
+            var cast = new TvdbCast();
+            cast.Name = name;
+            cast.Role = character;
+            cast.Id = vs.ElementAt(vs.Length - 2).ParseToInt() ?? 0;
+            cast.Url = string.Format("{0}/people/{1}", SiteUrls.TVDB, cast.Id).ParseToUri();
+            cast.Images.Add(imgUrl.ParseToUri().CreateImage(MetaImageType.Profile));
+
+            Console.WriteLine(cast);
+
+            return cast;
+        }
+        internal async Task<List<MetaImage>> GetAndParseImagesAsync(Uri uri, MetaImageType type, CancellationToken token = default)
+        {
+            string imageType = TvdbExts.CastImageType(type);
+            var url = string.Format("{0}/artwork/{1}", uri.OriginalString.TrimEnd('/'), imageType).ParseToUri();
+            var doc = await GetHtmlDocumentAsync(url, token);
+            return doc.GetArtworksOfType(type);
         }
 
         private string GetListItem(HtmlNodeCollection nodes, string name)

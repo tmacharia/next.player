@@ -136,5 +136,29 @@ namespace Tests.Online
             Assert.That(imgs.Any(x => x.Type == MetaImageType.Poster));
             Assert.That(imgs.Any(x => x.Type == MetaImageType.Backdrop));
         }
+
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Crew()
+        {
+            var list = await _tvdb.GetCrewAsync(SHOW_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Count > 0);
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Images.Count <= 0));
+        }
+
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Cast()
+        {
+            var list = await _tvdb.GetCastAsync(SHOW_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Count > 0);
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Images.Count > 0));
+        }
     }
 }

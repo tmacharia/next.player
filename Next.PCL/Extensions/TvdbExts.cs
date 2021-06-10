@@ -115,7 +115,7 @@ namespace Next.PCL.Extensions
             }
             return images;
         }
-        private static MetaImage CreateImage(this Uri uri, MetaImageType type, uint imageType = 0)
+        internal static MetaImage CreateImage(this Uri uri, MetaImageType type, uint imageType = 0)
         {
             var meta = new MetaImage(type, MetaSource.TVDB, uri);
             var size = meta.GetDefaultDimensions(imageType);
@@ -134,6 +134,7 @@ namespace Next.PCL.Extensions
                     case MetaImageType.Poster: return new Size(340, 500);
                     case MetaImageType.Banner: return new Size(758, 140);
                     case MetaImageType.Backdrop: return new Size(640, 360);
+                    case MetaImageType.Profile: return new Size(300, 450);
                 }
             }
             else
