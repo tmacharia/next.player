@@ -32,7 +32,7 @@ namespace Next.PCL.Html
                 return await wb.LoadFromWebAsync(uri.OriginalString, token);
             }
         }
-        protected virtual HtmlDocument ConvertToHtmlDoc(string html)
+        internal virtual HtmlDocument ConvertToHtmlDoc(string html)
         {
             if (html.IsValid())
             {

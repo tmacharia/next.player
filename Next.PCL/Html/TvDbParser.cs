@@ -67,7 +67,7 @@ namespace Next.PCL.Html
                 string type = tds[1].ParseText();
                 var prf = type.ParseToProfession();
                 if(prf != Profession.Other)
-                    ep.Crews.Add(new TvdbCrew(person) { Role = prf });
+                    ep.Crews.Add(new TvdbCrew(person) { Profession = prf });
                 else
                 {
                     string role = tds[2].ParseText();
@@ -168,31 +168,30 @@ namespace Next.PCL.Html
 
             return model;
         }
-        internal List<TvdbCrew> ParseCrew(string html, HtmlDocument document = default)
+        internal IEnumerable<TvdbCrew> ParseCrew(string html, HtmlDocument document = default)
         {
-            var crews = new List<TvdbCrew>();
-
             var doc = document ?? ConvertToHtmlDoc(html);
 
             var writers = doc.FindByTag("h2").WhereTextEquals("Writers")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
             var directors = doc.FindByTag("h2").WhereTextEquals("Directors")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
 
-            crews.AddRange(ParseAllCrew(writers, Profession.Writer));
-            crews.AddRange(ParseAllCrew(directors, Profession.Director));
-
-            return crews;
+            return ParseAllCrew(directors, Profession.Director).Concat(ParseAllCrew(writers, Profession.Writer));
         }
-        internal List<TvdbCast> ParseCast(string html, HtmlDocument document = default)
+        internal IEnumerable<TvdbPerson> ParseCast(string html, HtmlDocument document = default)
         {
-            var casts = new List<TvdbCast>();
-
             var doc = document ?? ConvertToHtmlDoc(html);
 
             var nodes = doc.FindAll("//div[@class='thumbnail']");
 
-            casts.AddRange(ParseAllCast(nodes));
-
-            return casts;
+            if (nodes != null)
+            {
+                foreach (var item in nodes)
+                {
+                    var cr = ParseSingleCast(item);
+                    if (cr != null)
+                        yield return cr;
+                }
+            }
         }
         private IEnumerable<TvdbCrew> ParseAllCrew(HtmlNodeCollection nodes, Profession profession)
         {
@@ -201,18 +200,6 @@ namespace Next.PCL.Html
                 foreach (var item in nodes)
                 {
                     var cr = ParseSingleCrew(item, profession);
-                    if (cr != null)
-                        yield return cr;
-                }
-            }
-        }
-        private IEnumerable<TvdbCast> ParseAllCast(HtmlNodeCollection nodes)
-        {
-            if (nodes != null)
-            {
-                foreach (var item in nodes)
-                {
-                    var cr = ParseSingleCast(item);
                     if (cr != null)
                         yield return cr;
                 }
@@ -232,7 +219,7 @@ namespace Next.PCL.Html
                 Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0,
             };
         }
-        private TvdbCast ParseSingleCast(HtmlNode node)
+        private TvdbPerson ParseSingleCast(HtmlNode node)
         {
             string name = node.Element("h3")?.Element("#text").ParseText();
             string character = node.Element("h3")?.Element("small").ParseText().Substring(2).Trim();
@@ -243,14 +230,12 @@ namespace Next.PCL.Html
 
             var vs = imgUrl.Split('/');
 
-            var cast = new TvdbCast();
+            var cast = new TvdbPerson();
             cast.Name = name;
             cast.Role = character;
             cast.Id = vs.ElementAt(vs.Length - 2).ParseToInt() ?? 0;
             cast.Url = string.Format("{0}/people/{1}", SiteUrls.TVDB, cast.Id).ParseToUri();
             cast.Images.Add(imgUrl.ParseToUri().CreateImage(MetaImageType.Profile));
-
-            Console.WriteLine(cast);
 
             return cast;
         }

@@ -26,17 +26,30 @@ namespace Next.PCL.Online
             string html = await GetAsync(url, token);
             return _parser.ParseShow(html, url);
         }
-        public async Task<List<TvdbCrew>> GetCrewAsync(Uri uri, CancellationToken token = default)
+        
+
+        public async Task<IEnumerable<TvdbCrew>> GetCrewAsync(Uri uri, CancellationToken token = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
             string html = await GetAsync(url, token);
             return _parser.ParseCrew(html);
         }
-        public async Task<List<TvdbCast>> GetCastAsync(Uri uri, CancellationToken token = default)
+        public async Task<IEnumerable<TvdbPerson>> GetCastAsync(Uri uri, CancellationToken token = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
             string html = await GetAsync(url, token);
             return _parser.ParseCast(html);
+        }
+        public async Task<IEnumerable<TvdbPerson>> GetCastAndCrewAsync(Uri uri, CancellationToken token = default)
+        {
+            var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
+            string html = await GetAsync(url, token);
+            var doc = _parser.ConvertToHtmlDoc(html);
+
+            var cast = _parser.ParseCast(html, doc);
+            var crew = _parser.ParseCrew(html, doc);
+
+            return cast.Concat(crew);
         }
 
         #region Images Section

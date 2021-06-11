@@ -6,10 +6,11 @@ namespace Next.PCL.Online.Models.Tvdb
     {
         public TvdbCrew(Profession profession) :base()
         {
-            Role = profession;
+            Profession = profession;
         }
         public TvdbCrew(TvdbPerson p):base(p)
         { }
-        public Profession Role { get; set; }
+        public Profession Profession { get; set; }
+        public override string Role => Profession.ToString();
     }
 }

@@ -150,7 +150,7 @@ namespace Tests.Online
             var list = await _tvdb.GetCrewAsync(SHOW_URL);
 
             Assert.NotNull(list);
-            Assert.That(list.Count > 0);
+            Assert.That(list.Any());
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Images.Count <= 0));
@@ -162,10 +162,25 @@ namespace Tests.Online
             var list = await _tvdb.GetCastAsync(SHOW_URL);
 
             Assert.NotNull(list);
-            Assert.That(list.Count > 0);
+            Assert.That(list.Any());
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Images.Count > 0));
+            Log(list.Count());
+        }
+
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Both_CastAndCrew()
+        {
+            var list = await _tvdb.GetCastAndCrewAsync(SHOW_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Role.IsValid()));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.Any(x => x.Images.Count > 0));
+            list.ForEach(x => Log(x));
         }
     }
 }

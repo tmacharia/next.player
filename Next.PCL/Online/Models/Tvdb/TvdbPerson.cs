@@ -20,7 +20,13 @@ namespace Next.PCL.Online.Models.Tvdb
         public int Id { get; set; }
         public Uri Url { get; set; }
         public string Name { get; set; }
+        public virtual string Role { get; set; }
 
         public List<MetaImage> Images { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1} as {2}", Id, Name, Role);
+        }
     }
 }
