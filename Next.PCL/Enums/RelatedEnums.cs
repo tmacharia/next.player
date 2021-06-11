@@ -11,6 +11,23 @@ namespace Next.PCL.Enums
         [Description("TV Maze")]        TVMAZE = 0X471,
         [Description("YTS")]            YTS_MX = 0X421
     }
+    public enum OtherSiteDomain
+    {
+        Unknown     = 0,
+        IMDB        = 1,
+        TMDB        = 2,
+        TVDB        = 3,
+        OMDB        = 4,
+        TVMAZE      = 5,
+        YTS_MX      = 6,
+        Twitter     = 7,
+        Facebook    = 8,
+        Instagram   = 9,
+        Reddit      = 10,
+        Zap2It      = 11,
+        Fansite     = 12,
+        OfficialSite = 13,
+    }
     public enum MetaType
     {
         Movie   = 1,

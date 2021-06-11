@@ -7,14 +7,23 @@ namespace Next.PCL.Entities
 {
     public class MetaUrl : IMetaUrl, IEquatable<MetaUrl>, IEqualityComparer<MetaUrl>
     {
+        public MetaUrl()
+        { }
+        public MetaUrl(MetaSource metaSource) : this()
+        {
+            Source = metaSource;
+        }
         public Uri Url { get; set; }
         public MetaSource Source { get; set; }
+        public OtherSiteDomain Domain { get; set; }
 
         public bool Equals(MetaUrl x)
         {
             if (x == null)
                 return false;
             if (Source != x.Source)
+                return false;
+            if (Domain != x.Domain)
                 return false;
             if (Url == null && x.Url == null)
                 return true;
@@ -37,6 +46,11 @@ namespace Next.PCL.Entities
         public int GetHashCode(MetaUrl obj)
         {
             return obj.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[{0}, {1}]\t{2}", Domain, Source, Url);
         }
     }
 }
