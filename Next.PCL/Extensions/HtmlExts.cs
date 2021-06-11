@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -68,10 +67,7 @@ namespace Next.PCL.Extensions
             return false;
         }
 
-        internal static string GetHref(this HtmlNode node)
-        {
-            return node.GetAttrib("href", string.Empty);
-        }
+        internal static string GetHref(this HtmlNode node) => node.GetAttrib("href", string.Empty);
         #endregion
 
         #region Single Node

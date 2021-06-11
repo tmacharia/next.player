@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Next.PCL.Entities;
+using Next.PCL.Metas;
 
 namespace Next.PCL.Online.Models.Tvdb
 {
@@ -8,7 +9,7 @@ namespace Next.PCL.Online.Models.Tvdb
     {
         public TvdbSeason()
         {
-            Posters = new List<Uri>();
+            Posters = new List<MetaImage>();
             Episodes = new List<TvdbEpisode>();
         }
         public int Id { get; set; }
@@ -18,7 +19,7 @@ namespace Next.PCL.Online.Models.Tvdb
         public string Plot { get; set; }
         public DateTime? AirDate { get; set; }
 
-        public List<Uri> Posters { get; set; }
+        public List<MetaImage> Posters { get; set; }
         public List<TvdbEpisode> Episodes { get; set; }
     }
 }

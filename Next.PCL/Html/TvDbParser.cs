@@ -17,8 +17,6 @@ namespace Next.PCL.Html
     internal class TvDbParser : BaseParser
     {
         private readonly string Language;
-        internal const char RETURN_CHAR = '\r';
-        internal const char NEWLINE_CHAR = '\n';
 
         public TvDbParser(string language = "eng")
         {
@@ -35,19 +33,16 @@ namespace Next.PCL.Html
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
                            .FirstContainingAttrib("data-language", Language)
                            ?.Element("p")
-                           ?.ParseText(),
-                Poster = doc.GetArtworksOfType("image")
-                           .FirstOrDefault()
+                           ?.ParseText()
             };
             ep.Runtime = doc.FindAll("//ul/li/strong").WhereTextEquals("runtime")
-                         ?.ParentNode.Element("span")
-                         ?.ParseText().ParseToRuntime();
+                         ?.ParentNode.Element("span").ParseText().ParseToRuntime();
             ep.AirDate = doc.FindAll("//ul/li/strong").WhereTextContains("aired")
-                         ?.ParentNode.SelectSingleNode("//span/a")
-                         ?.ParseDateTime();
+                         ?.ParentNode.SelectSingleNode("//span/a")?.ParseDateTime();
             ep.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
-                         ?.GetAttrib("data-id")
-                         ?.ParseToInt() ?? 0;
+                         ?.GetAttrib("data-id").ParseToInt() ?? 0;
+
+            ep.Images = doc.GetArtworksOfType(MetaImageType.Image);
 
             var rows = doc.FindAll("//table/tbody/tr");
             foreach (var row in rows)
@@ -87,13 +82,14 @@ namespace Next.PCL.Html
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
                            .FirstContainingAttrib("data-language", Language)
                            ?.ParseText(),
-                Posters = doc.GetArtworksOfType("posters"),
-                Episodes = ParseSeasonEpisodes(null, doc).ToList()
             };
             sn.Id = doc.GetElementbyId("season_deleted_reason_confirm")
                        ?.GetAttrib("data-id")
                        ?.ParseToInt() ?? 0;
+
+            sn.Episodes = ParseSeasonEpisodes(null, doc).ToList();
             sn.AirDate = sn.Episodes.FirstOrDefault()?.AirDate;
+            sn.Posters = doc.GetArtworksOfType(MetaImageType.Poster);
 
             return sn;
         }

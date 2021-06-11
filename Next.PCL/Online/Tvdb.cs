@@ -46,8 +46,8 @@ namespace Next.PCL.Online
             string html = await GetAsync(url, token);
             var doc = _parser.ConvertToHtmlDoc(html);
 
-            var cast = _parser.ParseCast(html, doc);
-            var crew = _parser.ParseCrew(html, doc);
+            var cast = _parser.ParseCast(null, doc);
+            var crew = _parser.ParseCrew(null, doc);
 
             return cast.Concat(crew);
         }

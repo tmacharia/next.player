@@ -30,13 +30,13 @@ namespace Tests.Online
             Assert.NotNull(ep);
             Assert.AreEqual(8221744, ep.Id);
             Assert.AreEqual(SHOW_EP_URL, ep.Url);
-            Assert.NotNull(ep.Poster);
             Assert.That(ep.Plot.IsValid());
             Assert.AreEqual("Bool Hunt", ep.Name);
             Assert.AreEqual(50, ep.Runtime);
             Assert.AreEqual(4, ep.AirDate.Value.Day);
             Assert.AreEqual(6, ep.AirDate.Value.Month);
             Assert.AreEqual(2021, ep.AirDate.Value.Year);
+            Assert.That(ep.Images.Any());
         }
 
         [TestCase(Category = TVDB_TESTS)]

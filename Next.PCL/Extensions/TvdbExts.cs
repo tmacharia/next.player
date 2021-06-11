@@ -7,7 +7,6 @@ using HtmlAgilityPack;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Metas;
-using Next.PCL.Online.Models.Tvdb;
 using Next.PCL.Static;
 
 namespace Next.PCL.Extensions
@@ -135,6 +134,7 @@ namespace Next.PCL.Extensions
                     case MetaImageType.Banner: return new Size(758, 140);
                     case MetaImageType.Backdrop: return new Size(640, 360);
                     case MetaImageType.Profile: return new Size(300, 450);
+                    case MetaImageType.Image: return new Size(640, 360);
                 }
             }
             else
@@ -145,6 +145,7 @@ namespace Next.PCL.Extensions
                     case MetaImageType.Poster: return new Size(680, 1000);
                     case MetaImageType.Banner: return new Size(758, 140);
                     case MetaImageType.Backdrop: return new Size(1920, 1080);
+                    case MetaImageType.Image: return new Size(640, 360);
                 }
             }
             return new Size(0, 0);
