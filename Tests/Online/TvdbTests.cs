@@ -31,7 +31,7 @@ namespace Tests.Online
             Assert.AreEqual(8221744, ep.Id);
             Assert.AreEqual(SHOW_EP_URL, ep.Url);
             Assert.NotNull(ep.Poster);
-            Assert.True(ep.Plot.IsValid());
+            Assert.That(ep.Plot.IsValid());
             Assert.AreEqual("Bool Hunt", ep.Name);
             Assert.AreEqual(50, ep.Runtime);
             Assert.AreEqual(4, ep.AirDate.Value.Day);
@@ -64,7 +64,7 @@ namespace Tests.Online
             Assert.NotNull(sn);
             Assert.AreEqual(522572, sn.Id);
             Assert.AreEqual(uri, sn.Url);
-            Assert.True(sn.Plot.IsValid());
+            Assert.That(sn.Plot.IsValid());
             Assert.GreaterOrEqual(sn.Posters.Count, 1);
             Assert.AreEqual(12, sn.AirDate.Value.Day);
             Assert.AreEqual(1, sn.AirDate.Value.Month);
@@ -94,10 +94,10 @@ namespace Tests.Online
             Assert.GreaterOrEqual(ep.Crews.Count, 1);
             Assert.GreaterOrEqual(ep.Guests.Count, 1);
 
-            Assert.True(ep.Crews.All(x => x.Id > 0));
-            Assert.True(ep.Crews.All(x => x.Name.IsValid()));
-            Assert.True(ep.Guests.All(x => x.Id > 0));
-            Assert.True(ep.Guests.All(x => x.Name.IsValid()));
+            Assert.That(ep.Crews.All(x => x.Id > 0));
+            Assert.That(ep.Crews.All(x => x.Name.IsValid()));
+            Assert.That(ep.Guests.All(x => x.Id > 0));
+            Assert.That(ep.Guests.All(x => x.Name.IsValid()));
         }
 
         [TestCase(Category = TVDB_TESTS)]
@@ -113,14 +113,21 @@ namespace Tests.Online
 
             Assert.NotNull(tv.AirsOn);
             Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);
-            Assert.True(tv.Runtime.HasValue);
+            Assert.That(tv.Runtime.HasValue);
             Assert.AreEqual(59, tv.Runtime);
 
             Assert.NotNull(tv.Genres);
-            Assert.True(tv.Genres.Contains("Crime"));
+            Assert.That(tv.Genres.Contains("Crime"));
 
-            Assert.True(tv.Posters.Any());
-            Assert.True(tv.Backdrops.Any());
+            Assert.That(tv.Posters.Any());
+            Assert.That(tv.Backdrops.Any());
+
+            Assert.That(tv.OtherSites.Any());
+            Assert.That(tv.OtherSites.All(x => x.Url != null));
+            Assert.That(tv.OtherSites.All(x => x.Source == MetaSource.TVDB));
+            Assert.That(tv.OtherSites.Any(x => x.Domain == OtherSiteDomain.IMDB));
+
+            tv.OtherSites.ForEach(x => Log(x));
         }
 
         

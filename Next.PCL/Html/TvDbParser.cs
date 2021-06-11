@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common;
 using HtmlAgilityPack;
+using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Metas;
@@ -38,10 +39,10 @@ namespace Next.PCL.Html
                 Poster = doc.GetArtworksOfType("image")
                            .FirstOrDefault()
             };
-            ep.Runtime = doc.FindAll("//ul/li/strong").Where(x => x.TextEquals("runtime")).FirstOrDefault()
+            ep.Runtime = doc.FindAll("//ul/li/strong").WhereTextEquals("runtime")
                          ?.ParentNode.Element("span")
                          ?.ParseText().ParseToRuntime();
-            ep.AirDate = doc.FindAll("//ul/li/strong").Where(x => x.TextContains("aired")).FirstOrDefault()
+            ep.AirDate = doc.FindAll("//ul/li/strong").WhereTextContains("aired")
                          ?.ParentNode.SelectSingleNode("//span/a")
                          ?.ParseDateTime();
             ep.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
@@ -155,6 +156,15 @@ namespace Next.PCL.Html
             model.Locations = GetListItems(lists, TvDbKeys.Location).Select(x => x.ParseText()).ToList();
             model.TimePeriods = GetListItems(lists, TvDbKeys.TimePeriod).Select(x => x.ParseText()).ToList();
             model.Runtime = GetListItem(lists, TvDbKeys.Runtimes).Split('(').First().Split(' ').First().ParseToInt();
+
+            model.OtherSites = GetListItems(lists, TvDbKeys.OtherSites).Select(x =>
+            {
+                var anc = x.Element("a");
+                var metaUrl = new MetaUrl(MetaSource.TVDB);
+                metaUrl.Url = anc.GetHref().ParseToUri();
+                metaUrl.Domain = metaUrl.Url.ParseToSiteDomain(anc.ParseText());
+                return metaUrl;
+            }).ToList();
 
             return model;
         }

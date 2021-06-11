@@ -137,6 +137,10 @@ namespace Next.PCL.Extensions
         {
             return nodes.FirstOrDefault(x => x.TextEquals(value));
         }
+        internal static HtmlNode WhereTextContains(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.FirstOrDefault(x => x.TextContains(value));
+        }
         #endregion
 
         #region Html Document

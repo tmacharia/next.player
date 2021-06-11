@@ -21,6 +21,8 @@ namespace Next.PCL.Online.Models.Tvdb
             Banners = new List<MetaImage>();
             Posters = new List<MetaImage>();
             Backdrops = new List<MetaImage>();
+
+            OtherSites = new List<MetaUrl>();
         }
         public int Id { get; set; }
         public AirShedule AirsOn { get; set; }
@@ -36,5 +38,7 @@ namespace Next.PCL.Online.Models.Tvdb
         public List<MetaImage> Banners { get; set; }
         public List<MetaImage> Posters { get; set; }
         public List<MetaImage> Backdrops { get; set; }
+
+        public List<MetaUrl> OtherSites { get; set; }
     }
 }
