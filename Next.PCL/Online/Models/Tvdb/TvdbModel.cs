@@ -25,9 +25,7 @@ namespace Next.PCL.Online.Models.Tvdb
             OtherSites = new List<MetaUrl>();
         }
         public int Id { get; set; }
-        public AirShedule AirsOn { get; set; }
         public MetaStatus Status { get; set; }
-        public string Network { get; set; }
         public override Uri Poster => Posters?.FirstOrDefault()?.Url;
 
         public List<string> Settings { get; set; }
