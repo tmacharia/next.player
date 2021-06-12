@@ -61,10 +61,10 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
-        internal static DateTime? ParseToDateTime(this string s)
+        internal static DateTime? ParseToDateTime(this string s, DateTimeStyles dateTimeStyle = DateTimeStyles.None)
         {
             if (s.IsValid() && DateTime
-                .TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                .TryParse(s, CultureInfo.InvariantCulture, dateTimeStyle, out DateTime date))
             {
                 return date;
             }

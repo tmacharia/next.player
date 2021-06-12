@@ -17,122 +17,23 @@ namespace Next.PCL.Html
     internal class TvDbParser : BaseParser
     {
         private readonly string Language;
+        private readonly bool IncludeSpecialSeasons;
 
-        public TvDbParser(string language = "eng")
+        public TvDbParser(string language = "eng", bool includeSpecialSeasons = true)
         {
             Language = language;
+            IncludeSpecialSeasons = includeSpecialSeasons;
         }
 
-        public TvdbEpisode ParseEpisode(string html, Uri episodeUrl)
+        internal TvDbShow ParseShow(string html, Uri showUrl)
         {
             var doc = ConvertToHtmlDoc(html);
-            var ep = new TvdbEpisode
-            {
-                Url = episodeUrl,
-                Name = doc.Find("//h1[@class='translated_title']").ParseText(),
-                Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstContainingAttrib("data-language", Language)
-                           ?.Element("p")
-                           ?.ParseText()
-            };
-            ep.Runtime = doc.FindAll("//ul/li/strong").WhereTextEquals("runtime")
-                         ?.ParentNode.Element("span").ParseText().ParseToRuntime();
-            ep.AirDate = doc.FindAll("//ul/li/strong").WhereTextContains("aired")
-                         ?.ParentNode.SelectSingleNode("//span/a")?.ParseDateTime();
-            ep.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
-                         ?.GetAttrib("data-id").ParseToInt() ?? 0;
-
-            ep.Images = doc.GetArtworksOfType(MetaImageType.Image);
-
-            var rows = doc.FindAll("//table/tbody/tr");
-            foreach (var row in rows)
-            {
-                HtmlNode[] tds = row.Elements("td").ToArray();
-                HtmlNode link = tds[0].Element("a");
-                string href = link.GetHref();
-                Uri url = (SiteUrls.TVDB + href).ParseToUri();
-                int id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0;
-
-                var person = new TvdbPerson
-                {
-                    Id = id,
-                    Url = url,
-                    Name = link.ParseText()
-                };
-                string type = tds[1].ParseText();
-                var prf = type.ParseToProfession();
-                if(prf != Profession.Other)
-                    ep.Crews.Add(new TvdbCrew(person) { Profession = prf });
-                else
-                {
-                    string role = tds[2].ParseText();
-                    ep.Guests.Add(new TvdbCast(person) { Role = role.IsValid() ? role : type });
-                }
-            }
-
-            return ep;
-        }
-        public TvdbSeason ParseSeason(string html, Uri seasonUrl)
-        {
-            var doc = ConvertToHtmlDoc(html);
-            var sn = new TvdbSeason
-            {
-                Url = seasonUrl,
-                Name = doc.Find("//h1[@class='translated_title']").ParseText(),
-                Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstContainingAttrib("data-language", Language)
-                           ?.ParseText(),
-            };
-            sn.Id = doc.GetElementbyId("season_deleted_reason_confirm")
-                       ?.GetAttrib("data-id")
-                       ?.ParseToInt() ?? 0;
-
-            sn.Episodes = ParseSeasonEpisodes(null, doc).ToList();
-            sn.AirDate = sn.Episodes.FirstOrDefault()?.AirDate;
-            sn.Posters = doc.GetArtworksOfType(MetaImageType.Poster);
-
-            return sn;
-        }
-        public IEnumerable<TvdbEpisode> ParseSeasonEpisodes(string html, HtmlDocument document = default)
-        {
-            var doc = document ?? ConvertToHtmlDoc(html);
-
-            var rows = doc.FindAll("//table/tbody/tr");
-
-            int index = 0;
-            foreach (var row in rows)
-            {
-                var tds = row.Elements("td").ToArray();
-                var link = tds[1].Element("a");
-                var href = link.GetHref();
-                index++;
-
-                TvdbEpisode ep = new TvdbEpisode
-                {
-                    Number = index,
-                    Name = link.ParseText(),
-                    Notation = tds[0].ParseText(),
-                    Url = (SiteUrls.TVDB + href).ParseToUri(),
-                    Runtime = tds[3].ParseText().ParseToRuntime(),
-                    AirDate = tds[2].Element("div").ParseDateTime(),
-                    Id = href.SplitByAndTrim("/")
-                             .Last()
-                             .ParseToInt()
-                             .GetValueOrDefault()
-                };
-                yield return ep;
-            }
-        }
-
-        internal TvdbModel ParseShow(string html, Uri showUrl)
-        {
-            var doc = ConvertToHtmlDoc(html);
-            var model = new TvdbModel
+            var model = new TvDbShow
             {
                 Url = showUrl,
                 Name = doc.GetElementbyId("series_title").ParseText(),
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstContainingAttrib("data-language", Language)
+                           .FirstWithAttrib("data-language", Language)
                            ?.ParseText(),
             };
 
@@ -162,17 +63,139 @@ namespace Next.PCL.Html
                 return metaUrl;
             }).ToList();
 
+            model.Seasons = doc.FindAll("//div[@role='tabpanel']").FirstContainingClass("tab-official")
+                               .ExtendFindAll("/ul/li").WhereHasAttrib("data-number")
+                               .Select(x => ParseSimpleSeason(x))
+                               .Where(x => x != null).OrderBy(x => x.Number)
+                               .ToList();
+
             return model;
         }
-        internal IEnumerable<TvdbCrew> ParseCrew(string html, HtmlDocument document = default)
+
+        public TvdbSeason ParseSimpleSeason(HtmlNode node)
+        {
+            int? num = node.GetAttrib("data-number").ParseToInt();
+
+            if (!num.HasValue)
+                return null;
+
+            if (num <= 0 && !IncludeSpecialSeasons)
+                return null;
+
+            var linkNode = node.ExtendFind("/h4/a");
+            var dates = node.Element("p").ParseText().SplitByAndTrim("-");
+
+            var model = new TvdbSeason
+            {
+                Number = num,
+                Name = linkNode?.ParseText(),
+                Url = linkNode?.GetHref()?.ParseToUri(),
+                AirDate = dates.FirstOrDefault()?.ParseToDateTime(),
+                LastAirDate = dates.Skip(1).FirstOrDefault()?.ParseToDateTime()
+            };
+
+            return model;
+        }
+        public TvdbSeason ParseSeason(string html, Uri seasonUrl)
+        {
+            var doc = ConvertToHtmlDoc(html);
+            var model = new TvdbSeason
+            {
+                Url = seasonUrl,
+                Name = doc.Find("//h1[@class='translated_title']").ParseText(),
+                Plot = doc.FindAll("//div[@class='change_translation_text']")
+                           .FirstWithAttrib("data-language", Language)?.ParseText(),
+            };
+            model.Id = doc.GetElementbyId("season_deleted_reason_confirm")
+                       ?.GetAttrib("data-id")?.ParseToInt() ?? 0;
+
+            model.Episodes = ParseSeasonEpisodes(null, doc).ToList();
+            model.AirDate = model.Episodes.FirstOrDefault()?.AirDate;
+            model.LastAirDate = model.Episodes.LastOrDefault()?.AirDate;
+            model.Posters = doc.GetArtworksOfType(MetaImageType.Poster);
+
+            return model;
+        }
+        
+        public IEnumerable<TvdbEpisode> ParseSeasonEpisodes(string html, HtmlDocument document = default)
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
-            var writers = doc.FindByTag("h2").WhereTextEquals("Writers")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
-            var directors = doc.FindByTag("h2").WhereTextEquals("Directors")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+            var rows = doc.FindAll("//table/tbody/tr");
 
-            return ParseAllCrew(directors, Profession.Director).Concat(ParseAllCrew(writers, Profession.Writer));
+            int index = 0;
+            foreach (var row in rows)
+            {
+                var tds = row.Elements("td").ToArray();
+                var link = tds[1].Element("a");
+                var href = link.GetHref();
+                index++;
+
+                TvdbEpisode model = new TvdbEpisode
+                {
+                    Number = index,
+                    Name = link.ParseText(),
+                    Notation = tds[0].ParseText(),
+                    Url = (SiteUrls.TVDB + href).ParseToUri(),
+                    Runtime = tds[3].ParseText().ParseToRuntime(),
+                    AirDate = tds[2].Element("div").ParseDateTime(),
+                    Id = href.SplitByAndTrim("/")
+                             .Last()
+                             .ParseToInt()
+                             .GetValueOrDefault()
+                };
+                yield return model;
+            }
         }
+        public TvdbEpisode ParseEpisode(string html, Uri episodeUrl)
+        {
+            var doc = ConvertToHtmlDoc(html);
+            var model = new TvdbEpisode
+            {
+                Url = episodeUrl,
+                Name = doc.Find("//h1[@class='translated_title']").ParseText(),
+                Plot = doc.FindAll("//div[@class='change_translation_text']")
+                           .FirstWithAttrib("data-language", Language)
+                           ?.Element("p")?.ParseText()
+            };
+            model.Runtime = doc.FindAll("//ul/li/strong").WhereTextEquals("runtime")
+                         ?.ParentNode.Element("span").ParseText().ParseToRuntime();
+            model.AirDate = doc.FindAll("//ul/li/strong").WhereTextContains("aired")
+                         ?.ParentNode.SelectSingleNode("//span/a")?.ParseDateTime();
+            model.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
+                         ?.GetAttrib("data-id").ParseToInt() ?? 0;
+
+            model.Images = doc.GetArtworksOfType(MetaImageType.Image);
+
+            var rows = doc.FindAll("//table/tbody/tr");
+            foreach (var row in rows)
+            {
+                HtmlNode[] tds = row.Elements("td").ToArray();
+                HtmlNode link = tds[0].Element("a");
+                string href = link.GetHref();
+                Uri url = (SiteUrls.TVDB + href).ParseToUri();
+                int id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0;
+
+                var person = new TvdbPerson
+                {
+                    Id = id,
+                    Url = url,
+                    Name = link.ParseText()
+                };
+                string type = tds[1].ParseText();
+                var prf = type.ParseToProfession();
+                if(prf != Profession.Other)
+                    model.Crews.Add(new TvdbCrew(person) { Profession = prf });
+                else
+                {
+                    string role = tds[2].ParseText();
+                    model.Guests.Add(new TvdbCast(person) { Role = role.IsValid() ? role : type });
+                }
+            }
+
+            return model;
+        }
+
         internal IEnumerable<TvdbPerson> ParseCast(string html, HtmlDocument document = default)
         {
             var doc = document ?? ConvertToHtmlDoc(html);
@@ -188,6 +211,15 @@ namespace Next.PCL.Html
                         yield return cr;
                 }
             }
+        }
+        internal IEnumerable<TvdbCrew> ParseCrew(string html, HtmlDocument document = default)
+        {
+            var doc = document ?? ConvertToHtmlDoc(html);
+
+            var writers = doc.FindByTag("h2").WhereTextEquals("Writers")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+            var directors = doc.FindByTag("h2").WhereTextEquals("Directors")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+
+            return ParseAllCrew(directors, Profession.Director).Concat(ParseAllCrew(writers, Profession.Writer));
         }
         private IEnumerable<TvdbCrew> ParseAllCrew(HtmlNodeCollection nodes, Profession profession)
         {
@@ -235,6 +267,7 @@ namespace Next.PCL.Html
 
             return cast;
         }
+
         internal async Task<List<MetaImage>> GetAndParseImagesAsync(Uri uri, MetaImageType type, CancellationToken token = default)
         {
             string imageType = TvdbExts.CastImageType(type);

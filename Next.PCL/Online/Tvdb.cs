@@ -20,7 +20,7 @@ namespace Next.PCL.Online
             _parser = new TvDbParser();
         }
 
-        public async Task<TvdbModel> GetShowAsync(string tvSlugName, CancellationToken token = default)
+        public async Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken token = default)
         {
             var url = string.Format("{0}/series/{1}", SiteUrls.TVDB, tvSlugName).ParseToUri();
             string html = await GetAsync(url, token);

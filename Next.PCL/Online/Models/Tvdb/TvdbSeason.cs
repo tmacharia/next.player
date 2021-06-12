@@ -18,6 +18,7 @@ namespace Next.PCL.Online.Models.Tvdb
         public int? Number { get; set; }
         public string Plot { get; set; }
         public DateTime? AirDate { get; set; }
+        public DateTime? LastAirDate { get; set; }
 
         public List<MetaImage> Posters { get; set; }
         public List<TvdbEpisode> Episodes { get; set; }

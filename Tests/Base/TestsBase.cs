@@ -46,5 +46,6 @@ namespace Tests
         }
 
         internal virtual void Log(object o) => Console.WriteLine(o);
+        internal virtual void Log(string format, params object[] args) => Console.WriteLine(format, args);
     }
 }
