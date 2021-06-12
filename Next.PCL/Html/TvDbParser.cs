@@ -52,7 +52,8 @@ namespace Next.PCL.Html
             model.Settings = GetListItems(lists, TvDbKeys.Setting).Select(x => x.ParseText()).ToList();
             model.Locations = GetListItems(lists, TvDbKeys.Location).Select(x => x.ParseText()).ToList();
             model.TimePeriods = GetListItems(lists, TvDbKeys.TimePeriod).Select(x => x.ParseText()).ToList();
-            model.Runtime = GetListItem(lists, TvDbKeys.Runtimes).Split('(').First().Split(' ').First().ParseToInt();
+            model.Runtime = GetNonDeterministicRuntimeFromList(
+                                GetListItems(lists, TvDbKeys.Runtimes).Select(x => x.ParseText()));
 
             model.OtherSites = GetListItems(lists, TvDbKeys.OtherSites).Select(x =>
             {
@@ -70,6 +71,16 @@ namespace Next.PCL.Html
                                .ToList();
 
             return model;
+        }
+        internal int? GetNonDeterministicRuntimeFromList(IEnumerable<string> list)
+        {
+            var runs = list.Select(x => x.SplitByAndTrim(" ").FirstOrDefault())
+                           .Select(x => x.ParseToInt())
+                           .Where(x => x.HasValue)
+                           .Select(x => x.Value)
+                           .ToList();
+
+            return runs.Median();
         }
 
         public TvdbSeason ParseSimpleSeason(HtmlNode node)

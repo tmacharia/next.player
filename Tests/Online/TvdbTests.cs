@@ -37,7 +37,7 @@ namespace Tests.Online
             Assert.NotNull(tv.AirsOn);
             Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);
             Assert.That(tv.Runtime.HasValue);
-            Assert.AreEqual(59, tv.Runtime);
+            Assert.NotZero(tv.Runtime.Value);
 
             Assert.NotNull(tv.Genres);
             Assert.That(tv.Genres.Contains("Crime"));
