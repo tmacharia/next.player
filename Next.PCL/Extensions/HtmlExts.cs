@@ -35,30 +35,42 @@ namespace Next.PCL.Extensions
         #region Attribute Related
         internal static string GetAttrib(this HtmlNode node, string name, string defaultValue = default)
         {
-            if (node.ContainsAttrib(name))
-                return node.GetAttributeValue(name, defaultValue);
-            return defaultValue;
+            return node.GetAttributeValue(name, defaultValue);
         }
         internal static IEnumerable<string> GetAllAttribs(this HtmlNodeCollection nodes, string name)
         {
             return nodes.Select(x => x.GetAttrib(name))
                         .Where(x => x.IsValid());
         }
-        internal static HtmlNode FirstContainingAttrib(this HtmlNodeCollection nodes, string name)
+        internal static IEnumerable<HtmlNode> WhereHasAttrib(this HtmlNodeCollection nodes, string name)
         {
-            return nodes.FirstOrDefault(x => x.ContainsAttrib(name));
+            return nodes.Where(x => x.HasAttrib(name));
         }
-        internal static HtmlNode FirstContainingAttrib(this HtmlNodeCollection nodes, string name, string value)
+        internal static HtmlNode FirstWithAttrib(this HtmlNodeCollection nodes, string name)
         {
-            return nodes.FirstOrDefault(x => x.ContainsAttrib(name, value));
+            return nodes.FirstOrDefault(x => x.HasAttrib(name));
         }
-        internal static bool ContainsAttrib(this HtmlNode node, string name)
+        internal static HtmlNode FirstWithAttrib(this HtmlNodeCollection nodes, string name, string value)
+        {
+            return nodes.FirstOrDefault(x => x.HasAttrib(name, value));
+        }
+        internal static HtmlNode FirstContainingClass(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.FirstOrDefault(x => x.ContainsClass(value));
+        }
+        internal static bool HasAttrib(this HtmlNode node, string name)
         {
             return node.HasAttribWhere(x => x.Name.EqualsOIC(name));
         }
-        internal static bool ContainsAttrib(this HtmlNode node, string name, string value)
+        internal static bool HasAttrib(this HtmlNode node, string name, string value)
         {
             return node.HasAttribWhere(x => x.Name.EqualsOIC(name) && x.Value.EqualsOIC(value));
+        }
+        internal static bool ContainsClass(this HtmlNode node, string value)
+        {
+            if (node != null && node.HasAttributes)
+                return node.GetAttrib("class").Contains(value);
+            return false;
         }
         internal static bool HasAttribWhere(this HtmlNode node, Func<HtmlAttribute,bool> predicate)
         {
