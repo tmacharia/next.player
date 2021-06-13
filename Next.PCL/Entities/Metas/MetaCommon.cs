@@ -23,10 +23,10 @@ namespace Next.PCL.Entities
         public DateTime ReleaseDate { get; set; }
         public DateTime? LastModified { get; set; }
 
-        public IList<MetaID> IDs { get; set; }
-        public IList<Alias> Aliases { get; set; }
-        public IList<MetaUrl> Urls { get; set; }
-        public IList<MetaImage> Images { get; set; }
+        public List<MetaID> IDs { get; set; }
+        public List<Alias> Aliases { get; set; }
+        public List<MetaUrl> Urls { get; set; }
+        public List<MetaImage> Images { get; set; }
     }
     /// <summary>
     /// Class B of related media items. Targets; movies,
@@ -47,12 +47,12 @@ namespace Next.PCL.Entities
         public TimeSpan Runtime { get; set; }
         public BaseRating ImdbRating { get; set; }
 
-        public IList<MetaPlot> Plots { get; set; }
-        public IList<Genre> Genres { get; set; }
-        public IList<MetaVideo> Videos { get; set; }
+        public List<MetaPlot> Plots { get; set; }
+        public List<Genre> Genres { get; set; }
+        public List<MetaVideo> Videos { get; set; }
 
-        public IList<Cast> Casts { get; set; }
-        public IList<FilmMaker> FilmMakers { get; set; }
+        public List<Cast> Casts { get; set; }
+        public List<FilmMaker> FilmMakers { get; set; }
     }
     /// <summary>
     /// Class C of related media items. Targets; movies,
@@ -69,8 +69,8 @@ namespace Next.PCL.Entities
         }
         public MetaRatings MetaRatings { get; set; }
 
-        public IList<Company> Companies { get; set; }
-        public IList<GeographicLocation> Locations { get; set; }
-        public IList<Language> Languages { get; set; }
+        public List<Company> Companies { get; set; }
+        public List<GeographicLocation> Locations { get; set; }
+        public List<Language> Languages { get; set; }
     }
 }

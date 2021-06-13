@@ -13,10 +13,10 @@ namespace Next.PCL.Entities
         MetaStatus Status { get; set; }
         DateTime ReleaseDate { get; set; }
 
-        IList<MetaID> IDs { get; set; }
-        IList<Alias> Aliases { get; set; }
-        IList<MetaUrl> Urls { get; set; }
-        IList<MetaImage> Images { get; set; }
+        List<MetaID> IDs { get; set; }
+        List<Alias> Aliases { get; set; }
+        List<MetaUrl> Urls { get; set; }
+        List<MetaImage> Images { get; set; }
     }
     /// <summary>
     /// Class B of related media items. Targets; movies,
@@ -27,11 +27,11 @@ namespace Next.PCL.Entities
     {
         TimeSpan Runtime { get; set; }
 
-        IList<Cast> Casts { get; set; }
-        IList<Genre> Genres { get; set; }
-        IList<MetaPlot> Plots { get; set; }
-        IList<MetaVideo> Videos { get; set; }
-        IList<FilmMaker> FilmMakers { get; set; }
+        List<Cast> Casts { get; set; }
+        List<Genre> Genres { get; set; }
+        List<MetaPlot> Plots { get; set; }
+        List<MetaVideo> Videos { get; set; }
+        List<FilmMaker> FilmMakers { get; set; }
     }
     /// <summary>
     /// Class C of related media items. Targets; movies,
@@ -40,8 +40,8 @@ namespace Next.PCL.Entities
     /// </summary>
     public interface IMetaCommonC : IMetaCommonB
     {
-        IList<Company> Companies { get; set; }
-        IList<GeographicLocation> Locations { get; set; }
-        IList<Language> Languages { get; set; }
+        List<Company> Companies { get; set; }
+        List<GeographicLocation> Locations { get; set; }
+        List<Language> Languages { get; set; }
     }
 }

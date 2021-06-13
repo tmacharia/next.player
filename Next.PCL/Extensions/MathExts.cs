@@ -19,7 +19,7 @@ namespace Next.PCL.Extensions
 		/// Pivot is selected ranodmly if random number generator is supplied else its selected as last element in the list.
 		/// Reference: Introduction to Algorithms 3rd Edition, Corman et al, pp 171
 		/// </summary>
-		private static int Partition<T>(this IList<T> list, int start, int end, Random rnd = null) 
+		private static int Partition<T>(this List<T> list, int start, int end, Random rnd = null) 
 			where T : IComparable<T>
 		{
 			if (rnd != null)
@@ -40,12 +40,12 @@ namespace Next.PCL.Extensions
 		/// Note: specified list would be mutated in the process.
 		/// Reference: Introduction to Algorithms 3rd Edition, Corman et al, pp 216
 		/// </summary>
-		public static T NthOrderStatistic<T>(this IList<T> list, int n, Random rnd = null) 
+		public static T NthOrderStatistic<T>(this List<T> list, int n, Random rnd = null) 
 			where T : IComparable<T>
 		{
 			return NthOrderStatistic(list, n, 0, list.Count - 1, rnd);
 		}
-		private static T NthOrderStatistic<T>(this IList<T> list, int n, int start, int end, Random rnd) 
+		private static T NthOrderStatistic<T>(this List<T> list, int n, int start, int end, Random rnd) 
 			where T : IComparable<T>
 		{
 			while (true)
@@ -61,7 +61,7 @@ namespace Next.PCL.Extensions
 			}
 		}
 
-		public static void Swap<T>(this IList<T> list, int i, int j)
+		public static void Swap<T>(this List<T> list, int i, int j)
 		{
 			if (i == j)   //This check is not required but Partition function may make many calls so its for perf reason
 				return;
@@ -72,7 +72,7 @@ namespace Next.PCL.Extensions
 		/// <summary>
 		/// Note: specified list would be mutated in the process.
 		/// </summary>
-		public static T Median<T>(this IList<T> list) 
+		public static T Median<T>(this List<T> list) 
 			where T : IComparable<T>
 		{
 			if (list.Count <= 0)

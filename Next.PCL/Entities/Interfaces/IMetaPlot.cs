@@ -8,6 +8,6 @@ namespace Next.PCL.Entities
     }
     public interface IMetaPlots
     {
-        IList<MetaPlot> Plots { get; set; }
+        List<MetaPlot> Plots { get; set; }
     }
 }

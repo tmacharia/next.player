@@ -8,6 +8,6 @@ namespace Next.PCL.Entities
     }
     public interface IAliases
     {
-        IList<Alias> Aliases { get; set; }
+        List<Alias> Aliases { get; set; }
     }
 }

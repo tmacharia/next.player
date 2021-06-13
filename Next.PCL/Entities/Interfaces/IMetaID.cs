@@ -9,6 +9,6 @@ namespace Next.PCL.Entities
     }
     public interface IMetaIDs
     {
-        IList<MetaID> IDs { get; set; }
+        List<MetaID> IDs { get; set; }
     }
 }

@@ -22,6 +22,10 @@ namespace Next.PCL.Extensions
         {
             return node.ParseText().ParseToInt();
         }
+        internal static Uri ParseUri(this HtmlNode node)
+        {
+            return node.ParseText().ParseToUri();
+        }
         internal static double? ParseDouble(this HtmlNode node)
         {
             return node.ParseText().ParseToDouble();
@@ -53,6 +57,10 @@ namespace Next.PCL.Extensions
         internal static HtmlNode FirstWithAttrib(this HtmlNodeCollection nodes, string name, string value)
         {
             return nodes.FirstOrDefault(x => x.HasAttrib(name, value));
+        }
+        internal static HtmlNode FirstWithAttribContaining(this HtmlNodeCollection nodes, string name, string value)
+        {
+            return nodes.FirstOrDefault(x => x.HasAttribWhere(t => t.Name.EqualsOIC(name) && t.Value.Contains(value)));
         }
         internal static HtmlNode FirstContainingClass(this HtmlNodeCollection nodes, string value)
         {

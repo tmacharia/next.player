@@ -141,6 +141,15 @@ namespace Next.PCL.Extensions
             }
             return MetaStatus.Released;
         }
+        internal static CompanyService ParseToCompanyType(this string s)
+        {
+            if (s.IsValid())
+            {
+                if (s.Matches("production"))
+                    return CompanyService.Production;
+            }
+            return CompanyService.Network;
+        }
         internal static IEnumerable<string> SplitByAndTrim(this string s, params string[] args)
         {
             if (s.IsValid())

@@ -7,11 +7,12 @@ namespace Next.PCL.Online.Models.Tvdb
     {
         public TvDbShow() :base()
         {
+            Networks = new List<Company>();
             Seasons = new List<TvdbSeason>();
         }
-        public string Network { get; set; }
         public AirShedule AirsOn { get; set; }
 
+        public List<Company> Networks { get; set; }
         public List<TvdbSeason> Seasons { get; set; }
     }
 }

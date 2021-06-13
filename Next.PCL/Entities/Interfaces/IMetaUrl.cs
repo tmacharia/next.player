@@ -11,6 +11,6 @@ namespace Next.PCL.Entities
     }
     public interface IUrls
     {
-        IList<MetaUrl> Urls { get; set; }
+        List<MetaUrl> Urls { get; set; }
     }
 }

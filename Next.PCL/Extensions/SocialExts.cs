@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Common;
+using Next.PCL.Entities;
+using Next.PCL.Enums;
 
 namespace Next.PCL.Extensions
 {
@@ -21,6 +23,18 @@ namespace Next.PCL.Extensions
                 return uri.OriginalString.SplitByAndTrim("?v=").Last();
             }
             return string.Empty;
+        }
+        internal static MetaUrl ParseToMetaUrl(this Uri uri, MetaSource metaSource)
+        {
+            if (uri != null)
+            {
+                return new MetaUrl(metaSource)
+                {
+                    Url = uri,
+                    Domain = uri.ParseToSiteDomain(uri.OriginalString)
+                };
+            }
+            return null;
         }
     }
 }
