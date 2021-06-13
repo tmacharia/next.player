@@ -15,6 +15,11 @@ namespace Next.PCL.Online
     public class Tvdb : BaseOnline
     {
         private readonly TvDbParser _parser;
+        internal TvdbConfig Config
+        {
+            get { return _parser.Config; }
+            private set { _parser.Config = value; }
+        }
 
         public Tvdb()
         {
@@ -23,12 +28,6 @@ namespace Next.PCL.Online
         public Tvdb(TvdbConfig tvdbConfig)
         {
             _parser = new TvDbParser(tvdbConfig);
-        }
-
-        internal TvdbConfig Config
-        {
-            get { return _parser.Config; }
-            set { _parser.Config = value; }
         }
 
         public async Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken token = default)

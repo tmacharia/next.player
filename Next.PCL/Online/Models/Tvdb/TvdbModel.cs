@@ -14,7 +14,6 @@ namespace Next.PCL.Online.Models.Tvdb
             Source = MetaSource.TVDB;
 
             Settings = new List<string>();
-            Locations = new List<string>();
             TimePeriods = new List<string>();
 
             Icons = new List<MetaImage>();
@@ -24,13 +23,13 @@ namespace Next.PCL.Online.Models.Tvdb
 
             OtherSites = new List<MetaUrl>();
             Trailers = new List<MetaVideo>();
+            Locations = new List<GeographicLocation>();
         }
         public int Id { get; set; }
         public MetaStatus Status { get; set; }
         public override Uri Poster => Posters?.FirstOrDefault()?.Url;
 
         public List<string> Settings { get; set; }
-        public List<string> Locations { get; set; }
         public List<string> TimePeriods { get; set; }
 
         public List<MetaImage> Icons { get; set; }
@@ -40,5 +39,6 @@ namespace Next.PCL.Online.Models.Tvdb
 
         public List<MetaUrl> OtherSites { get; set; }
         public List<MetaVideo> Trailers { get; set; }
+        public List<GeographicLocation> Locations { get; set; }
     }
 }

@@ -41,7 +41,7 @@ namespace Next.PCL.Entities
     public interface IMetaCommonC : IMetaCommonB
     {
         IList<Company> Companies { get; set; }
-        IList<Country> Countries { get; set; }
+        IList<GeographicLocation> Locations { get; set; }
         IList<Language> Languages { get; set; }
     }
 }

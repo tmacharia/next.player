@@ -50,7 +50,7 @@ namespace Next.PCL.Html
             model.Network = GetListItem(lists, TvDbKeys.Networks);
             model.Genres = GetListItems(lists, TvDbKeys.Genres).Select(x => x.ParseText()).ToList();
             model.Settings = GetListItems(lists, TvDbKeys.Setting).Select(x => x.ParseText()).ToList();
-            model.Locations = GetListItems(lists, TvDbKeys.Location).Select(x => x.ParseText()).ToList();
+            model.Locations = GetListItems(lists, TvDbKeys.Location).Select(x => x.ParseText().ToGeoLocale()).ToList();
             model.TimePeriods = GetListItems(lists, TvDbKeys.TimePeriod).Select(x => x.ParseText()).ToList();
             model.Runtime = GetNonDeterministicRuntime(GetListItems(lists, TvDbKeys.Runtimes).Select(x => x.ParseText()));
 

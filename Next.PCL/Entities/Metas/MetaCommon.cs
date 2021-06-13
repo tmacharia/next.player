@@ -64,13 +64,13 @@ namespace Next.PCL.Entities
         protected MetaCommonC() : base()
         {
             Companies = new List<Company>();
-            Countries = new List<Country>();
+            Locations = new List<GeographicLocation>();
             Languages = new List<Language>();
         }
         public MetaRatings MetaRatings { get; set; }
 
         public IList<Company> Companies { get; set; }
-        public IList<Country> Countries { get; set; }
+        public IList<GeographicLocation> Locations { get; set; }
         public IList<Language> Languages { get; set; }
     }
 }
