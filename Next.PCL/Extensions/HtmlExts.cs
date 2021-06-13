@@ -83,6 +83,12 @@ namespace Next.PCL.Extensions
         #endregion
 
         #region Single Node
+        internal static bool Is(this HtmlNode node, string htmlTagName)
+        {
+            if (node != null && htmlTagName.IsValid())
+                return node.Name.EqualsOIC(htmlTagName);
+            return false;
+        }
         internal static bool TextEquals(this HtmlNode node, string value)
         {
             string s = node.ParseText();

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common;
 using HtmlAgilityPack;
-using Next.PCL.Entities;
+using Next.PCL.Configurations;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Metas;
@@ -16,13 +16,13 @@ namespace Next.PCL.Html
 {
     internal class TvDbParser : BaseParser
     {
-        private readonly string Language;
-        private readonly bool IncludeSpecialSeasons;
+        internal const string ACTOR_AVATAR_IMG = "https://thetvdb.com/images/missing/actor.jpg";
 
-        public TvDbParser(string language = "eng", bool includeSpecialSeasons = true)
+        internal TvdbConfig Config { get; set; }
+
+        public TvDbParser(TvdbConfig tvdbConfig = default)
         {
-            Language = language;
-            IncludeSpecialSeasons = includeSpecialSeasons;
+            Config = tvdbConfig ?? new TvdbConfig();
         }
 
         internal TvDbShow ParseShow(string html, Uri showUrl)
@@ -33,7 +33,7 @@ namespace Next.PCL.Html
                 Url = showUrl,
                 Name = doc.GetElementbyId("series_title").ParseText(),
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstWithAttrib("data-language", Language)
+                           .FirstWithAttrib("data-language", Config.Language)
                            ?.ParseText(),
             };
 
@@ -83,11 +83,18 @@ namespace Next.PCL.Html
             if (!num.HasValue)
                 return null;
 
-            if (num <= 0 && !IncludeSpecialSeasons)
+            if (num <= 0 && !Config.TvShowSpecials)
                 return null;
 
             var linkNode = node.ExtendFind("/h4/a");
+            var episodesCount = node.Element("span")?.ParseInt();
             var dates = node.Element("p").ParseText().SplitByAndTrim("-");
+
+            if (!episodesCount.HasValue)
+                return null;
+
+            if (episodesCount <= 0 && !Config.TvShowSeasonsWithNoEpisodes)
+                return null;
 
             var model = new TvdbSeason
             {
@@ -108,7 +115,7 @@ namespace Next.PCL.Html
                 Url = seasonUrl,
                 Name = doc.Find("//h1[@class='translated_title']").ParseText(),
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstWithAttrib("data-language", Language)?.ParseText(),
+                           .FirstWithAttrib("data-language", Config.Language)?.ParseText(),
             };
             model.Id = doc.GetElementbyId("season_deleted_reason_confirm")
                        ?.GetAttrib("data-id")?.ParseToInt() ?? 0;
@@ -159,7 +166,7 @@ namespace Next.PCL.Html
                 Url = episodeUrl,
                 Name = doc.Find("//h1[@class='translated_title']").ParseText(),
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstWithAttrib("data-language", Language)
+                           .FirstWithAttrib("data-language", Config.Language)
                            ?.Element("p")?.ParseText()
             };
             model.Runtime = doc.FindAll("//ul/li/strong").WhereTextEquals("runtime")
@@ -260,15 +267,30 @@ namespace Next.PCL.Html
             if (!imgUrl.IsValid())
                 return null;
 
-            var vs = imgUrl.Split('/');
-
             var cast = new TvdbPerson();
             cast.Name = name;
             cast.Role = character;
-            cast.Id = vs.ElementAt(vs.Length - 2).ParseToInt() ?? 0;
-            cast.Url = string.Format("{0}/people/{1}", SiteUrls.TVDB, cast.Id).ParseToUri();
-            cast.Images.Add(imgUrl.ParseToUri().CreateImage(MetaImageType.Profile));
 
+            if (imgUrl.EqualsOIC(ACTOR_AVATAR_IMG))
+            {
+                if (!Config.ActorsWithNoImages)
+                    return null;
+
+                // fallback and use the parent node element to
+                // get the url for the person.
+                if (node.ParentNode.Is("a"))
+                {
+                    cast.Url = string.Format("{0}{1}", SiteUrls.TVDB, node.ParentNode.GetHref()).ParseToUri();
+                }
+            }
+            else
+            {
+                var vs = imgUrl.Split('/');
+                cast.Id = vs.ElementAt(vs.Length - 2).ParseToInt() ?? 0;
+                cast.Url = string.Format("{0}/people/{1}", SiteUrls.TVDB, cast.Id).ParseToUri();
+                cast.Images.Add(imgUrl.ParseToUri().CreateImage(MetaImageType.Profile));
+            }
+            
             return cast;
         }
 

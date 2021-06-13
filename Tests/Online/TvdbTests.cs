@@ -24,7 +24,7 @@ namespace Tests.Online
         
 
         [TestCase(Category = TVDB_TESTS)]
-        public async Task Get_Show_BySlug()
+        public async Task Get_Show_BySlug_01()
         {
             var tv = await _tvdb.GetShowAsync("true-detective");
 
@@ -57,6 +57,41 @@ namespace Tests.Online
             tv.Seasons.ForEach(x => Log("{0}, {1}", x.Number, x.Name));
             Log("\n==========\n");
             tv.OtherSites.ForEach(x => Log(x));
+        }
+
+        [TestCase(Category = TVDB_TESTS)]
+        public async Task Get_Show_BySlug_02()
+        {
+            var tv = await _tvdb.GetShowAsync("blindspotting-2021");
+
+            Assert.NotNull(tv);
+            Assert.AreEqual("Blindspotting", tv.Name);
+            Assert.AreEqual(392720, tv.Id);
+            Assert.AreEqual("Starz", tv.Network);
+            Assert.AreEqual(MetaStatus.Airing, tv.Status);
+
+            Assert.NotNull(tv.AirsOn);
+            Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);
+            Assert.That(tv.Runtime.HasValue);
+            Assert.NotZero(tv.Runtime.Value);
+
+            Assert.NotNull(tv.Genres);
+            Assert.That(tv.Genres.Contains("Drama"));
+
+            Assert.That(tv.Posters.Any());
+            Assert.That(tv.Backdrops.Any());
+
+            Assert.That(tv.OtherSites.Any());
+            Assert.That(tv.Trailers.Any());
+            Assert.That(tv.Trailers.All(x => x.Url != null));
+
+            Assert.That(tv.Seasons.Any());
+            Assert.AreEqual(1, tv.Seasons.Count);
+            Assert.That(tv.Seasons.Where(x => x.Number > 0).All(x => x.AirDate.HasValue && x.LastAirDate.HasValue));
+
+            tv.Seasons.ForEach(x => Log("{0}, {1}", x.Number, x.Name));
+            Log("\n==========\n");
+            tv.Trailers.ForEach(x => Log(x.Url));
         }
 
         #region Seasons

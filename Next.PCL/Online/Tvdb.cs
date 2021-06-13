@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Next.PCL.Configurations;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Html;
@@ -18,6 +19,16 @@ namespace Next.PCL.Online
         public Tvdb()
         {
             _parser = new TvDbParser();
+        }
+        public Tvdb(TvdbConfig tvdbConfig)
+        {
+            _parser = new TvDbParser(tvdbConfig);
+        }
+
+        internal TvdbConfig Config
+        {
+            get { return _parser.Config; }
+            set { _parser.Config = value; }
         }
 
         public async Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken token = default)
