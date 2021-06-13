@@ -7,6 +7,12 @@ namespace Next.PCL.Metas
 {
     public class MetaVideo : IMetaVideo
     {
+        public MetaVideo()
+        { }
+        public MetaVideo(MetaSource metaSource) :this()
+        {
+            Source = metaSource;
+        }
         public string Key { get; set; }
         public Uri Url { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]

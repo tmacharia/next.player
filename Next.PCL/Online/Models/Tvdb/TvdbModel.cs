@@ -23,6 +23,7 @@ namespace Next.PCL.Online.Models.Tvdb
             Backdrops = new List<MetaImage>();
 
             OtherSites = new List<MetaUrl>();
+            Trailers = new List<MetaVideo>();
         }
         public int Id { get; set; }
         public MetaStatus Status { get; set; }
@@ -38,5 +39,6 @@ namespace Next.PCL.Online.Models.Tvdb
         public List<MetaImage> Backdrops { get; set; }
 
         public List<MetaUrl> OtherSites { get; set; }
+        public List<MetaVideo> Trailers { get; set; }
     }
 }

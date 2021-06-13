@@ -6,6 +6,7 @@ using Common;
 using HtmlAgilityPack;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
+using Next.PCL.Exceptions;
 using Next.PCL.Metas;
 using Next.PCL.Static;
 
@@ -28,6 +29,43 @@ namespace Next.PCL.Extensions
                         Time = tm.TimeOfDay
                     };
                 }
+            }
+            return null;
+        }
+        internal static MetaUrl ParseToMetaUrl(this HtmlNode node)
+        {
+            if(node != null)
+            {
+                if (!node.Name.EqualsOIC("a"))
+                    throw new ExpectationFailedException("a", node.Name);
+
+                string href = node.GetHref();
+                var uri = href.ParseToUri();
+
+                return new MetaUrl(MetaSource.TVDB)
+                {
+                    Url = uri,
+                    Domain = uri.ParseToSiteDomain(href)
+                };
+            }
+            return null;
+        }
+        internal static MetaVideo ParseToMetaVideo(this HtmlNode node)
+        {
+            if (node != null)
+            {
+                if (!node.Name.EqualsOIC("a"))
+                    throw new ExpectationFailedException("a", node.Name);
+
+                var uri = node.GetHref().ParseToUri();
+
+                return new MetaVideo(MetaSource.TVDB)
+                {
+                    Url = uri,
+                    Type = MetaVideoType.Trailer,
+                    Platform = StreamingPlatform.Youtube,
+                    Key = SocialExts.GetYoubetubeKey(uri),
+                };
             }
             return null;
         }

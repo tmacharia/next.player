@@ -52,17 +52,10 @@ namespace Next.PCL.Html
             model.Settings = GetListItems(lists, TvDbKeys.Setting).Select(x => x.ParseText()).ToList();
             model.Locations = GetListItems(lists, TvDbKeys.Location).Select(x => x.ParseText()).ToList();
             model.TimePeriods = GetListItems(lists, TvDbKeys.TimePeriod).Select(x => x.ParseText()).ToList();
-            model.Runtime = GetNonDeterministicRuntimeFromList(
-                                GetListItems(lists, TvDbKeys.Runtimes).Select(x => x.ParseText()));
+            model.Runtime = GetNonDeterministicRuntime(GetListItems(lists, TvDbKeys.Runtimes).Select(x => x.ParseText()));
 
-            model.OtherSites = GetListItems(lists, TvDbKeys.OtherSites).Select(x =>
-            {
-                var anc = x.Element("a");
-                var metaUrl = new MetaUrl(MetaSource.TVDB);
-                metaUrl.Url = anc.GetHref().ParseToUri();
-                metaUrl.Domain = metaUrl.Url.ParseToSiteDomain(anc.ParseText());
-                return metaUrl;
-            }).ToList();
+            model.OtherSites = GetListItems(lists, TvDbKeys.OtherSites, "a").Select(x => x.ParseToMetaUrl()).ToList();
+            model.Trailers = GetListItems(lists, TvDbKeys.Trailers, "a").Select(x => x.ParseToMetaVideo()).ToList();
 
             model.Seasons = doc.FindAll("//div[@role='tabpanel']").FirstContainingClass("tab-official")
                                .ExtendFindAll("/ul/li").WhereHasAttrib("data-number")
@@ -72,7 +65,7 @@ namespace Next.PCL.Html
 
             return model;
         }
-        internal int? GetNonDeterministicRuntimeFromList(IEnumerable<string> list)
+        internal int? GetNonDeterministicRuntime(IEnumerable<string> list)
         {
             var runs = list.Select(x => x.SplitByAndTrim(" ").FirstOrDefault())
                            .Select(x => x.ParseToInt())
@@ -292,10 +285,21 @@ namespace Next.PCL.Html
             var elem = nodes.FirstOrDefault(x => x.Element("strong").ParseText().Matches(name));
             return elem?.Element("span").ParseText();
         }
-        private IEnumerable<HtmlNode> GetListItems(HtmlNodeCollection nodes, string name)
+        private IEnumerable<HtmlNode> GetListItems(HtmlNodeCollection nodes, string name, string xPath = default)
         {
             var elem = nodes.FirstOrDefault(x => x.Element("strong").ParseText().Matches(name));
-            return elem?.Elements("span");
+
+            if (elem == null)
+                return Array.Empty<HtmlNode>();
+
+            string path = "span";
+            if (xPath.IsValid())
+            {
+                if (!xPath.StartsWith("/"))
+                    xPath = '/' + xPath;
+                path += xPath;
+            }
+            return elem.ExtendFindAll(path);
         }
     }
 }

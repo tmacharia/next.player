@@ -20,6 +20,7 @@
         internal const string Genres = "Genres";
         internal const string TimePeriod = "Time Period";
         internal const string OtherSites = "On Other Sites";
+        internal const string Trailers = "Trailers";
         internal const string Setting = "Setting";
         internal const string Location = "Geographic Location";
     }

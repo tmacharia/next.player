@@ -13,5 +13,13 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
+        internal static string GetYoubetubeKey(Uri uri)
+        {
+            if(uri != null)
+            {
+                return uri.GetQueryStrings()["v"];
+            }
+            return string.Empty;
+        }
     }
 }
