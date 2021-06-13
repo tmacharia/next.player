@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using AutoMapper;
@@ -33,6 +34,17 @@ namespace Tests
             new Tuple<string, int>("NA", 0),
             new Tuple<string, int>("N/A", 0),
         };
+
+        internal static IEnumerable MedianCases
+        {
+            get
+            {
+                yield return new MedianTestModel<int>(35, 10, 20, 30, 40, 50, 60);
+                yield return new MedianTestModel<int>(35, 30, 20, 10, 60, 40, 50);
+                yield return new MedianTestModel<int>(35, 60, 30, 20, 10, 40, 50);
+                //yield return new MedianTestModel<int>(57, 59, 58, 60, 57, 55, 11, 67, 30, 87, 64, 12, 76, 56, 54);
+            }
+        }
 
         private static IMapper GetMapper()
         {

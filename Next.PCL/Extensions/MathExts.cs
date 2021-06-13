@@ -86,5 +86,25 @@ namespace Next.PCL.Extensions
 			var mid = (list.Count - 1) / 2;
 			return list.NthOrderStatistic(mid);
 		}
+
+		public static int Median(params int[] arr)
+		{
+			int min = arr[0];
+			int max = arr[arr.Length-1];
+
+			Console.WriteLine("Min: {0}, Max: {1}", min, max);
+			int i = 0;
+			while (i < arr.Length)
+            {
+				int v = arr[i];
+				if (v < min)
+					min = v;
+				if (v > max)
+					max = v;
+				Console.WriteLine("{0} | Min: {1}, Max: {2}", i, min, max);
+				i++;
+            }
+			return (max + min) / 2;
+		}
 	}
 }
