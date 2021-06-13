@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Common;
 
 namespace Next.PCL.Extensions
@@ -17,7 +18,7 @@ namespace Next.PCL.Extensions
         {
             if(uri != null)
             {
-                return uri.GetQueryStrings()["v"];
+                return uri.OriginalString.SplitByAndTrim("?v=").Last();
             }
             return string.Empty;
         }
