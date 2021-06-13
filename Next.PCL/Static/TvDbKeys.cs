@@ -9,7 +9,8 @@
         internal const string Images = "image";
         internal const string EP_IMG = "image";
 
-        internal const string ID = "TheTVDB.com Series ID";
+        internal const string ID = "ID";
+        internal const string SeriesID = "TheTVDB.com Series ID";
         internal const string Airs = "Airs";
         internal const string Status = "Status";
         internal const string Networks = "Networks";
@@ -19,6 +20,9 @@
         internal const string OtherSites = "On Other Sites";
         internal const string Trailers = "Trailers";
         internal const string Setting = "Setting";
+        internal const string Country = "Country";
         internal const string Location = "Geographic Location";
+
+        internal const string PrimaryType = "Primary Type";
     }
 }

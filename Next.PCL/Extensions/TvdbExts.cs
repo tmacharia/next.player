@@ -14,6 +14,8 @@ namespace Next.PCL.Extensions
 {
     internal static class TvdbExts
     {
+        internal const string IMAGE_EXTENSION = ".png";
+
         internal static AirShedule ParseToAirShedule(this string s)
         {
             if (s.IsValid())
@@ -39,14 +41,7 @@ namespace Next.PCL.Extensions
                 if (!node.Name.EqualsOIC("a"))
                     throw new ExpectationFailedException("a", node.Name);
 
-                string href = node.GetHref();
-                var uri = href.ParseToUri();
-
-                return new MetaUrl(MetaSource.TVDB)
-                {
-                    Url = uri,
-                    Domain = uri.ParseToSiteDomain(href)
-                };
+                return node.GetHref().ParseToUri().ParseToMetaUrl(MetaSource.TVDB);
             }
             return null;
         }
@@ -69,6 +64,54 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
+        internal static Company ParseToCompany(this HtmlNode node, CompanyService companyType = CompanyService.Network)
+        {
+            if (node != null)
+            {
+                if (!node.Name.EqualsOIC("a"))
+                    throw new ExpectationFailedException("a", node.Name);
+
+                var model = new Company
+                {
+                    Name = node.ParseText(),
+                    Service = companyType
+                };
+                model.Urls.Add(node.ParseToMetaUrl());
+                return model;
+            }
+            return null;
+        }
+        internal static IEnumerable<MetaImage> ParseToImagesAs(this HtmlNode node, MetaImageType type)
+        {
+            if (node != null)
+            {
+                if (!node.Name.EqualsOIC("img"))
+                    throw new ExpectationFailedException("img", node.Name);
+
+                string img = node?.GetAttrib("src");
+                
+                string ext = '.' + img.Split('.').Last();
+                string part = img.Substring(0, img.LastIndexOf(ext));
+                Console.WriteLine(part);
+                string sm, lg;
+
+                if (part.EndsWith("_t"))
+                {
+                    sm = img;
+                    lg = string.Format("{0}{1}", part.Substring(0, part.LastIndexOf("_t")), ext);
+                }
+                else
+                {
+                    lg = img;
+                    sm = string.Format("{0}_t{1}", part, ext);
+                }
+
+                yield return sm.ParseToUri().CreateImage(type);
+                yield return lg.ParseToUri().CreateImage(type, 1);
+            }
+            yield return null;
+        }
+
 
         internal static List<MetaImage> GetArtworksOfType(this HtmlDocument doc, MetaImageType type)
         {
@@ -76,6 +119,8 @@ namespace Next.PCL.Extensions
 
             var images = new List<MetaImage>();
             var anchors = doc.FindAll($"//a[@rel='artwork_{imageType}']");
+            if (anchors == null)
+                return images;
             foreach (var item in anchors)
             {
                 var link_url = item.GetHref().ParseToUri();
@@ -105,6 +150,7 @@ namespace Next.PCL.Extensions
                 switch (metaImage.Type)
                 {
                     case MetaImageType.Icon: return new Size(512, 512);
+                    case MetaImageType.Logo: return new Size(256, 256);
                     case MetaImageType.Poster: return new Size(340, 500);
                     case MetaImageType.Banner: return new Size(758, 140);
                     case MetaImageType.Backdrop: return new Size(640, 360);
@@ -116,6 +162,7 @@ namespace Next.PCL.Extensions
             {
                 switch (metaImage.Type)
                 {
+                    case MetaImageType.Logo: return new Size(512, 512);
                     case MetaImageType.Icon: return new Size(1024, 1024);
                     case MetaImageType.Poster: return new Size(680, 1000);
                     case MetaImageType.Banner: return new Size(758, 140);

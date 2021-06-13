@@ -13,7 +13,7 @@ namespace Next.PCL.Entities
         }
         public DateTime? LastModified { get; set; }
 
-        public IList<MetaUrl> Urls { get; set; }
-        public IList<MetaImage> Images { get; set; }
+        public List<MetaUrl> Urls { get; set; }
+        public List<MetaImage> Images { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Common;
 using HtmlAgilityPack;
 using Next.PCL.Configurations;
+using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Metas;
@@ -16,7 +17,9 @@ namespace Next.PCL.Html
 {
     internal class TvDbParser : BaseParser
     {
-        internal const string ACTOR_AVATAR_IMG = "https://thetvdb.com/images/missing/actor.jpg";
+        internal const string IMAGE_EXTENSION = ".png";
+        internal const string ACTOR_AVATAR_IMG = "/images/missing/actor.jpg";
+        internal const string MOVIE_AVATAR_IMG = "/images/missing/movie.jpg";
 
         internal TvdbConfig Config { get; set; }
 
@@ -44,18 +47,18 @@ namespace Next.PCL.Html
 
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
-            model.Id = GetListItem(lists, TvDbKeys.ID).ParseToInt() ?? 0;
-            model.Status = GetListItem(lists, TvDbKeys.Status).ParseToMetaStatus();
-            model.AirsOn = GetListItem(lists, TvDbKeys.Airs).ParseToAirShedule();
-            model.Network = GetListItem(lists, TvDbKeys.Networks);
-            model.Genres = GetListItems(lists, TvDbKeys.Genres).Select(x => x.ParseText()).ToList();
-            model.Settings = GetListItems(lists, TvDbKeys.Setting).Select(x => x.ParseText()).ToList();
-            model.Locations = GetListItems(lists, TvDbKeys.Location).Select(x => x.ParseText().ToGeoLocale()).ToList();
-            model.TimePeriods = GetListItems(lists, TvDbKeys.TimePeriod).Select(x => x.ParseText()).ToList();
-            model.Runtime = GetNonDeterministicRuntime(GetListItems(lists, TvDbKeys.Runtimes).Select(x => x.ParseText()));
+            model.Id = GetAsText(lists, TvDbKeys.SeriesID).ParseToInt() ?? 0;
+            model.Genres = GetNodesAsText(lists, TvDbKeys.Genres);
+            model.Settings = GetNodesAsText(lists, TvDbKeys.Setting);
+            model.TimePeriods = GetNodesAsText(lists, TvDbKeys.TimePeriod);
+            model.AirsOn = GetAsText(lists, TvDbKeys.Airs).ParseToAirShedule();
+            model.Status = GetAsText(lists, TvDbKeys.Status).ParseToMetaStatus();
+            model.Locations = GetNodes(lists, TvDbKeys.Location).Select(x => x.ParseText().ToGeoLocale()).ToList();
+            model.Runtime = GetNonDeterministicRuntime(GetNodesAsText(lists, TvDbKeys.Runtimes));
+            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
 
-            model.OtherSites = GetListItems(lists, TvDbKeys.OtherSites, "a").Select(x => x.ParseToMetaUrl()).ToList();
-            model.Trailers = GetListItems(lists, TvDbKeys.Trailers, "a").Select(x => x.ParseToMetaVideo()).ToList();
+            model.OtherSites = GetLinks(lists, TvDbKeys.OtherSites).Select(x => x.ParseToMetaUrl()).ToList();
+            model.Trailers = GetLinks(lists, TvDbKeys.Trailers).Select(x => x.ParseToMetaVideo()).ToList();
 
             model.Seasons = doc.FindAll("//div[@role='tabpanel']").FirstContainingClass("tab-official")
                                .ExtendFindAll("/ul/li").WhereHasAttrib("data-number")
@@ -65,6 +68,59 @@ namespace Next.PCL.Html
 
             return model;
         }
+
+        public Company ParseCompany(string html, Uri companyUrl)
+        {
+            var doc = ConvertToHtmlDoc(html);
+            var model = new Company();
+
+            var lists = doc.FindAll("//ul[@class='list-group']/li");
+            var img = doc.FindByTag("img").FirstWithAttribContaining("src", "/icons/");
+
+            model.Id = GetAsText(lists, TvDbKeys.ID).ParseToInt() ?? 0;
+            model.Name = doc.GetElementbyId("series_title").ParseText();
+            model.Address = GetAsText(lists, TvDbKeys.Country);
+            model.Service = GetAsText(lists, TvDbKeys.PrimaryType).ParseToCompanyType();
+            model.Urls.Add(companyUrl.ParseToMetaUrl(MetaSource.TVDB));
+            model.Images.AddRange(img.ParseToImagesAs(MetaImageType.Logo));
+
+            return model;
+        }
+        public IEnumerable<TinyTvdbModel> ParseCompanyMedias(string html, MetaType metaType)
+        {
+            var doc = ConvertToHtmlDoc(html);
+
+            string metaName = metaType == MetaType.Movie ? "Movies"
+                            : metaType == MetaType.TvShow ? "Series" : "";
+
+            var list = doc.FindByTag("h3")
+                          .WhereTextEquals(metaName)
+                          .GetAdjacent("div")
+                          .Elements("div");
+
+            foreach (var item in list)
+            {
+                var model = new TinyTvdbModel
+                {
+                    Url = string.Format("{0}{1}", SiteUrls.TVDB, item.Element("a").GetHref()).ParseToUri(),
+                    Name = item.Element("cite").ParseText(),
+                    Posters = item.Element("a").Element("img")
+                                    .ParseToImagesAs(MetaImageType.Poster)
+                                    .Where(x => x != null)
+                                    .ToList()
+                };
+                if (Config.IgnoreMediasWithNoImages)
+                {
+                    if (model.Posters.All(x => x.Url != null))
+                        yield return model;
+                }
+                else
+                {
+                    yield return model;
+                }
+            }
+        }
+
         internal int? GetNonDeterministicRuntime(IEnumerable<string> list)
         {
             var runs = list.Select(x => x.SplitByAndTrim(" ").FirstOrDefault())
@@ -271,9 +327,9 @@ namespace Next.PCL.Html
             cast.Name = name;
             cast.Role = character;
 
-            if (imgUrl.EqualsOIC(ACTOR_AVATAR_IMG))
+            if (imgUrl.EndsWith(ACTOR_AVATAR_IMG))
             {
-                if (!Config.ActorsWithNoImages)
+                if (!Config.IgnoreActorsWithNoImages)
                     return null;
 
                 // fallback and use the parent node element to
@@ -302,12 +358,20 @@ namespace Next.PCL.Html
             return doc.GetArtworksOfType(type);
         }
 
-        private string GetListItem(HtmlNodeCollection nodes, string name)
+        private string GetAsText(HtmlNodeCollection nodes, string name)
         {
             var elem = nodes.FirstOrDefault(x => x.Element("strong").ParseText().Matches(name));
             return elem?.Element("span").ParseText();
         }
-        private IEnumerable<HtmlNode> GetListItems(HtmlNodeCollection nodes, string name, string xPath = default)
+        private List<string> GetNodesAsText(HtmlNodeCollection nodes, string name)
+        {
+            return GetNodes(nodes, name).Select(x => x.ParseText()).ToList();
+        }
+        private IEnumerable<HtmlNode> GetLinks(HtmlNodeCollection nodes, string name)
+        {
+            return GetNodes(nodes, name, "a");
+        }
+        private IEnumerable<HtmlNode> GetNodes(HtmlNodeCollection nodes, string name, string xPath = default)
         {
             var elem = nodes.FirstOrDefault(x => x.Element("strong").ParseText().Matches(name));
 

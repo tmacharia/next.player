@@ -101,8 +101,9 @@ namespace Next.PCL.Enums
     }
     public enum CompanyService
     {
-        Production = 0,
-        Distributor = 1
+        Production  = 0,
+        Distributor = 1,
+        Network     = 2
     }
     public enum MetaStatus
     {

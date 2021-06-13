@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Common;
 using Next.PCL.Enums;
 using Next.PCL.Online;
+using Next.PCL.Extensions;
 using NUnit.Framework;
+using Tests.Attributes;
 
 namespace Tests.Online
 {
@@ -21,9 +23,10 @@ namespace Tests.Online
         {
             _tvdb = new Tvdb();
         }
-        
 
-        [TestCase(Category = TVDB_TESTS)]
+
+        #region Tv Shows
+        [Case(TVDB_TESTS, SHOW_TESTS)]
         public async Task Get_Show_BySlug_01()
         {
             var tv = await _tvdb.GetShowAsync("true-detective");
@@ -31,7 +34,6 @@ namespace Tests.Online
             Assert.NotNull(tv);
             Assert.AreEqual("True Detective", tv.Name);
             Assert.AreEqual(270633, tv.Id);
-            Assert.AreEqual("HBO", tv.Network);
             Assert.AreEqual(MetaStatus.Ended, tv.Status);
 
             Assert.NotNull(tv.AirsOn);
@@ -39,8 +41,10 @@ namespace Tests.Online
             Assert.That(tv.Runtime.HasValue);
             Assert.NotZero(tv.Runtime.Value);
 
-            Assert.NotNull(tv.Genres);
+            Assert.That(tv.Genres.Any());
             Assert.That(tv.Genres.Contains("Crime"));
+            Assert.That(tv.Networks.Any());
+            Assert.That(tv.Networks.Contains("HBO"));
 
             Assert.That(tv.Posters.Any());
             Assert.That(tv.Backdrops.Any());
@@ -58,8 +62,7 @@ namespace Tests.Online
             Log("\n==========\n");
             tv.OtherSites.ForEach(x => Log(x));
         }
-
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, SHOW_TESTS)]
         public async Task Get_Show_BySlug_02()
         {
             var tv = await _tvdb.GetShowAsync("blindspotting-2021");
@@ -67,7 +70,6 @@ namespace Tests.Online
             Assert.NotNull(tv);
             Assert.AreEqual("Blindspotting", tv.Name);
             Assert.AreEqual(392720, tv.Id);
-            Assert.AreEqual("Starz", tv.Network);
             Assert.AreEqual(MetaStatus.Airing, tv.Status);
 
             Assert.NotNull(tv.AirsOn);
@@ -75,8 +77,10 @@ namespace Tests.Online
             Assert.That(tv.Runtime.HasValue);
             Assert.NotZero(tv.Runtime.Value);
 
-            Assert.NotNull(tv.Genres);
+            Assert.That(tv.Genres.Any());
             Assert.That(tv.Genres.Contains("Drama"));
+            Assert.That(tv.Networks.Any());
+            Assert.That(tv.Networks.Contains("Starz"));
 
             Assert.That(tv.Posters.Any());
             Assert.That(tv.Backdrops.Any());
@@ -93,9 +97,86 @@ namespace Tests.Online
             Log("\n==========\n");
             tv.Trailers.ForEach(x => Log(x.Url));
         }
+        [Case(TVDB_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_BySlug_03()
+        {
+            var tv = await _tvdb.GetShowAsync("formula-1-drive-to-survive");
+
+            Assert.NotNull(tv);
+            Assert.AreEqual("Formula 1: Drive to Survive", tv.Name);
+            Assert.AreEqual(359913, tv.Id);
+            Assert.AreEqual(MetaStatus.Airing, tv.Status);
+
+            Assert.NotNull(tv.AirsOn);
+            Assert.AreEqual(DayOfWeek.Friday, tv.AirsOn.DayOfWeek);
+            Assert.That(tv.Runtime.HasValue);
+            Assert.NotZero(tv.Runtime.Value);
+
+            Assert.That(tv.Genres.Any());
+            Assert.That(tv.Genres.Contains("Sport"));
+            Assert.That(tv.Networks.Any());
+            Assert.That(tv.Networks.Contains("Netflix"));
+
+            Assert.That(tv.Posters.Any());
+            Assert.That(tv.Backdrops.Any());
+
+            Assert.That(tv.OtherSites.Any());
+            Assert.That(tv.Trailers.Any());
+            Assert.That(tv.Trailers.All(x => x.Url != null));
+
+            Assert.That(tv.Seasons.Any());
+            Assert.AreEqual(4, tv.Seasons.Count);
+
+            tv.Seasons.ForEach(x => Log("{0}, {1}", x.Number, x.Name));
+            Log("\n==========\n");
+            tv.Trailers.ForEach(x => Log(x.Url));
+        }
+        #endregion
+
+        #region Companies
+        [Case(TVDB_TESTS, COMPANY_TESTS)]
+        public async Task Get_Company_BySlug()
+        {
+            var model = await _tvdb.GetCompanyAsync("netflix");
+
+            Assert.NotNull(model);
+            Assert.AreEqual(535, model.Id);
+            Assert.AreEqual("Netflix", model.Name);
+
+            Assert.That(model.Images.Any());
+        }
+        [Case(TVDB_TESTS, COMPANY_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movies_ByCompany()
+        {
+            var model = await _tvdb.GetMoviesByCompanyAsync("netflix");
+            var list = model.ToList();
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x != null));
+            Assert.That(list.All(x => x.Url != null));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Posters.Any()));
+            Assert.That(list.All(x => x.Posters.All(p => p.Url != null)));
+        }
+        [Case(TVDB_TESTS, COMPANY_TESTS, MOVIE_TESTS)]
+        public async Task Get_Shows_ByCompany()
+        {
+            var model = await _tvdb.GetShowsByCompanyAsync("netflix");
+            var list = model.ToList();
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x != null));
+            Assert.That(list.All(x => x.Url != null));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Posters.Any()));
+            Assert.That(list.All(x => x.Posters.All(p => p.Url != null)));
+        }
+        #endregion
 
         #region Seasons
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, SEASON_TESTS)]
         public async Task Get_Season_ByUrl()
         {
             var uri = new Uri("https://www.thetvdb.com/series/true-detective/seasons/official/1");
@@ -111,7 +192,7 @@ namespace Tests.Online
             Assert.AreEqual(2014, sn.AirDate.Value.Year);
             Assert.That(sn.LastAirDate.HasValue);
         }
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, SEASON_TESTS)]
         public async Task Get_Season_ByNumber()
         {
             var sn = await _tvdb.GetSeasonAsync("true-detective", 3);
@@ -127,7 +208,7 @@ namespace Tests.Online
         #endregion
 
         #region Episodes
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, EPISODE_TESTS)]
         public async Task Get_Episode_ByUrl()
         {
             var ep = await _tvdb.GetEpisodeAsync(SHOW_EP_URL);
@@ -143,7 +224,7 @@ namespace Tests.Online
             Assert.AreEqual(2021, ep.AirDate.Value.Year);
             Assert.That(ep.Images.Any());
         }
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, EPISODE_TESTS)]
         public async Task Get_Episode_ByNumber()
         {
             var ep = await _tvdb.GetEpisodeAsync(SHOW_SLUG, 1, 1);
@@ -158,7 +239,7 @@ namespace Tests.Online
             Assert.AreEqual(6, ep.AirDate.Value.Month);
             Assert.AreEqual(2021, ep.AirDate.Value.Year);
         }
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, CAST_TESTS)]
         public async Task Get_Episode_WithCastAndCrew()
         {
             var ep = await _tvdb.GetEpisodeAsync("true-detective", 4592328);
@@ -177,7 +258,7 @@ namespace Tests.Online
         #endregion
 
         #region Cast & Crew
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, CAST_TESTS)]
         public async Task Get_Crew()
         {
             var list = await _tvdb.GetCrewAsync(SHOW_URL);
@@ -188,7 +269,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Images.Count <= 0));
         }
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, CAST_TESTS)]
         public async Task Get_Cast()
         {
             var list = await _tvdb.GetCastAsync(SHOW_URL);
@@ -200,7 +281,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Images.Count > 0));
             Log(list.Count());
         }
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, CAST_TESTS)]
         public async Task Get_Both_CastAndCrew()
         {
             var list = await _tvdb.GetCastAndCrewAsync(SHOW_URL);
@@ -216,7 +297,7 @@ namespace Tests.Online
         #endregion
 
         #region Artworks
-        [TestCase(Category = TVDB_TESTS)]
+        [Case(TVDB_TESTS, ARTWORK_TESTS)]
         public async Task Get_All_Artworks()
         {
             var imgs = await _tvdb.GetArtworksAsync(SHOW_URL);

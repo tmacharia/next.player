@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Next.PCL.Configurations;
+using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Html;
@@ -37,7 +38,6 @@ namespace Next.PCL.Online
             return _parser.ParseShow(html, url);
         }
         
-
         public async Task<IEnumerable<TvdbCrew>> GetCrewAsync(Uri uri, CancellationToken token = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
@@ -61,6 +61,38 @@ namespace Next.PCL.Online
 
             return cast.Concat(crew);
         }
+
+        public Task<Company> GetCompanyAsync(string companySlugName, CancellationToken token = default)
+        {
+            var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
+            return GetCompanyAsync(url, token);
+        }
+        public async Task<Company> GetCompanyAsync(Uri companyUrl, CancellationToken token = default)
+        {
+            string html = await GetAsync(companyUrl, token);
+            return _parser.ParseCompany(html, companyUrl);
+        }
+        public async Task<IEnumerable<TinyTvdbModel>> GetMoviesByCompanyAsync(Uri companyUrl, CancellationToken token = default)
+        {
+            string html = await GetAsync(companyUrl, token);
+            return _parser.ParseCompanyMedias(html, MetaType.Movie);
+        }
+        public async Task<IEnumerable<TinyTvdbModel>> GetShowsByCompanyAsync(Uri companyUrl, CancellationToken token = default)
+        {
+            string html = await GetAsync(companyUrl, token);
+            return _parser.ParseCompanyMedias(html, MetaType.TvShow);
+        }
+        public Task<IEnumerable<TinyTvdbModel>> GetShowsByCompanyAsync(string companySlugName, CancellationToken token = default)
+        {
+            var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
+            return GetShowsByCompanyAsync(url, token);
+        }
+        public Task<IEnumerable<TinyTvdbModel>> GetMoviesByCompanyAsync(string companySlugName, CancellationToken token = default)
+        {
+            var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
+            return GetMoviesByCompanyAsync(url, token);
+        }
+
 
         #region Images Section
         public async Task<List<MetaImage>> GetArtworksAsync(Uri uri, CancellationToken token = default)
