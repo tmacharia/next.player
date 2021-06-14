@@ -31,9 +31,44 @@ namespace Next.PCL.Html
         internal TvDbShow ParseShow(string html, Uri showUrl)
         {
             var doc = ConvertToHtmlDoc(html);
-            var model = new TvDbShow
+            var model = ParseCommonModel(html, showUrl, doc) as TvDbShow;
+
+            var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
+
+            model.AirsOn = GetAsText(lists, TvDbKeys.Airs).ParseToAirShedule();
+            model.Runtime = GetNonDeterministicRuntime(GetNodesAsText(lists, TvDbKeys.Runtimes));
+            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
+
+            model.Seasons = doc.FindAll("//div[@role='tabpanel']").FirstContainingClass("tab-official")
+                               .ExtendFindAll("/ul/li").WhereHasAttrib("data-number")
+                               .Select(x => ParseSimpleSeason(x))
+                               .Where(x => x != null).OrderBy(x => x.Number)
+                               .ToList();
+
+            return model;
+        }
+        internal TvDbMovie ParseMovie(string html, Uri movieUrl)
+        {
+            var doc = ConvertToHtmlDoc(html);
+            var model = ParseCommonModel(html, movieUrl, doc) as TvDbMovie;
+
+            var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
+
+            model.Runtime = GetAsText(lists, TvDbKeys.Runtime).ParseToRuntime();
+            model.Studios = GetLinks(lists, TvDbKeys.Studio).Select(x => x.ParseToCompany()).ToList();
+            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
+            model.Distributors = GetLinks(lists, TvDbKeys.Distributor).Select(x => x.ParseToCompany()).ToList();
+            model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().Element("#text").ParseDateTime();
+            model.ProductionCompanies = GetLinks(lists, TvDbKeys.ProductionCompanies).Select(x => x.ParseToCompany()).ToList();
+
+            return model;
+        }
+        internal TvdbModel ParseCommonModel(string html, Uri uri, HtmlDocument doc = default)
+        {
+            doc = doc ?? ConvertToHtmlDoc(html);
+            var model = new TvdbModel
             {
-                Url = showUrl,
+                Url = uri,
                 Name = doc.GetElementbyId("series_title").ParseText(),
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
                            .FirstWithAttrib("data-language", Config.Language)
@@ -51,20 +86,11 @@ namespace Next.PCL.Html
             model.Genres = GetNodesAsText(lists, TvDbKeys.Genres);
             model.Settings = GetNodesAsText(lists, TvDbKeys.Setting);
             model.TimePeriods = GetNodesAsText(lists, TvDbKeys.TimePeriod);
-            model.AirsOn = GetAsText(lists, TvDbKeys.Airs).ParseToAirShedule();
             model.Status = GetAsText(lists, TvDbKeys.Status).ParseToMetaStatus();
             model.Locations = GetNodes(lists, TvDbKeys.Location).Select(x => x.ParseText().ToGeoLocale()).ToList();
-            model.Runtime = GetNonDeterministicRuntime(GetNodesAsText(lists, TvDbKeys.Runtimes));
-            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
 
             model.OtherSites = GetLinks(lists, TvDbKeys.OtherSites).Select(x => x.ParseToMetaUrl()).ToList();
             model.Trailers = GetLinks(lists, TvDbKeys.Trailers).Select(x => x.ParseToMetaVideo()).ToList();
-
-            model.Seasons = doc.FindAll("//div[@role='tabpanel']").FirstContainingClass("tab-official")
-                               .ExtendFindAll("/ul/li").WhereHasAttrib("data-number")
-                               .Select(x => ParseSimpleSeason(x))
-                               .Where(x => x != null).OrderBy(x => x.Number)
-                               .ToList();
 
             return model;
         }

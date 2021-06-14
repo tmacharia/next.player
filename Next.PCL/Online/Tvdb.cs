@@ -37,7 +37,13 @@ namespace Next.PCL.Online
             string html = await GetAsync(url, token);
             return _parser.ParseShow(html, url);
         }
-        
+        public async Task<TvDbMovie> GetMovieAsync(string movieSlugName, CancellationToken token = default)
+        {
+            var url = string.Format("{0}/movies/{1}", SiteUrls.TVDB, movieSlugName).ParseToUri();
+            string html = await GetAsync(url, token);
+            return _parser.ParseMovie(html, url);
+        }
+
         public async Task<IEnumerable<TvdbCrew>> GetCrewAsync(Uri uri, CancellationToken token = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();

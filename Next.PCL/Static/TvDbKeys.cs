@@ -14,6 +14,7 @@
         internal const string Airs = "Airs";
         internal const string Status = "Status";
         internal const string Networks = "Networks";
+        
         internal const string Runtimes = "Runtimes";
         internal const string Genres = "Genres";
         internal const string TimePeriod = "Time Period";
@@ -22,6 +23,13 @@
         internal const string Setting = "Setting";
         internal const string Country = "Country";
         internal const string Location = "Geographic Location";
+
+        internal const string Studio = "Studio";
+        internal const string Network = "Network";
+        internal const string Runtime = "Runtime";
+        internal const string Released = "Released";
+        internal const string Distributor = "Distributor";
+        internal const string ProductionCompanies = "Production Company";
 
         internal const string PrimaryType = "Primary Type";
     }
