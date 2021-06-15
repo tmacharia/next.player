@@ -169,8 +169,9 @@ namespace Tests.Online
             var mov = await _tvdb.GetMovieAsync("moneyball");
 
             Assert.NotNull(mov);
-            Assert.AreEqual("Moneyball", mov.Name);
             Assert.AreEqual(3053, mov.Id);
+            Assert.AreEqual("Moneyball", mov.Name);
+            Assert.AreEqual("tt1210166", mov.ImdbId);
             Assert.AreEqual(MetaStatus.Released, mov.Status);
             Assert.IsTrue(mov.Runtime.HasValue);
             Assert.AreEqual(134, mov.Runtime.Value);

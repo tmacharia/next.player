@@ -63,8 +63,7 @@ namespace Next.PCL.Html
             model.Studios = GetLinks(lists, TvDbKeys.Studio).Select(x => x.ParseToCompany()).ToList();
             model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
             model.Distributors = GetLinks(lists, TvDbKeys.Distributor).Select(x => x.ParseToCompany()).ToList();
-            var a = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().LastChild;
-            Console.WriteLine(a.ParseText());
+            
             model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().LastChild.ParseDateTime();
             model.ProductionCompanies = GetLinks(lists, TvDbKeys.ProductionCompanies).Select(x => x.ParseToCompany()).ToList();
 
@@ -98,6 +97,7 @@ namespace Next.PCL.Html
 
             model.OtherSites = GetLinks(lists, TvDbKeys.OtherSites).Select(x => x.ParseToMetaUrl()).ToList();
             model.Trailers = GetLinks(lists, TvDbKeys.Trailers).Select(x => x.ParseToMetaVideo()).ToList();
+            model.ImdbId = model.OtherSites.GetImdbKey();
 
             return model;
         }
