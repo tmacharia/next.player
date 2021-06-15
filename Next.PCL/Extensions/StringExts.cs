@@ -152,6 +152,26 @@ namespace Next.PCL.Extensions
             }
             return CompanyService.Network;
         }
+        /// <summary>
+        /// Splits a string into substrings based on the strings in an array. 
+        /// <br/>
+        /// <list type="bullet">
+        /// <item>
+        /// It applies <see cref="StringSplitOptions.RemoveEmptyEntries"/> 
+        /// to make sure that the return array does not include empty strings. 
+        /// </item>
+        /// <item>
+        /// It finally trims leading and trailing whitespace characters from each item.
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="args"></param>
+        /// <returns>
+        /// Substrings of the original <see cref="string"/> as pairs.
+        /// </returns>
+        /// <exception cref="ArgumentException"/>
+        /// <exception cref="ArgumentNullException"/>
         internal static IEnumerable<string> SplitByAndTrim(this string s, params string[] args)
         {
             if (s.IsValid())

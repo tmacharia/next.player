@@ -300,13 +300,20 @@ namespace Next.PCL.Html
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
+            bool isGridView = true;
             var nodes = doc.FindAll("//div[@class='thumbnail']");
+            if(nodes == null)
+            {
+                isGridView = false;
+                nodes = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Actors)
+                           ?.GetAdjacent("table")?.ExtendFindAll("tr");
+            }
 
             if (nodes != null)
             {
                 foreach (var item in nodes)
                 {
-                    var cr = ParseSingleCast(item);
+                    var cr = isGridView ? ParseSingleCast_Grid(item) : ParseSingleCast_Tabular(item);
                     if (cr != null)
                         yield return cr;
                 }
@@ -355,7 +362,7 @@ namespace Next.PCL.Html
                 Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0,
             };
         }
-        private TvdbPerson ParseSingleCast(HtmlNode node)
+        private TvdbPerson ParseSingleCast_Grid(HtmlNode node)
         {
             string name = node.Element("h3")?.Element("#text").ParseText();
             string character = node.Element("h3")?.Element("small").ParseText().Substring(2).Trim();
@@ -388,6 +395,24 @@ namespace Next.PCL.Html
                 cast.Images.Add(imgUrl.ParseToUri().CreateImage(MetaImageType.Profile));
             }
             
+            return cast;
+        }
+        private TvdbPerson ParseSingleCast_Tabular(HtmlNode node)
+        {
+            var link = node.ExtendFind("td/a");
+            string character = node.Elements("td").LastOrDefault().ParseText();
+
+            if (link == null || !character.IsValid())
+                return null;
+
+            var cast = new TvdbPerson();
+            cast.Role = character;
+            cast.Name = link.ParseText();
+
+            string href = link.GetHref();
+            cast.Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0;
+            cast.Url = string.Format("{0}{1}", SiteUrls.TVDB, href).ParseToUri();
+
             return cast;
         }
 

@@ -337,7 +337,6 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Role.IsValid()));
-            Assert.That(list.All(x => x.Images.Count > 0));
             Log(list);
         }
         [Case(TVDB_TESTS, CAST_TESTS, MOVIE_TESTS)]
