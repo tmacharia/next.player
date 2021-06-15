@@ -15,5 +15,13 @@ namespace Next.PCL.Extensions
 
             return false;
         }
+        public static bool AnyMatches<TEntity>(this IEnumerable<TEntity> query, string value)
+            where TEntity : INamedEntity
+        {
+            if (value.IsValid())
+                return query.Any(x => x.Name.Matches(value));
+
+            return false;
+        }
     }
 }

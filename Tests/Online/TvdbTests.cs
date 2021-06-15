@@ -136,7 +136,7 @@ namespace Tests.Online
 
         #region Movies
         [Case(TVDB_TESTS, MOVIE_TESTS)]
-        public async Task Get_Movie_ByUrl()
+        public async Task Get_Movie_BySlug_01()
         {
             var mov = await _tvdb.GetMovieAsync("iron-man");
 
@@ -154,9 +154,38 @@ namespace Tests.Online
             Assert.That(mov.Genres.Contains("Science Fiction"));
 
             Assert.That(mov.Studios.Any());
-            Assert.That(mov.Studios.Contains("Paramount Pictures"));
+            Assert.That(mov.Studios.AnyMatches("Paramount"));
             Assert.That(mov.ProductionCompanies.Any());
-            Assert.That(mov.ProductionCompanies.Contains("Marvel Studios"));
+            Assert.That(mov.ProductionCompanies.AnyMatches("Marvel"));
+
+            Assert.That(mov.Posters.Any());
+            Assert.That(mov.Backdrops.Any());
+
+            Assert.That(mov.Trailers.Any());
+        }
+        [Case(TVDB_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_BySlug_02()
+        {
+            var mov = await _tvdb.GetMovieAsync("moneyball");
+
+            Assert.NotNull(mov);
+            Assert.AreEqual("Moneyball", mov.Name);
+            Assert.AreEqual(3053, mov.Id);
+            Assert.AreEqual(MetaStatus.Released, mov.Status);
+            Assert.IsTrue(mov.Runtime.HasValue);
+            Assert.AreEqual(134, mov.Runtime.Value);
+            Assert.IsTrue(mov.ReleaseDate.HasValue);
+            Assert.AreEqual(22, mov.ReleaseDate.Value.Day);
+            Assert.AreEqual(9, mov.ReleaseDate.Value.Month);
+            Assert.AreEqual(2011, mov.ReleaseDate.Value.Year);
+
+            Assert.That(mov.Genres.Any());
+            Assert.That(mov.Genres.Contains("Drama"));
+
+            Assert.That(mov.Studios.Any());
+            Assert.That(mov.Studios.AnyMatches("Sony"));
+            Assert.That(mov.ProductionCompanies.Any());
+            Assert.That(mov.ProductionCompanies.AnyMatches("Columbia"));
 
             Assert.That(mov.Posters.Any());
             Assert.That(mov.Backdrops.Any());
@@ -337,6 +366,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Role.IsValid()));
+            Assert.That(list.Contains("Robert Downey Jr."));
             Log(list);
         }
         [Case(TVDB_TESTS, CAST_TESTS, MOVIE_TESTS)]
