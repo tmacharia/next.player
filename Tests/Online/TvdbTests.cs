@@ -15,6 +15,7 @@ namespace Tests.Online
         private Tvdb _tvdb;
 
         private const string SHOW_SLUG = "liseys-story";
+        private static readonly Uri MOVIE_URL = new("https://thetvdb.com/movies/luca-2021");
         private static readonly Uri SHOW_URL = new("https://thetvdb.com/series/true-detective");
         private static readonly Uri SHOW_EP_URL = new("https://thetvdb.com/series/liseys-story/episodes/8221744");
 
@@ -133,6 +134,32 @@ namespace Tests.Online
         }
         #endregion
 
+        #region Movies
+        [Case(TVDB_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_ByUrl()
+        {
+            var mov = await _tvdb.GetMovieAsync("luca-2021");
+
+            Assert.NotNull(mov);
+            Assert.AreEqual("Luca", mov.Name);
+            Assert.AreEqual(137867, mov.Id);
+            Assert.AreEqual(MOVIE_URL, mov.Url);
+            Assert.AreEqual(MetaStatus.Released, mov.Status);
+            Assert.IsTrue(mov.ReleaseDate.HasValue);
+            Assert.AreEqual(18, mov.ReleaseDate.Value.Day);
+            Assert.AreEqual(6, mov.ReleaseDate.Value.Month);
+            Assert.AreEqual(2021, mov.ReleaseDate.Value.Year);
+
+            Assert.That(mov.Genres.Any());
+            Assert.That(mov.Genres.Contains("Animation"));
+            Assert.That(mov.Studios.Any());
+            Assert.That(mov.Studios.Contains("Pixar"));
+
+            Assert.That(mov.Posters.Any());
+            Assert.That(mov.Backdrops.Any());
+        }
+        #endregion
+
         #region Companies
         [Case(TVDB_TESTS, COMPANY_TESTS)]
         public async Task Get_Company_BySlug()
@@ -145,7 +172,7 @@ namespace Tests.Online
 
             Assert.That(model.Images.Any());
         }
-        [Case(TVDB_TESTS, COMPANY_TESTS, MOVIE_TESTS)]
+        [Case(TVDB_TESTS, COMPANY_TESTS, SHOW_TESTS)]
         public async Task Get_Movies_ByCompany()
         {
             var model = await _tvdb.GetMoviesByCompanyAsync("netflix");
@@ -159,7 +186,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Posters.Any()));
             Assert.That(list.All(x => x.Posters.All(p => p.Url != null)));
         }
-        [Case(TVDB_TESTS, COMPANY_TESTS, MOVIE_TESTS)]
+        [Case(TVDB_TESTS, COMPANY_TESTS, SHOW_TESTS)]
         public async Task Get_Shows_ByCompany()
         {
             var model = await _tvdb.GetShowsByCompanyAsync("netflix");

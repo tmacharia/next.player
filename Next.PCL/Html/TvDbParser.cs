@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Common;
 using HtmlAgilityPack;
+using Next.PCL.AutoMap;
 using Next.PCL.Configurations;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
@@ -21,18 +23,21 @@ namespace Next.PCL.Html
         internal const string ACTOR_AVATAR_IMG = "/images/missing/actor.jpg";
         internal const string MOVIE_AVATAR_IMG = "/images/missing/movie.jpg";
 
+        private readonly IMapper _mapper;
+
         internal TvdbConfig Config { get; set; }
 
-        public TvDbParser(TvdbConfig tvdbConfig = default)
+        public TvDbParser(TvdbConfig tvdbConfig = default, IMapper autoMapper = default)
         {
             Config = tvdbConfig ?? new TvdbConfig();
+            _mapper = autoMapper ?? new Mapper(AutomapperConfig.Configure());
         }
 
         internal TvDbShow ParseShow(string html, Uri showUrl)
         {
             var doc = ConvertToHtmlDoc(html);
-            var model = ParseCommonModel(html, showUrl, doc) as TvDbShow;
-
+            var model = _mapper.Map<TvDbShow>(ParseCommonModel(html, showUrl, doc));
+            
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
             model.AirsOn = GetAsText(lists, TvDbKeys.Airs).ParseToAirShedule();
@@ -50,15 +55,17 @@ namespace Next.PCL.Html
         internal TvDbMovie ParseMovie(string html, Uri movieUrl)
         {
             var doc = ConvertToHtmlDoc(html);
-            var model = ParseCommonModel(html, movieUrl, doc) as TvDbMovie;
+            var model = _mapper.Map<TvDbMovie>(ParseCommonModel(html, movieUrl, doc));
 
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
-            model.Runtime = GetAsText(lists, TvDbKeys.Runtime).ParseToRuntime();
+            model.Runtime = GetAsText(lists, TvDbKeys.Runtime)?.ParseToRuntime();
             model.Studios = GetLinks(lists, TvDbKeys.Studio).Select(x => x.ParseToCompany()).ToList();
             model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
             model.Distributors = GetLinks(lists, TvDbKeys.Distributor).Select(x => x.ParseToCompany()).ToList();
-            model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().Element("#text").ParseDateTime();
+            var a = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().LastChild;
+            Console.WriteLine(a.ParseText());
+            model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().LastChild.ParseDateTime();
             model.ProductionCompanies = GetLinks(lists, TvDbKeys.ProductionCompanies).Select(x => x.ParseToCompany()).ToList();
 
             return model;
@@ -82,7 +89,7 @@ namespace Next.PCL.Html
 
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
-            model.Id = GetAsText(lists, TvDbKeys.SeriesID).ParseToInt() ?? 0;
+            model.Id = GetAsText(lists, TvDbKeys.TvDBID).ParseToInt() ?? 0;
             model.Genres = GetNodesAsText(lists, TvDbKeys.Genres);
             model.Settings = GetNodesAsText(lists, TvDbKeys.Setting);
             model.TimePeriods = GetNodesAsText(lists, TvDbKeys.TimePeriod);
@@ -386,8 +393,12 @@ namespace Next.PCL.Html
 
         private string GetAsText(HtmlNodeCollection nodes, string name)
         {
-            var elem = nodes.FirstOrDefault(x => x.Element("strong").ParseText().Matches(name));
-            return elem?.Element("span").ParseText();
+            return nodes.FirstOrDefault(x
+                            => x.Element("strong")
+                                .ParseText()
+                                .Matches(name))
+                        ?.Element("span")
+                        ?.ParseText();
         }
         private List<string> GetNodesAsText(HtmlNodeCollection nodes, string name)
         {

@@ -138,6 +138,8 @@ namespace Next.PCL.Extensions
                     return MetaStatus.Ended;
                 if (s.Matches("production"))
                     return MetaStatus.InProduction;
+                if (s.Matches("completed"))
+                    return MetaStatus.Released;
             }
             return MetaStatus.Released;
         }

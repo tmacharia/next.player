@@ -10,7 +10,7 @@
         internal const string EP_IMG = "image";
 
         internal const string ID = "ID";
-        internal const string SeriesID = "TheTVDB.com Series ID";
+        internal const string TvDBID = "TheTVDB.com";
         internal const string Airs = "Airs";
         internal const string Status = "Status";
         internal const string Networks = "Networks";
