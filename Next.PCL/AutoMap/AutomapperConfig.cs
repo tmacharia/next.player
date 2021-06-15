@@ -9,6 +9,7 @@ namespace Next.PCL.AutoMap
             var config = new MapperConfiguration(cfg =>
               {
                   cfg.AddProfile<TmdbMappingProfile>();
+                  cfg.AddProfile<TvdbMappingProfile>();
               });
             return config;
         }
