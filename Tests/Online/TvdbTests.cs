@@ -15,7 +15,7 @@ namespace Tests.Online
         private Tvdb _tvdb;
 
         private const string SHOW_SLUG = "liseys-story";
-        private static readonly Uri MOVIE_URL = new("https://thetvdb.com/movies/luca-2021");
+        private static readonly Uri MOVIE_URL = new("https://thetvdb.com/movies/iron-man");
         private static readonly Uri SHOW_URL = new("https://thetvdb.com/series/true-detective");
         private static readonly Uri SHOW_EP_URL = new("https://thetvdb.com/series/liseys-story/episodes/8221744");
 
@@ -138,25 +138,30 @@ namespace Tests.Online
         [Case(TVDB_TESTS, MOVIE_TESTS)]
         public async Task Get_Movie_ByUrl()
         {
-            var mov = await _tvdb.GetMovieAsync("luca-2021");
+            var mov = await _tvdb.GetMovieAsync("iron-man");
 
             Assert.NotNull(mov);
-            Assert.AreEqual("Luca", mov.Name);
-            Assert.AreEqual(137867, mov.Id);
+            Assert.AreEqual("Iron Man", mov.Name);
+            Assert.AreEqual(108, mov.Id);
             Assert.AreEqual(MOVIE_URL, mov.Url);
             Assert.AreEqual(MetaStatus.Released, mov.Status);
             Assert.IsTrue(mov.ReleaseDate.HasValue);
-            Assert.AreEqual(18, mov.ReleaseDate.Value.Day);
-            Assert.AreEqual(6, mov.ReleaseDate.Value.Month);
-            Assert.AreEqual(2021, mov.ReleaseDate.Value.Year);
+            Assert.AreEqual(30, mov.ReleaseDate.Value.Day);
+            Assert.AreEqual(4, mov.ReleaseDate.Value.Month);
+            Assert.AreEqual(2008, mov.ReleaseDate.Value.Year);
 
             Assert.That(mov.Genres.Any());
-            Assert.That(mov.Genres.Contains("Animation"));
+            Assert.That(mov.Genres.Contains("Science Fiction"));
+
             Assert.That(mov.Studios.Any());
-            Assert.That(mov.Studios.Contains("Pixar"));
+            Assert.That(mov.Studios.Contains("Paramount Pictures"));
+            Assert.That(mov.ProductionCompanies.Any());
+            Assert.That(mov.ProductionCompanies.Contains("Marvel Studios"));
 
             Assert.That(mov.Posters.Any());
             Assert.That(mov.Backdrops.Any());
+
+            Assert.That(mov.Trailers.Any());
         }
         #endregion
 
