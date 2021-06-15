@@ -316,10 +316,18 @@ namespace Next.PCL.Html
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
-            var writers = doc.FindByTag("h2").WhereTextEquals("Writers")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
-            var directors = doc.FindByTag("h2").WhereTextEquals("Directors")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+            var writers = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Writers)
+                            ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
 
-            return ParseAllCrew(directors, Profession.Director).Concat(ParseAllCrew(writers, Profession.Writer));
+            var directors = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Directors)
+                            ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+
+            var producers = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Producers)
+                            ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+
+            return ParseAllCrew(directors, Profession.Director)
+             .Concat(ParseAllCrew(writers, Profession.Writer))
+             .Concat(ParseAllCrew(producers, Profession.Producer));
         }
         private IEnumerable<TvdbCrew> ParseAllCrew(HtmlNodeCollection nodes, Profession profession)
         {

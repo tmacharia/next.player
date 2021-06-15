@@ -290,19 +290,8 @@ namespace Tests.Online
         #endregion
 
         #region Cast & Crew
-        [Case(TVDB_TESTS, CAST_TESTS)]
-        public async Task Get_Crew()
-        {
-            var list = await _tvdb.GetCrewAsync(SHOW_URL);
-
-            Assert.NotNull(list);
-            Assert.That(list.Any());
-            Assert.That(list.All(x => x.Id > 0));
-            Assert.That(list.All(x => x.Name.IsValid()));
-            Assert.That(list.All(x => x.Images.Count <= 0));
-        }
-        [Case(TVDB_TESTS, CAST_TESTS)]
-        public async Task Get_Cast()
+        [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Cast()
         {
             var list = await _tvdb.GetCastAsync(SHOW_URL);
 
@@ -311,10 +300,21 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Images.Count > 0));
-            Log(list.Count());
+            Log(list);
         }
-        [Case(TVDB_TESTS, CAST_TESTS)]
-        public async Task Get_Both_CastAndCrew()
+        [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Crew()
+        {
+            var list = await _tvdb.GetCrewAsync(SHOW_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Log(list);
+        }
+        [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Both_CastAndCrew()
         {
             var list = await _tvdb.GetCastAndCrewAsync(SHOW_URL);
 
@@ -324,7 +324,36 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Role.IsValid()));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.Any(x => x.Images.Count > 0));
-            list.ForEach(x => Log(x));
+            Log(list);
+        }
+
+        [Case(TVDB_TESTS, CAST_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_Cast()
+        {
+            var list = await _tvdb.GetCastAsync(MOVIE_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Role.IsValid()));
+            Assert.That(list.All(x => x.Images.Count > 0));
+            Log(list);
+        }
+        [Case(TVDB_TESTS, CAST_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_Crew()
+        {
+            var list = await _tvdb.GetCrewAsync(MOVIE_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Role.IsValid()));
+            Assert.That(list.Any(x => x.Profession == Profession.Writer));
+            Assert.That(list.Any(x => x.Profession == Profession.Director));
+            Assert.That(list.Any(x => x.Profession == Profession.Producer));
+            Log(list);
         }
         #endregion
 

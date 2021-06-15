@@ -176,6 +176,8 @@ namespace Next.PCL.Extensions
         }
         internal static HtmlNodeCollection FindByTag(this HtmlDocument node, string tagName)
         {
+            if (tagName.StartsWith("/"))
+                tagName = tagName.TrimStart('/');
             return node.DocumentNode.SelectNodes($"//{tagName}");
         }
         #endregion

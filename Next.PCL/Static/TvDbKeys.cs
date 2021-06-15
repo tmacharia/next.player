@@ -32,5 +32,10 @@
         internal const string ProductionCompanies = "Production Company";
 
         internal const string PrimaryType = "Primary Type";
+
+        internal const string Actors = "Actors";
+        internal const string Writers = "Writers";
+        internal const string Directors = "Directors";
+        internal const string Producers = "Producers";
     }
 }
