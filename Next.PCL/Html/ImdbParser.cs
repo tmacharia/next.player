@@ -39,7 +39,7 @@ namespace Next.PCL.Html
         }
 
 
-        public async Task<List<ImdbReview>> GetReviewsAsync(string imdbId, CancellationToken token = default)
+        internal async Task<List<ImdbReview>> GetAndParseReviewsAsync(string imdbId, CancellationToken token = default)
         {
             var reviews = new List<ImdbReview>();
             if (!imdbId.IsValid())
@@ -62,28 +62,38 @@ namespace Next.PCL.Html
             }
             return reviews;
         }
-        internal ImdbReview ParseImdbReview(HtmlNode node)
+        private ImdbReview ParseImdbReview(HtmlNode node)
         {
-            var doc = ConvertToHtmlDoc(node.OuterHtml);
-
-            var titl = doc.Find("//a[@class='title']");
-            var date = doc.Find("//span[@class='review-date']");
-            var revw = doc.Find("//div[@class='text show-more__control']");
-            var spns = doc.FindAll("//span[@class='rating-other-user-rating']/span");
+            var link = node.ExtendFind("a[@class='title']");
+            var display = node.ExtendFind("div[@class='display-name-date']");
+            var user = display.ExtendFind("span/a']");
+            var content = node.ExtendFind("div[@class='content']");
 
             var imdb = new ImdbReview
             {
-                Title = titl.ParseText(),
-                Review = revw.ParseText(),
-                Timestamp = date.ParseDateTime()
+                Title = link.ParseText(),
+                Url = link.GetHref().ParseToUri(),
+                Reviewer = user.ParseText(),
+                ReviewerUrl = user.GetHref().ParseToUri(),
+                Review = content.Element("div").ParseText(),
+                Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
+                Score = node.ExtendFind("span[@class='rating-other-user-rating']/span")?.ParseDouble()
             };
-            if (spns.IsNotNullOrEmpty())
+
+            string stats = content.ExtendFindAll("div")?.FirstContainingClass("actions")?.FirstChild?.ParseText();
+            if (stats.IsValid())
             {
-                var a = spns.FirstOrDefault(x => !x.HasAttributes);
-                var d = a.ParseDouble();
-                if (d.HasValue)
-                    imdb.Score = d.Value;
+                stats = stats.Replace("out of", "");
+                stats = stats.Replace("found this helpful", "");
+                stats = stats.TrimEnd('.').Trim();
+
+                var tks = stats.SplitByAndTrim(" ").ToArray();
+                if(tks.Length == 2)
+                {
+                    Console.WriteLine("{0}/{1} found this good.", tks[0], tks[1]);
+                }
             }
+
             return imdb;
         }
     }
