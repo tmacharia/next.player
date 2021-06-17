@@ -66,7 +66,7 @@ namespace Next.PCL.Html
         {
             var link = node.ExtendFind("a[@class='title']");
             var display = node.ExtendFind("div[@class='display-name-date']");
-            var user = display.ExtendFind("span/a']");
+            var user = display.ExtendFind("span/a");
             var content = node.ExtendFind("div[@class='content']");
 
             var imdb = new ImdbReview
@@ -77,7 +77,7 @@ namespace Next.PCL.Html
                 ReviewerUrl = user.GetHref().ParseToUri(),
                 Review = content.Element("div").ParseText(),
                 Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
-                Score = node.ExtendFind("span[@class='rating-other-user-rating']/span")?.ParseDouble()
+                Score = node.ExtendFind("div/span[@class='rating-other-user-rating']/span")?.ParseDouble()
             };
 
             string stats = content.ExtendFindAll("div")?.FirstContainingClass("actions")?.FirstChild?.ParseText();
@@ -90,7 +90,7 @@ namespace Next.PCL.Html
                 var tks = stats.SplitByAndTrim(" ").ToArray();
                 if(tks.Length == 2)
                 {
-                    Console.WriteLine("{0}/{1} found this good.", tks[0], tks[1]);
+                    //Console.WriteLine("{0}/{1} found this good.", tks[0], tks[1]);
                 }
             }
 

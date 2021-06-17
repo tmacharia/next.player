@@ -14,7 +14,7 @@ namespace Next.PCL.Online.Models.Imdb
 
         public override string ToString()
         {
-            return string.Format("{0:N1}/10 by {1}", Score, Reviewer);
+            return string.Format("{0:N0}/10 by {1}", Score, Reviewer);
         }
     }
 }
