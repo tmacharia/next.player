@@ -127,7 +127,7 @@ namespace Next.PCL.Html
                             : metaType == MetaType.TvShow ? "Series" : "";
 
             var list = doc.FindByTag("h3")
-                          .WhereTextEquals(metaName)
+                          .FirstEqualing(metaName)
                           .GetAdjacent("div")
                           .Elements("div");
 
@@ -258,9 +258,9 @@ namespace Next.PCL.Html
                            .FirstWithAttrib("data-language", Config.Language)
                            ?.Element("p")?.ParseText()
             };
-            model.Runtime = doc.FindAll("//ul/li/strong").WhereTextEquals("runtime")
+            model.Runtime = doc.FindAll("//ul/li/strong").FirstEqualing("runtime")
                          ?.ParentNode.Element("span").ParseText().ParseToRuntime();
-            model.AirDate = doc.FindAll("//ul/li/strong").WhereTextContains("aired")
+            model.AirDate = doc.FindAll("//ul/li/strong").FirstContaining("aired")
                          ?.ParentNode.SelectSingleNode("//span/a")?.ParseDateTime();
             model.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
                          ?.GetAttrib("data-id").ParseToInt() ?? 0;
@@ -305,7 +305,7 @@ namespace Next.PCL.Html
             if(nodes == null)
             {
                 isGridView = false;
-                nodes = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Actors)
+                nodes = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Actors)
                            ?.GetAdjacent("table")?.ExtendFindAll("tr");
             }
 
@@ -323,13 +323,13 @@ namespace Next.PCL.Html
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
-            var writers = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Writers)
+            var writers = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Writers)
                             ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
 
-            var directors = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Directors)
+            var directors = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Directors)
                             ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
 
-            var producers = doc.FindByTag("//h2|//h3").WhereTextEquals(TvDbKeys.Producers)
+            var producers = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Producers)
                             ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
 
             return ParseAllCrew(directors, Profession.Director)

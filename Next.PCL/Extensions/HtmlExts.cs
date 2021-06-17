@@ -155,11 +155,19 @@ namespace Next.PCL.Extensions
         #endregion
 
         #region Nodes Collection
-        internal static HtmlNode WhereTextEquals(this HtmlNodeCollection nodes, string value)
+        internal static IEnumerable<HtmlNode> WhereTextEquals(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.Where(x => x.TextEquals(value));
+        }
+        internal static IEnumerable<HtmlNode> WhereTextContains(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.Where(x => x.TextContains(value));
+        }
+        internal static HtmlNode FirstEqualing(this HtmlNodeCollection nodes, string value)
         {
             return nodes.FirstOrDefault(x => x.TextEquals(value));
         }
-        internal static HtmlNode WhereTextContains(this HtmlNodeCollection nodes, string value)
+        internal static HtmlNode FirstContaining(this HtmlNodeCollection nodes, string value)
         {
             return nodes.FirstOrDefault(x => x.TextContains(value));
         }
