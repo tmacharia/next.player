@@ -9,7 +9,7 @@ namespace Tests.Converters
 {
     class JsonConverterTests : TestsBase
     {
-        [TestCase(Category = JSON_CONV_TESTS)]
+        [TestCase(Category = UNIT_TESTS)]
         public void OmdbRuntime()
         {
             string json = "{\"Runtime\":\"85 mins\"}";
@@ -18,7 +18,7 @@ namespace Tests.Converters
             Assert.True(model.Runtime.HasValue);
             Assert.AreEqual(85, model.Runtime.Value);
         }
-        [TestCase(Category = JSON_CONV_TESTS)]
+        [TestCase(Category = UNIT_TESTS)]
         public void StringToURI()
         {
             string url = "https://google.com";
@@ -28,7 +28,7 @@ namespace Tests.Converters
             Assert.NotNull(model.Poster);
             Assert.AreEqual(url, model.Poster.OriginalString);
         }
-        [TheoriesFrom(nameof(ReleaseDates), JSON_CONV_TESTS)]
+        [TheoriesFrom(nameof(ReleaseDates), UNIT_TESTS)]
         public void StringToDateTime(DateTimeFormat dtf)
         {
             string json = "{\"ReleaseDate\":\"" + dtf.DateTime + "\"}";
@@ -37,7 +37,7 @@ namespace Tests.Converters
             Assert.True(model.ReleaseDate.HasValue);
             Assert.AreEqual(dtf.DateTime, model.ReleaseDate.Value.ToString(dtf.Format));
         }
-        [TheoriesFrom(nameof(Genres), JSON_CONV_TESTS)]
+        [TheoriesFrom(nameof(Genres), UNIT_TESTS)]
         public void StringToList(string s)
         {
             string json = "{\"Genre\":\"" + s + "\"}";
@@ -46,7 +46,7 @@ namespace Tests.Converters
             Assert.NotNull(model.Genres);
             Assert.AreEqual(s.Split(',').Length, model.Genres.Count);
         }
-        [TheoriesFrom(nameof(MetaScores), JSON_CONV_TESTS)]
+        [TheoriesFrom(nameof(MetaScores), UNIT_TESTS)]
         public void StringToInt(Tuple<string, int> tuple)
         {
             string json = "{\"Metascore\":\"" + tuple.Item1 + "\"}";

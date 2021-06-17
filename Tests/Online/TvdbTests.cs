@@ -35,7 +35,6 @@ namespace Tests.Online
             Assert.NotNull(tv);
             Assert.AreEqual("True Detective", tv.Name);
             Assert.AreEqual(270633, tv.Id);
-            Assert.AreEqual(MetaStatus.Ended, tv.Status);
 
             Assert.NotNull(tv.AirsOn);
             Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);

@@ -3,8 +3,10 @@
     class TestVariables
     {
         internal const string MATH_TESTS = "Math";
+        internal const string UNIT_TESTS = "Unit/Internal";
 
         internal const string OMDB_TESTS = "Omdb";
+        internal const string IMDB_TESTS = "Imdb";
         internal const string TVMAZE_TESTS = "TvMaze";
         internal const string JSON_CONV_TESTS = "Json";
         internal const string TVDB_TESTS = "TheTvDB";
