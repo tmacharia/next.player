@@ -69,7 +69,7 @@ namespace Next.PCL.Html
             var user = display.ExtendFind("span/a");
             var content = node.ExtendFind("div[@class='content']");
 
-            var imdb = new ImdbReview
+            var review = new ImdbReview
             {
                 Title = link.ParseText(),
                 Url = link.GetHref().ParseToUri(),
@@ -90,11 +90,12 @@ namespace Next.PCL.Html
                 var tks = stats.SplitByAndTrim(" ").ToArray();
                 if(tks.Length == 2)
                 {
-                    //Console.WriteLine("{0}/{1} found this good.", tks[0], tks[1]);
+                    review.MarkedAsUseful = tks[0].ParseToInt();
+                    review.TotalEngagement = tks[1].ParseToInt();
                 }
             }
 
-            return imdb;
+            return review;
         }
     }
 }

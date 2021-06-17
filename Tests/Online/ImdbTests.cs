@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Common;
 using Next.PCL.Online;
 using NUnit.Framework;
 
@@ -21,6 +22,10 @@ namespace Tests.Online
 
             Assert.NotNull(list);
             Assert.That(list.Any());
+            Assert.That(list.All(x => x.Score.HasValue));
+            Assert.That(list.All(x => x.Review.IsValid()));
+            Assert.That(list.All(x => x.Timestamp.HasValue));
+            Assert.That(list.All(x => x.Reviewer.IsValid()));
             Log(list);
         }
     }
