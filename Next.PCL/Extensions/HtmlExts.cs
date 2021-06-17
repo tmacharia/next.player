@@ -66,6 +66,10 @@ namespace Next.PCL.Extensions
         {
             return nodes.FirstOrDefault(x => x.ContainsClass(value));
         }
+        internal static IEnumerable<HtmlNode> WhereClassContains(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.Where(x => x.ContainsClass(value));
+        }
         internal static bool HasAttrib(this HtmlNode node, string name)
         {
             return node.HasAttribWhere(x => x.Name.EqualsOIC(name));

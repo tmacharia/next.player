@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common;
 using HtmlAgilityPack;
+using Next.PCL.Entities;
 using Next.PCL.Extensions;
 using Next.PCL.Online.Models.Imdb;
 
@@ -39,30 +40,36 @@ namespace Next.PCL.Html
         }
 
 
-        internal async Task<List<ImdbReview>> GetAndParseReviewsAsync(string imdbId, CancellationToken token = default)
+        internal IEnumerable<ImdbReview> ParseReviews(string html, HtmlDocument htmlDocument = default)
         {
-            var reviews = new List<ImdbReview>();
-            if (!imdbId.IsValid())
-                return reviews;
-
-            var uri = new Uri(string.Format("{0}/title/{1}/reviews", SiteUrls.IMDB, imdbId));
-            var doc = await GetHtmlDocumentAsync(uri, token);
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
             var nodes = doc.FindAll("//div[@class='lister-item-content']");
             if (nodes.IsNotNullOrEmpty())
             {
                 foreach (var node in nodes)
                 {
-                    var rv = ParseImdbReview(node);
+                    var rv = ParseSingleImdbReview(node);
                     if (rv != null)
-                    {
-                        reviews.Add(rv);
-                    }
+                        yield return rv;
                 }
             }
-            return reviews;
         }
-        private ImdbReview ParseImdbReview(HtmlNode node)
+        internal IEnumerable<GeographicLocation> ParseFilmingLocations(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var nodes = doc.GetElementbyId("filming_locations")?.ExtendFindAll("div")?.WhereClassContains("soda").ToList();
+
+            foreach (var node in nodes)
+            {
+                var rv = ParseSingleFilmingLocation(node);
+                if (rv != null)
+                    yield return rv;
+            }
+        }
+
+        private ImdbReview ParseSingleImdbReview(HtmlNode node)
         {
             var link = node.ExtendFind("a[@class='title']");
             var display = node.ExtendFind("div[@class='display-name-date']");
@@ -97,5 +104,28 @@ namespace Next.PCL.Html
 
             return review;
         }
+        private GeographicLocation ParseSingleFilmingLocation(HtmlNode node)
+        {
+            var places = node?.ExtendFind("dt/a")?.ParseText().SplitByAndTrim(",").ToArray();
+
+            if(places.Length <= 0)
+                return null;
+
+            var geo = new GeographicLocation
+            {
+                Name = places.Last(),
+                IsCountry = true
+            };
+            if (places.Length > 1)
+            {
+                geo.Inner.Add(new GeographicLocation()
+                {
+                    IsCountry = false,
+                    Name = string.Join(",", places.Take(places.Length - 1))
+                });
+            }
+            return geo;
+        }
+
     }
 }

@@ -28,5 +28,17 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Reviewer.IsValid()));
             Log(list);
         }
+
+        [TestCase(Category = IMDB_TESTS)]
+        public async Task Get_FilmingLocations()
+        {
+            var list = await _imdb.GetLocationsAsync(GOT.ImdbID);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.IsCountry));
+            Log(list);
+        }
     }
 }
