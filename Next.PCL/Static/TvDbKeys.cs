@@ -23,6 +23,7 @@
         internal const string Setting = "Setting";
         internal const string Country = "Country";
         internal const string Location = "Geographic Location";
+        internal const string ProductionCountries = "Production Countries";
 
         internal const string Studio = "Studio";
         internal const string Network = "Network";

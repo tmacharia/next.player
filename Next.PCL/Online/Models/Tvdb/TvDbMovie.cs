@@ -1,4 +1,5 @@
 ﻿using Next.PCL.Entities;
+using Next.PCL.Enums;
 using System.Collections.Generic;
 
 namespace Next.PCL.Online.Models.Tvdb
@@ -12,6 +13,8 @@ namespace Next.PCL.Online.Models.Tvdb
             Distributors = new List<Company>();
             ProductionCompanies = new List<Company>();
         }
+        public MPAA MPAA { get; set; }
+
         public List<Company> Studios { get; set; }
         public List<Company> Networks { get; set; }
         public List<Company> Distributors { get; set; }

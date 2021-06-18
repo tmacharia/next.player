@@ -24,6 +24,7 @@ namespace Next.PCL.Online.Models.Tvdb
             OtherSites = new List<MetaUrl>();
             Trailers = new List<MetaVideo>();
             Locations = new List<GeographicLocation>();
+            ProductionCountries = new List<GeographicLocation>();
         }
         public int Id { get; set; }
         public MetaStatus Status { get; set; }
@@ -40,5 +41,6 @@ namespace Next.PCL.Online.Models.Tvdb
         public List<MetaUrl> OtherSites { get; set; }
         public List<MetaVideo> Trailers { get; set; }
         public List<GeographicLocation> Locations { get; set; }
+        public List<GeographicLocation> ProductionCountries { get; set; }
     }
 }

@@ -88,6 +88,7 @@ namespace Next.PCL.Html
             model.TimePeriods = GetNodesAsText(lists, TvDbKeys.TimePeriod);
             model.Status = GetAsText(lists, TvDbKeys.Status).ParseToMetaStatus();
             model.Locations = GetNodes(lists, TvDbKeys.Location).Select(x => x.ParseText().ToGeoLocale()).ToList();
+            model.ProductionCountries = GetNodes(lists, TvDbKeys.ProductionCountries).Select(x => x.ParseText().ToGeoLocale()).ToList();
 
             model.OtherSites = GetLinks(lists, TvDbKeys.OtherSites).Select(x => x.ParseToMetaUrl()).ToList();
             model.Trailers = GetLinks(lists, TvDbKeys.Trailers).Select(x => x.ParseToMetaVideo()).ToList();
