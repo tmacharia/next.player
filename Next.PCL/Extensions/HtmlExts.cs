@@ -66,6 +66,10 @@ namespace Next.PCL.Extensions
         {
             return nodes.FirstOrDefault(x => x.ContainsClass(value));
         }
+        internal static IEnumerable<HtmlNode> WhereClassContains(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.Where(x => x.ContainsClass(value));
+        }
         internal static bool HasAttrib(this HtmlNode node, string name)
         {
             return node.HasAttribWhere(x => x.Name.EqualsOIC(name));
@@ -155,11 +159,19 @@ namespace Next.PCL.Extensions
         #endregion
 
         #region Nodes Collection
-        internal static HtmlNode WhereTextEquals(this HtmlNodeCollection nodes, string value)
+        internal static IEnumerable<HtmlNode> WhereTextEquals(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.Where(x => x.TextEquals(value));
+        }
+        internal static IEnumerable<HtmlNode> WhereTextContains(this HtmlNodeCollection nodes, string value)
+        {
+            return nodes.Where(x => x.TextContains(value));
+        }
+        internal static HtmlNode FirstEqualing(this HtmlNodeCollection nodes, string value)
         {
             return nodes.FirstOrDefault(x => x.TextEquals(value));
         }
-        internal static HtmlNode WhereTextContains(this HtmlNodeCollection nodes, string value)
+        internal static HtmlNode FirstContaining(this HtmlNodeCollection nodes, string value)
         {
             return nodes.FirstOrDefault(x => x.TextContains(value));
         }
@@ -176,6 +188,8 @@ namespace Next.PCL.Extensions
         }
         internal static HtmlNodeCollection FindByTag(this HtmlDocument node, string tagName)
         {
+            if (tagName.StartsWith("/"))
+                tagName = tagName.TrimStart('/');
             return node.DocumentNode.SelectNodes($"//{tagName}");
         }
         #endregion

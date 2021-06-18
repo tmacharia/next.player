@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common;
 using HtmlAgilityPack;
+using Next.PCL.Entities;
 using Next.PCL.Extensions;
 using Next.PCL.Online.Models.Imdb;
 
@@ -39,52 +40,92 @@ namespace Next.PCL.Html
         }
 
 
-        public async Task<List<ImdbReview>> GetReviewsAsync(string imdbId, CancellationToken token = default)
+        internal IEnumerable<ImdbReview> ParseReviews(string html, HtmlDocument htmlDocument = default)
         {
-            var reviews = new List<ImdbReview>();
-            if (!imdbId.IsValid())
-                return reviews;
-
-            var uri = new Uri(string.Format("{0}/title/{1}/reviews", SiteUrls.IMDB, imdbId));
-            var doc = await GetHtmlDocumentAsync(uri, token);
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
             var nodes = doc.FindAll("//div[@class='lister-item-content']");
             if (nodes.IsNotNullOrEmpty())
             {
                 foreach (var node in nodes)
                 {
-                    var rv = ParseImdbReview(node);
+                    var rv = ParseSingleImdbReview(node);
                     if (rv != null)
-                    {
-                        reviews.Add(rv);
-                    }
+                        yield return rv;
                 }
             }
-            return reviews;
         }
-        internal ImdbReview ParseImdbReview(HtmlNode node)
+        internal IEnumerable<GeographicLocation> ParseFilmingLocations(string html, HtmlDocument htmlDocument = default)
         {
-            var doc = ConvertToHtmlDoc(node.OuterHtml);
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
-            var titl = doc.Find("//a[@class='title']");
-            var date = doc.Find("//span[@class='review-date']");
-            var revw = doc.Find("//div[@class='text show-more__control']");
-            var spns = doc.FindAll("//span[@class='rating-other-user-rating']/span");
+            var nodes = doc.GetElementbyId("filming_locations")?.ExtendFindAll("div")?.WhereClassContains("soda").ToList();
 
-            var imdb = new ImdbReview
+            foreach (var node in nodes)
             {
-                Title = titl.ParseText(),
-                Review = revw.ParseText(),
-                Timestamp = date.ParseDateTime()
-            };
-            if (spns.IsNotNullOrEmpty())
-            {
-                var a = spns.FirstOrDefault(x => !x.HasAttributes);
-                var d = a.ParseDouble();
-                if (d.HasValue)
-                    imdb.Score = d.Value;
+                var rv = ParseSingleFilmingLocation(node);
+                if (rv != null)
+                    yield return rv;
             }
-            return imdb;
         }
+
+        private ImdbReview ParseSingleImdbReview(HtmlNode node)
+        {
+            var link = node.ExtendFind("a[@class='title']");
+            var display = node.ExtendFind("div[@class='display-name-date']");
+            var user = display.ExtendFind("span/a");
+            var content = node.ExtendFind("div[@class='content']");
+
+            var review = new ImdbReview
+            {
+                Title = link.ParseText(),
+                Url = link.GetHref().ParseToUri(),
+                Reviewer = user.ParseText(),
+                ReviewerUrl = user.GetHref().ParseToUri(),
+                Review = content.Element("div").ParseText(),
+                Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
+                Score = node.ExtendFind("div/span[@class='rating-other-user-rating']/span")?.ParseDouble()
+            };
+
+            string stats = content.ExtendFindAll("div")?.FirstContainingClass("actions")?.FirstChild?.ParseText();
+            if (stats.IsValid())
+            {
+                stats = stats.Replace("out of", "");
+                stats = stats.Replace("found this helpful", "");
+                stats = stats.TrimEnd('.').Trim();
+
+                var tks = stats.SplitByAndTrim(" ").ToArray();
+                if(tks.Length == 2)
+                {
+                    review.MarkedAsUseful = tks[0].ParseToInt();
+                    review.TotalEngagement = tks[1].ParseToInt();
+                }
+            }
+
+            return review;
+        }
+        private GeographicLocation ParseSingleFilmingLocation(HtmlNode node)
+        {
+            var places = node?.ExtendFind("dt/a")?.ParseText().SplitByAndTrim(",").ToArray();
+
+            if(places.Length <= 0)
+                return null;
+
+            var geo = new GeographicLocation
+            {
+                Name = places.Last(),
+                IsCountry = true
+            };
+            if (places.Length > 1)
+            {
+                geo.Inner.Add(new GeographicLocation()
+                {
+                    IsCountry = false,
+                    Name = string.Join(",", places.Take(places.Length - 1))
+                });
+            }
+            return geo;
+        }
+
     }
 }

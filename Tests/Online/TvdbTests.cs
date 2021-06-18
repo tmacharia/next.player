@@ -15,6 +15,7 @@ namespace Tests.Online
         private Tvdb _tvdb;
 
         private const string SHOW_SLUG = "liseys-story";
+        private static readonly Uri MOVIE_URL = new("https://thetvdb.com/movies/iron-man");
         private static readonly Uri SHOW_URL = new("https://thetvdb.com/series/true-detective");
         private static readonly Uri SHOW_EP_URL = new("https://thetvdb.com/series/liseys-story/episodes/8221744");
 
@@ -34,7 +35,6 @@ namespace Tests.Online
             Assert.NotNull(tv);
             Assert.AreEqual("True Detective", tv.Name);
             Assert.AreEqual(270633, tv.Id);
-            Assert.AreEqual(MetaStatus.Ended, tv.Status);
 
             Assert.NotNull(tv.AirsOn);
             Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);
@@ -133,6 +133,67 @@ namespace Tests.Online
         }
         #endregion
 
+        #region Movies
+        [Case(TVDB_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_BySlug_01()
+        {
+            var mov = await _tvdb.GetMovieAsync("iron-man");
+
+            Assert.NotNull(mov);
+            Assert.AreEqual("Iron Man", mov.Name);
+            Assert.AreEqual(108, mov.Id);
+            Assert.AreEqual(MOVIE_URL, mov.Url);
+            Assert.AreEqual(MetaStatus.Released, mov.Status);
+            Assert.IsTrue(mov.ReleaseDate.HasValue);
+            Assert.AreEqual(30, mov.ReleaseDate.Value.Day);
+            Assert.AreEqual(4, mov.ReleaseDate.Value.Month);
+            Assert.AreEqual(2008, mov.ReleaseDate.Value.Year);
+
+            Assert.That(mov.Genres.Any());
+            Assert.That(mov.Genres.Contains("Science Fiction"));
+
+            Assert.That(mov.Studios.Any());
+            Assert.That(mov.Studios.AnyMatches("Paramount"));
+            Assert.That(mov.ProductionCompanies.Any());
+            Assert.That(mov.ProductionCompanies.AnyMatches("Marvel"));
+
+            Assert.That(mov.Posters.Any());
+            Assert.That(mov.Backdrops.Any());
+
+            Assert.That(mov.Trailers.Any());
+        }
+        [Case(TVDB_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_BySlug_02()
+        {
+            var mov = await _tvdb.GetMovieAsync("moneyball");
+
+            Assert.NotNull(mov);
+            Assert.AreEqual(3053, mov.Id);
+            Assert.AreEqual("Moneyball", mov.Name);
+            Assert.AreEqual("tt1210166", mov.ImdbId);
+            Assert.AreEqual(MetaStatus.Released, mov.Status);
+            Assert.IsTrue(mov.Runtime.HasValue);
+            Assert.AreEqual(134, mov.Runtime.Value);
+            Assert.IsTrue(mov.ReleaseDate.HasValue);
+            Assert.AreEqual(22, mov.ReleaseDate.Value.Day);
+            Assert.AreEqual(9, mov.ReleaseDate.Value.Month);
+            Assert.AreEqual(2011, mov.ReleaseDate.Value.Year);
+
+            Assert.That(mov.Genres.Any());
+            Assert.That(mov.Genres.Contains("Drama"));
+
+            Assert.That(mov.Studios.Any());
+            Assert.That(mov.Studios.AnyMatches("Sony"));
+            Assert.That(mov.ProductionCompanies.Any());
+            Assert.That(mov.ProductionCompanies.AnyMatches("Columbia"));
+
+            Assert.That(mov.Posters.Any());
+            Assert.That(mov.Backdrops.Any());
+
+            Assert.That(mov.Trailers.Any());
+        }
+        #endregion
+
         #region Companies
         [Case(TVDB_TESTS, COMPANY_TESTS)]
         public async Task Get_Company_BySlug()
@@ -145,7 +206,7 @@ namespace Tests.Online
 
             Assert.That(model.Images.Any());
         }
-        [Case(TVDB_TESTS, COMPANY_TESTS, MOVIE_TESTS)]
+        [Case(TVDB_TESTS, COMPANY_TESTS, SHOW_TESTS)]
         public async Task Get_Movies_ByCompany()
         {
             var model = await _tvdb.GetMoviesByCompanyAsync("netflix");
@@ -159,7 +220,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Posters.Any()));
             Assert.That(list.All(x => x.Posters.All(p => p.Url != null)));
         }
-        [Case(TVDB_TESTS, COMPANY_TESTS, MOVIE_TESTS)]
+        [Case(TVDB_TESTS, COMPANY_TESTS, SHOW_TESTS)]
         public async Task Get_Shows_ByCompany()
         {
             var model = await _tvdb.GetShowsByCompanyAsync("netflix");
@@ -258,19 +319,8 @@ namespace Tests.Online
         #endregion
 
         #region Cast & Crew
-        [Case(TVDB_TESTS, CAST_TESTS)]
-        public async Task Get_Crew()
-        {
-            var list = await _tvdb.GetCrewAsync(SHOW_URL);
-
-            Assert.NotNull(list);
-            Assert.That(list.Any());
-            Assert.That(list.All(x => x.Id > 0));
-            Assert.That(list.All(x => x.Name.IsValid()));
-            Assert.That(list.All(x => x.Images.Count <= 0));
-        }
-        [Case(TVDB_TESTS, CAST_TESTS)]
-        public async Task Get_Cast()
+        [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Cast()
         {
             var list = await _tvdb.GetCastAsync(SHOW_URL);
 
@@ -279,10 +329,21 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Images.Count > 0));
-            Log(list.Count());
+            Log(list);
         }
-        [Case(TVDB_TESTS, CAST_TESTS)]
-        public async Task Get_Both_CastAndCrew()
+        [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Crew()
+        {
+            var list = await _tvdb.GetCrewAsync(SHOW_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Log(list);
+        }
+        [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Both_CastAndCrew()
         {
             var list = await _tvdb.GetCastAndCrewAsync(SHOW_URL);
 
@@ -292,7 +353,36 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Role.IsValid()));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.Any(x => x.Images.Count > 0));
-            list.ForEach(x => Log(x));
+            Log(list);
+        }
+
+        [Case(TVDB_TESTS, CAST_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_Cast()
+        {
+            var list = await _tvdb.GetCastAsync(MOVIE_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Role.IsValid()));
+            Assert.That(list.Contains("Robert Downey Jr."));
+            Log(list);
+        }
+        [Case(TVDB_TESTS, CAST_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_Crew()
+        {
+            var list = await _tvdb.GetCrewAsync(MOVIE_URL);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.Id > 0));
+            Assert.That(list.All(x => x.Name.IsValid()));
+            Assert.That(list.All(x => x.Role.IsValid()));
+            Assert.That(list.Any(x => x.Profession == Profession.Writer));
+            Assert.That(list.Any(x => x.Profession == Profession.Director));
+            Assert.That(list.Any(x => x.Profession == Profession.Producer));
+            Log(list);
         }
         #endregion
 

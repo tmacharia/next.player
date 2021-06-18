@@ -7,7 +7,7 @@ namespace Tests
 {
     class MathTests : TestsBase
     {
-        [TheoriesFrom(nameof(MedianCases), MATH_TESTS)]
+        [TheoriesFrom(nameof(MedianCases), UNIT_TESTS)]
         public void Calculate_Median(MedianTestModel<int> model)
         {
             int ans = MathExts.Median(model.Values);

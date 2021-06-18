@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Common;
 using HtmlAgilityPack;
+using Next.PCL.AutoMap;
 using Next.PCL.Configurations;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
@@ -21,18 +23,21 @@ namespace Next.PCL.Html
         internal const string ACTOR_AVATAR_IMG = "/images/missing/actor.jpg";
         internal const string MOVIE_AVATAR_IMG = "/images/missing/movie.jpg";
 
+        private readonly IMapper _mapper;
+
         internal TvdbConfig Config { get; set; }
 
-        public TvDbParser(TvdbConfig tvdbConfig = default)
+        public TvDbParser(TvdbConfig tvdbConfig = default, IMapper autoMapper = default)
         {
             Config = tvdbConfig ?? new TvdbConfig();
+            _mapper = autoMapper ?? new Mapper(AutomapperConfig.Configure());
         }
 
         internal TvDbShow ParseShow(string html, Uri showUrl)
         {
             var doc = ConvertToHtmlDoc(html);
-            var model = ParseCommonModel(html, showUrl, doc) as TvDbShow;
-
+            var model = _mapper.Map<TvDbShow>(ParseCommonModel(html, showUrl, doc));
+            
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
             model.AirsOn = GetAsText(lists, TvDbKeys.Airs).ParseToAirShedule();
@@ -50,15 +55,16 @@ namespace Next.PCL.Html
         internal TvDbMovie ParseMovie(string html, Uri movieUrl)
         {
             var doc = ConvertToHtmlDoc(html);
-            var model = ParseCommonModel(html, movieUrl, doc) as TvDbMovie;
+            var model = _mapper.Map<TvDbMovie>(ParseCommonModel(html, movieUrl, doc));
 
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
-            model.Runtime = GetAsText(lists, TvDbKeys.Runtime).ParseToRuntime();
+            model.Runtime = GetAsText(lists, TvDbKeys.Runtime)?.ParseToRuntime();
             model.Studios = GetLinks(lists, TvDbKeys.Studio).Select(x => x.ParseToCompany()).ToList();
             model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
             model.Distributors = GetLinks(lists, TvDbKeys.Distributor).Select(x => x.ParseToCompany()).ToList();
-            model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().Element("#text").ParseDateTime();
+            
+            model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().LastChild.ParseDateTime();
             model.ProductionCompanies = GetLinks(lists, TvDbKeys.ProductionCompanies).Select(x => x.ParseToCompany()).ToList();
 
             return model;
@@ -82,7 +88,7 @@ namespace Next.PCL.Html
 
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
-            model.Id = GetAsText(lists, TvDbKeys.SeriesID).ParseToInt() ?? 0;
+            model.Id = GetAsText(lists, TvDbKeys.TvDBID).ParseToInt() ?? 0;
             model.Genres = GetNodesAsText(lists, TvDbKeys.Genres);
             model.Settings = GetNodesAsText(lists, TvDbKeys.Setting);
             model.TimePeriods = GetNodesAsText(lists, TvDbKeys.TimePeriod);
@@ -92,6 +98,7 @@ namespace Next.PCL.Html
 
             model.OtherSites = GetLinks(lists, TvDbKeys.OtherSites).Select(x => x.ParseToMetaUrl()).ToList();
             model.Trailers = GetLinks(lists, TvDbKeys.Trailers).Select(x => x.ParseToMetaVideo()).ToList();
+            model.ImdbId = model.OtherSites.GetImdbKey();
 
             return model;
         }
@@ -121,7 +128,7 @@ namespace Next.PCL.Html
                             : metaType == MetaType.TvShow ? "Series" : "";
 
             var list = doc.FindByTag("h3")
-                          .WhereTextEquals(metaName)
+                          .FirstEqualing(metaName)
                           .GetAdjacent("div")
                           .Elements("div");
 
@@ -252,9 +259,9 @@ namespace Next.PCL.Html
                            .FirstWithAttrib("data-language", Config.Language)
                            ?.Element("p")?.ParseText()
             };
-            model.Runtime = doc.FindAll("//ul/li/strong").WhereTextEquals("runtime")
+            model.Runtime = doc.FindAll("//ul/li/strong").FirstEqualing("runtime")
                          ?.ParentNode.Element("span").ParseText().ParseToRuntime();
-            model.AirDate = doc.FindAll("//ul/li/strong").WhereTextContains("aired")
+            model.AirDate = doc.FindAll("//ul/li/strong").FirstContaining("aired")
                          ?.ParentNode.SelectSingleNode("//span/a")?.ParseDateTime();
             model.Id = doc.GetElementbyId("episode_deleted_reason_confirm")
                          ?.GetAttrib("data-id").ParseToInt() ?? 0;
@@ -294,13 +301,20 @@ namespace Next.PCL.Html
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
+            bool isGridView = true;
             var nodes = doc.FindAll("//div[@class='thumbnail']");
+            if(nodes == null)
+            {
+                isGridView = false;
+                nodes = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Actors)
+                           ?.GetAdjacent("table")?.ExtendFindAll("tr");
+            }
 
             if (nodes != null)
             {
                 foreach (var item in nodes)
                 {
-                    var cr = ParseSingleCast(item);
+                    var cr = isGridView ? ParseSingleCast_Grid(item) : ParseSingleCast_Tabular(item);
                     if (cr != null)
                         yield return cr;
                 }
@@ -310,10 +324,18 @@ namespace Next.PCL.Html
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
-            var writers = doc.FindByTag("h2").WhereTextEquals("Writers")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
-            var directors = doc.FindByTag("h2").WhereTextEquals("Directors")?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+            var writers = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Writers)
+                            ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
 
-            return ParseAllCrew(directors, Profession.Director).Concat(ParseAllCrew(writers, Profession.Writer));
+            var directors = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Directors)
+                            ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+
+            var producers = doc.FindByTag("//h2|//h3").FirstEqualing(TvDbKeys.Producers)
+                            ?.GetAdjacent("table")?.ExtendFindAll("tr/td/a");
+
+            return ParseAllCrew(directors, Profession.Director)
+             .Concat(ParseAllCrew(writers, Profession.Writer))
+             .Concat(ParseAllCrew(producers, Profession.Producer));
         }
         private IEnumerable<TvdbCrew> ParseAllCrew(HtmlNodeCollection nodes, Profession profession)
         {
@@ -341,7 +363,7 @@ namespace Next.PCL.Html
                 Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0,
             };
         }
-        private TvdbPerson ParseSingleCast(HtmlNode node)
+        private TvdbPerson ParseSingleCast_Grid(HtmlNode node)
         {
             string name = node.Element("h3")?.Element("#text").ParseText();
             string character = node.Element("h3")?.Element("small").ParseText().Substring(2).Trim();
@@ -376,6 +398,24 @@ namespace Next.PCL.Html
             
             return cast;
         }
+        private TvdbPerson ParseSingleCast_Tabular(HtmlNode node)
+        {
+            var link = node.ExtendFind("td/a");
+            string character = node.Elements("td").LastOrDefault().ParseText();
+
+            if (link == null || !character.IsValid())
+                return null;
+
+            var cast = new TvdbPerson();
+            cast.Role = character;
+            cast.Name = link.ParseText();
+
+            string href = link.GetHref();
+            cast.Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0;
+            cast.Url = string.Format("{0}{1}", SiteUrls.TVDB, href).ParseToUri();
+
+            return cast;
+        }
 
         internal async Task<List<MetaImage>> GetAndParseImagesAsync(Uri uri, MetaImageType type, CancellationToken token = default)
         {
@@ -387,8 +427,12 @@ namespace Next.PCL.Html
 
         private string GetAsText(HtmlNodeCollection nodes, string name)
         {
-            var elem = nodes.FirstOrDefault(x => x.Element("strong").ParseText().Matches(name));
-            return elem?.Element("span").ParseText();
+            return nodes.FirstOrDefault(x
+                            => x.Element("strong")
+                                .ParseText()
+                                .Matches(name))
+                        ?.Element("span")
+                        ?.ParseText();
         }
         private List<string> GetNodesAsText(HtmlNodeCollection nodes, string name)
         {

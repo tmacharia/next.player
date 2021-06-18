@@ -57,6 +57,7 @@ namespace Tests
             return json.DeserializeTo<TestSettingsModel>();
         }
 
+        internal virtual void Log<T>(IEnumerable<T> ts) => ts.ForEach(x => Log(x));
         internal virtual void Log(object o) => Console.WriteLine(o);
         internal virtual void Log(string format, params object[] args) => Console.WriteLine(format, args);
     }

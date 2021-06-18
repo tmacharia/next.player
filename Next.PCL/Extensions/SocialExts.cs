@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Next.PCL.Entities;
@@ -35,6 +36,17 @@ namespace Next.PCL.Extensions
                 };
             }
             return null;
+        }
+        internal static string GetImdbKey(this IEnumerable<MetaUrl> uris)
+        {
+            if (uris.Any())
+            {
+                var url = uris.FirstOrDefault(x => x.Domain == OtherSiteDomain.IMDB)?.Url;
+                string s = url.AbsolutePath.SplitByAndTrim("/").Last();
+                if (s.StartsWith("tt"))
+                    return s;
+            }
+            return string.Empty;
         }
     }
 }

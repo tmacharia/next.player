@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using Next.PCL.AutoMap;
 using Next.PCL.Configurations;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
@@ -15,7 +17,9 @@ namespace Next.PCL.Online
 {
     public class Tvdb : BaseOnline
     {
+        private readonly IMapper _mapper;
         private readonly TvDbParser _parser;
+
         internal TvdbConfig Config
         {
             get { return _parser.Config; }
@@ -25,9 +29,11 @@ namespace Next.PCL.Online
         public Tvdb()
         {
             _parser = new TvDbParser();
+            _mapper = new Mapper(AutomapperConfig.Configure());
         }
-        public Tvdb(TvdbConfig tvdbConfig)
+        public Tvdb(TvdbConfig tvdbConfig, IMapper autoMapper)
         {
+            _mapper = autoMapper;
             _parser = new TvDbParser(tvdbConfig);
         }
 
