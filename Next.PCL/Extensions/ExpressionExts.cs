@@ -18,14 +18,53 @@ namespace Next.PCL.Extensions
         {
             if (exp == null)
                 return string.Empty;
-            if (exp.Body is MemberExpression m)
+            var stack = new Stack<string>();
+            Expression expression1 = exp.Body;
+            while (expression1 != null)
             {
-                Console.WriteLine("{0}, {1}", m.Member.Name,exp.Body.NodeType);
-                return m.Member.Name;
+                if (expression1.NodeType == ExpressionType.Call)
+                {
+                    var methodCallExpression = (MethodCallExpression)expression1;
+                    if (IsSingleArgumentIndexer(methodCallExpression))
+                    {
+                        stack.Push(string.Empty);
+                        expression1 = methodCallExpression.Object;
+                    }
+                    else
+                        break;
+                }
+                else if (expression1.NodeType == ExpressionType.ArrayIndex)
+                {
+                    var binaryExpression = (BinaryExpression)expression1;
+                    stack.Push(string.Empty);
+                    expression1 = binaryExpression.Left;
+                }
+                else if (expression1.NodeType == ExpressionType.MemberAccess)
+                {
+                    var memberExpression = (MemberExpression)expression1;
+                    stack.Push("." + memberExpression.Member.Name);
+                    expression1 = memberExpression.Expression;
+                }
+                else if (expression1.NodeType == ExpressionType.Parameter)
+                {
+                    stack.Push(string.Empty);
+                    expression1 = null;
+                }
+                else if (expression1.NodeType == ExpressionType.Convert)
+                {
+                    var memberExp = ((UnaryExpression)expression1).Operand as MemberExpression;
+                    stack.Push("." + memberExp.Member.Name);
+                    expression1 = memberExp.Expression;
+                }
+                else
+                    break;
             }
-            else if (exp.Body is UnaryExpression ue)
-                return ((MemberExpression)ue.Operand).Member.Name;
-            return string.Empty;
+            if (stack.Count > 0 && string.Equals(stack.Peek(), ".model", StringComparison.OrdinalIgnoreCase))
+                stack.Pop();
+            if (stack.Count <= 0)
+                return string.Empty;
+            string s = (stack).Aggregate(((left, right) => left + right)).TrimStart(new[] { '.' });
+            return s;
         }
         public static TProp GetPropValue<TClass, TProp>(this TClass @class, Expression<Func<TClass>> propSelector)
             where TClass : class
@@ -115,6 +154,14 @@ namespace Next.PCL.Extensions
             if (prop.IsValid())
                 @class.SetPropertyValue(prop, newValue);
         }
+        public static string GetPropName<TClass, TProp>(this TClass @class, Expression<Func<TClass, TProp>> propertySelector)
+            where TClass : class
+        {
+            if (@class == null)
+                return "";
 
+            string prop = propertySelector.GetPropName();
+            return prop;
+        }
     }
 }
