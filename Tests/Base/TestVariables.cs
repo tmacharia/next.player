@@ -5,6 +5,7 @@
         internal const string MATH_TESTS = "Math";
         internal const string UNIT_TESTS = "Unit/Internal";
 
+        internal const string YTS_TESTS = "Yts.Mx";
         internal const string OMDB_TESTS = "Omdb";
         internal const string IMDB_TESTS = "Imdb";
         internal const string TVMAZE_TESTS = "TvMaze";

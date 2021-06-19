@@ -14,8 +14,8 @@ namespace Tests
         internal static IMapper AutoMapper => GetMapper();
         internal static TestSettingsModel Settings => ReadPrivateSettingsFile();
 
-        internal static MetaTestModel GOT => new("tt0944947", 82, 121361, 1399, "Game of Thrones");
-        internal static MetaTestModel SocialNetwork => new("tt1285016", 82, 2240, 37799, "The Social Network");
+        internal static MetaTestModel GOT => new("tt0944947", 82, 121361, 1399, 0, "Game of Thrones");
+        internal static MetaTestModel SocialNetwork => new("tt1285016", 82, 2240, 37799, 3726, "The Social Network");
 
         internal static List<string> Genres => new()
         {

@@ -26,8 +26,6 @@ namespace Next.PCL.Online
             return res.Movies;
         }
 
-
-
         internal async Task<TResponse> RequestAsync<TResponse>(string route, CancellationToken token = default) 
             where TResponse : class
         {
