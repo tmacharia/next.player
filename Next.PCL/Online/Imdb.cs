@@ -16,7 +16,20 @@ namespace Next.PCL.Online
         {
             _parser = new ImdbParser();
         }
-        
+
+        public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken token = default)
+        {
+            var uri = new Uri(string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId));
+            string html = await GetAsync(uri, token);
+            return _parser.ParseImdb(html);
+        }
+        public async Task<List<ImdbReview>> GetSuggestionsAsync(string imdbId, CancellationToken token = default)
+        {
+            var uri = new Uri(string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId));
+            string html = await GetAsync(uri, token);
+            return _parser.ParseSuggestions(html).ToList();
+        }
+
         public async Task<List<ImdbReview>> GetReviewsAsync(string imdbId, CancellationToken token = default)
         {
             var uri = new Uri(string.Format("{0}/title/{1}/reviews", SiteUrls.IMDB, imdbId));

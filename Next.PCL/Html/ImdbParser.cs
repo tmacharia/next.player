@@ -40,6 +40,22 @@ namespace Next.PCL.Html
         }
 
 
+        internal IEnumerable<ImdbReview> ParseSuggestions(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var nodes = doc.FindAll("//div[@class='lister-item-content']");
+            if (nodes.IsNotNullOrEmpty())
+            {
+                foreach (var node in nodes)
+                {
+                    var rv = ParseSingleImdbSuggestion(node);
+                    if (rv != null)
+                        yield return rv;
+                }
+            }
+        }
+
         internal IEnumerable<ImdbReview> ParseReviews(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
@@ -69,6 +85,56 @@ namespace Next.PCL.Html
             }
         }
 
+
+        internal ImdbModel ParseImdb(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var json = doc.Find("//script[@type='application/ld+json']")?.ParseText();
+            if (json.IsValid())
+            {
+                var model = json.DeserializeTo<ImdbModel>();
+                return model;
+            }
+
+            return null;
+        }
+
+        private ImdbReview ParseSingleImdbSuggestion(HtmlNode node)
+        {
+            var link = node.ExtendFind("a[@class='title']");
+            var display = node.ExtendFind("div[@class='display-name-date']");
+            var user = display.ExtendFind("span/a");
+            var content = node.ExtendFind("div[@class='content']");
+
+            var review = new ImdbReview
+            {
+                Title = link.ParseText(),
+                Url = link.GetHref().ParseToUri(),
+                Reviewer = user.ParseText(),
+                ReviewerUrl = user.GetHref().ParseToUri(),
+                Review = content.Element("div").ParseText(),
+                Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
+                Score = node.ExtendFind("div/span[@class='rating-other-user-rating']/span")?.ParseDouble()
+            };
+
+            string stats = content.ExtendFindAll("div")?.FirstContainingClass("actions")?.FirstChild?.ParseText();
+            if (stats.IsValid())
+            {
+                stats = stats.Replace("out of", "");
+                stats = stats.Replace("found this helpful", "");
+                stats = stats.TrimEnd('.').Trim();
+
+                var tks = stats.SplitByAndTrim(" ").ToArray();
+                if (tks.Length == 2)
+                {
+                    review.MarkedAsUseful = tks[0].ParseToInt();
+                    review.TotalEngagement = tks[1].ParseToInt();
+                }
+            }
+
+            return review;
+        }
         private ImdbReview ParseSingleImdbReview(HtmlNode node)
         {
             var link = node.ExtendFind("a[@class='title']");

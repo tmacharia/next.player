@@ -16,6 +16,18 @@ namespace Tests.Online
         }
 
         [TestCase(Category = IMDB_TESTS)]
+        public async Task Get_Imdb()
+        {
+            var model = await _imdb.GetImdbAsync(SocialNetwork.ImdbID);
+
+            Assert.NotNull(model);
+            Assert.That(model.Genres.Any());
+            Assert.True(model.ReleaseDate.HasValue);
+            Assert.AreEqual(2010, model.ReleaseDate.Value.Year);
+            Log(model);
+        }
+
+        [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Reviews()
         {
             var list = await _imdb.GetReviewsAsync(GOT.ImdbID);
