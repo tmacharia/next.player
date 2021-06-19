@@ -92,5 +92,23 @@ namespace Tests.Online
             Assert.That(list.Any());
             Log(list);
         }
+
+        [Case(TMDB_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_Suggestions()
+        {
+            var list = await _tmdb.SimilarMoviesAsync(SocialNetwork.TmDbID);
+
+            Assert.That(list.Any());
+            Log(list);
+        }
+
+        [Case(TMDB_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Suggestions()
+        {
+            var list = await _tmdb.SimilarShowsAsync(GOT.TmDbID);
+
+            Assert.That(list.Any());
+            Log(list);
+        }
     }
 }

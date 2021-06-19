@@ -32,6 +32,11 @@ namespace Next.PCL.Online.Models
         public DateTime? ReleaseDate { get; set; }
 
         public List<MetaImage> Posters { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}. {1}, {2:yyyy}", Id, Name, ReleaseDate);
+        }
     }
     public interface IPosterPath
     {

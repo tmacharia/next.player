@@ -159,7 +159,7 @@ namespace Next.PCL.Online
         {
             var res = await _client.GetTvShowSimilarAsync(id, cancellationToken: token);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
-            map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
+            //map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
         public async Task<List<TmdbSearch>> SearchMovieAsync(string q, int year = 0, bool nsfw = false, CancellationToken token = default)
@@ -173,7 +173,7 @@ namespace Next.PCL.Online
         {
             var res = await _client.GetMovieSimilarAsync(id, cancellationToken: token);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
-            map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
+            //map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
 
