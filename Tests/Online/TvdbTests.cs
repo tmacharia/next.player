@@ -387,7 +387,7 @@ namespace Tests.Online
         #endregion
 
         #region Artworks
-        [Case(TVDB_TESTS, ARTWORK_TESTS)]
+        [Case(TVDB_TESTS)]
         public async Task Get_All_Artworks()
         {
             var imgs = await _tvdb.GetArtworksAsync(SHOW_URL);
