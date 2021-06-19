@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Next.PCL.Enums;
 using Next.PCL.Exceptions;
 using Next.PCL.Online;
 using NUnit.Framework;
+using Tests.Attributes;
 
 namespace Tests.Online
 {
@@ -20,13 +23,13 @@ namespace Tests.Online
             await _tmdb.ConfigureAsync();
         }
 
-        [TestCase(Category = TMDB_TESTS)]
+        [Case(TMDB_TESTS)]
         public void No_ApiKey_ThrowEx()
         {
             Assert.Throws<ApiKeyException>(() => new Tmdb("", null));
         }
 
-        [TestCase(Category = TMDB_TESTS)]
+        [Case(TMDB_TESTS, SHOW_TESTS)]
         public async Task Get_TvShow_ById()
         {
             var show = await _tmdb.GetShowAsync(GOT.TmDbID);
@@ -39,7 +42,7 @@ namespace Tests.Online
             //Assert.Greater(0, show.Posters.Count);
         }
 
-        [TestCase(Category = TMDB_TESTS)]
+        [Case(TMDB_TESTS, SHOW_TESTS)]
         public async Task Search_TvShow_ByQuery()
         {
             var shows = await _tmdb.SearchShowAsync(GOT.Name);
@@ -50,7 +53,7 @@ namespace Tests.Online
             Assert.AreEqual(GOT.TmDbID, shows[0].Id);
         }
 
-        [TestCase(Category = TMDB_TESTS)]
+        [Case(TMDB_TESTS, MOVIE_TESTS)]
         public async Task Get_Movie_ById()
         {
             var mov = await _tmdb.GetMovieAsync(SocialNetwork.TmDbID);
@@ -60,7 +63,7 @@ namespace Tests.Online
             Assert.AreEqual(SocialNetwork.TmDbID, mov.Id);
             Assert.AreEqual(SocialNetwork.ImdbID, mov.ExternalIds.ImdbId);
         }
-        [TestCase(Category = TMDB_TESTS)]
+        [Case(TMDB_TESTS, MOVIE_TESTS)]
         public async Task Search_Movie_ByQuery()
         {
             var movies = await _tmdb.SearchMovieAsync(SocialNetwork.Name);
@@ -69,6 +72,25 @@ namespace Tests.Online
             Assert.Greater(movies.Count, 0);
             Assert.AreEqual(SocialNetwork.Name, movies[0].Name);
             Assert.AreEqual(SocialNetwork.TmDbID, movies[0].Id);
+        }
+
+        [Case(TMDB_TESTS, SHOW_TESTS)]
+        public async Task Get_Show_Reviews()
+        {
+            var list = await _tmdb.GetReviewsAsync(GOT.TmDbID, MetaType.TvShow);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Log(list);
+        }
+        [Case(TMDB_TESTS, MOVIE_TESTS)]
+        public async Task Get_Movie_Reviews()
+        {
+            var list = await _tmdb.GetReviewsAsync(SocialNetwork.TmDbID, MetaType.Movie);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Log(list);
         }
     }
 }

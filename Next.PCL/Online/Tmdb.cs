@@ -111,17 +111,17 @@ namespace Next.PCL.Online
             }
             return null;
         }
-        public async Task<List<ReviewBase>> GetReviewsAsync(int id, MetaType type, CancellationToken token = default)
+        public async Task<List<TmdbReview>> GetReviewsAsync(int id, MetaType type, CancellationToken token = default)
         {
             if (type == MetaType.Movie)
             {
                 var res = await _client.GetMovieReviewsAsync(id, cancellationToken: token);
-                return res.GetList();
+                return _mapper.Map<List<TmdbReview>>(res.GetList());
             }
             else if (type == MetaType.TvShow)
             {
                 var res = await _client.GetTvShowReviewsAsync(id, cancellationToken: token);
-                return res.GetList();
+                return _mapper.Map<List<TmdbReview>>(res.GetList());
             }
             return null;
         }
