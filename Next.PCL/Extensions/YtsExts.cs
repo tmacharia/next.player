@@ -29,7 +29,7 @@ namespace Next.PCL.Extensions
         }
         private static void GetImageAs(this YtsMovie model, Expression<Func<YtsMovie,Uri>> keySelector, MetaImageType type, Resolution resolution, ref List<MetaImage> images)
         {
-            var url = model.GetPropValue(keySelector);
+            var url = model.GetPropValue2(keySelector);
             if(url != null)
             {
                 images.Add(new MetaImage(type, MetaSource.YTS_MX)

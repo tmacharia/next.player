@@ -41,7 +41,7 @@ namespace Next.PCL.Online
                 res = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: token);
 
             var map = _mapper.Map<TmdbMovie>(res);
-            //map.Posters.AddRange(map.GetPosters(_client));
+            map.Posters.AddRange(map.GetPosters(_client));
             return map;
         }
         public async Task<List<MetaImage>> GetMovieImagesAsync(int id, CancellationToken token = default)
@@ -59,7 +59,7 @@ namespace Next.PCL.Online
         {
             TvShow res = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: token);
             var map = _mapper.Map<TmdbShow>(res);
-            //map.Posters.AddRange(map.GetPosters(_client));
+            map.Posters.AddRange(map.GetPosters(_client));
             return map;
         }
         public async Task<List<MetaImage>> GetShowImagesAsync(int id, CancellationToken token = default)
@@ -152,28 +152,28 @@ namespace Next.PCL.Online
         {
             var res = await _client.SearchTvShowAsync(q, firstAirDateYear: year, includeAdult: nsfw, cancellationToken: token);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
-            //map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
+            map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
         public async Task<List<TmdbSearch>> SimilarShowsAsync(int id, CancellationToken token = default)
         {
             var res = await _client.GetTvShowSimilarAsync(id, cancellationToken: token);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
-            //map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
+            map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
         public async Task<List<TmdbSearch>> SearchMovieAsync(string q, int year = 0, bool nsfw = false, CancellationToken token = default)
         {
             var res = await _client.SearchMovieAsync(q, year: year, includeAdult: nsfw, cancellationToken: token);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
-            //map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
+            map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
         public async Task<List<TmdbSearch>> SimilarMoviesAsync(int id, CancellationToken token = default)
         {
             var res = await _client.GetMovieSimilarAsync(id, cancellationToken: token);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
-            //map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
+            map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
 

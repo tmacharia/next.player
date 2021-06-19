@@ -65,13 +65,13 @@ namespace Next.PCL.Extensions
         internal static List<MetaImage> GetPosters(this Movie model, TMDbClient client)
         {
             if (model.Images == null)
-                return client.ExtractImages(model, MetaImageType.Poster, x => x.PosterPath, ExpressionExts.GetPropName(() => client.Config.Images.PosterSizes));
+                return client.ExtractImages(model, MetaImageType.Poster, x => x.PosterPath, x => x.Config.Images.PosterSizes).ToList();
             return model.Images.Posters.AsMetaImages(MetaImageType.Poster, client);
         }
         internal static List<MetaImage> GetBackdrops(this Movie model, TMDbClient client)
         {
             if (model.Images == null)
-                return client.ExtractImages(model, MetaImageType.Backdrop, x => x.BackdropPath, ExpressionExts.GetPropName(() => client.Config.Images.BackdropSizes));
+                return client.ExtractImages(model, MetaImageType.Backdrop, x => x.BackdropPath, x => x.Config.Images.BackdropSizes).ToList();
 
             return model.Images.Backdrops.AsMetaImages(MetaImageType.Backdrop, client);
         }
@@ -93,14 +93,14 @@ namespace Next.PCL.Extensions
         internal static List<MetaImage> GetPosters(this TvShow model, TMDbClient client)
         {
             if (model.Images == null)
-                return client.ExtractImages(model, MetaImageType.Poster, x => x.PosterPath, ExpressionExts.GetPropName(() => client.Config.Images.PosterSizes));
+                return client.ExtractImages(model, MetaImageType.Poster, x => x.PosterPath, x => x.Config.Images.PosterSizes).ToList();
 
             return model.Images.Posters.AsMetaImages(MetaImageType.Poster, client);
         }
         internal static List<MetaImage> GetBackdrops(this TvShow model, TMDbClient client)
         {
             if (model.Images == null)
-                return client.ExtractImages(model, MetaImageType.Backdrop, x => x.BackdropPath, ExpressionExts.GetPropName(() => client.Config.Images.BackdropSizes));
+                return client.ExtractImages(model, MetaImageType.Backdrop, x => x.BackdropPath, x => x.Config.Images.BackdropSizes).ToList();
 
             return model.Images.Backdrops.AsMetaImages(MetaImageType.Backdrop, client);
         }
@@ -114,7 +114,7 @@ namespace Next.PCL.Extensions
         internal static List<MetaImage> GetPosters<TPoster>(this TPoster poster, TMDbClient client)
             where TPoster : class, IPosterPath
         {
-            return client.ExtractImages(poster, MetaImageType.Logo, x => x.PosterPath, ExpressionExts.GetPropName(() => client.Config.Images.PosterSizes));
+            return client.ExtractImages(poster, MetaImageType.Logo, x => x.PosterPath, x => x.Config.Images.PosterSizes).ToList();
         }
         internal static List<MetaImage> GetStills(this StillImages model, TMDbClient client)
         {
@@ -176,48 +176,45 @@ namespace Next.PCL.Extensions
         internal static List<MetaImage> GetImages<TProfile>(this TProfile profile, TMDbClient client)
             where TProfile : class, ITmdbProfile
         {
-            return client.ExtractImages(profile, MetaImageType.Profile, x => x.ProfilePath, ExpressionExts.GetPropName(() => client.Config.Images.ProfileSizes));
+            return client.ExtractImages(profile, MetaImageType.Profile, x => x.ProfilePath, x=>x.Config.Images.ProfileSizes).ToList();
         }
         internal static List<MetaImage> GetLogos(this TmdbCompany company, TMDbClient client)
         {
-            return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, ExpressionExts.GetPropName(() => client.Config.Images.LogoSizes));
+            return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, x => x.Config.Images.LogoSizes).ToList();
         }
         
         internal static List<MetaImage> GetLogos(this ProductionCompany company, TMDbClient client)
         {
-            return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, ExpressionExts.GetPropName(() => client.Config.Images.LogoSizes));
+            return client.ExtractImages(company, MetaImageType.Logo, x => x.LogoPath, x => x.Config.Images.LogoSizes).ToList();
         }
 
-        internal static List<MetaImage> ExtractImages<TClass>(this TMDbClient client, TClass obj, MetaImageType type, Expression<Func<TClass,string>> pathSelector, string sizeSelector)
+        internal static IEnumerable<MetaImage> ExtractImages<TClass>(this TMDbClient client, TClass obj, MetaImageType type, Expression<Func<TClass,string>> pathSelector, Expression<Func<TMDbClient, List<string>>> sizeSelector)
             where TClass : class
         {
             if (obj == null)
-                return null;
+                yield break;
 
             if (!client.HasConfig)
                 throw new ConfigException("Tmdb config not set.");
 
-            string path = obj.GetPropValue(pathSelector);
+            string path = obj.GetPropValue2(pathSelector);
 
             if (!path.IsValid())
-                return new List<MetaImage>();
+                yield break;
 
-            sizeSelector = sizeSelector.Substring(sizeSelector.IndexOf('.') + 1);
+            var sizes = client.GetPropValue2(sizeSelector);
 
-            Console.WriteLine(sizeSelector);
-
-            var sizes = client.GetPropertyValue<TMDbClient, List<string>>(sizeSelector);
-            var a = sizes.Select(x => new
+            foreach (var sz in sizes)
             {
-                w = ushort.Parse(x.TrimStart('w')),
-                url = client.GetImageUrl(x, path)
-            }).ToList();
-
-            return a.Select(x => new MetaImage(type, MetaSource.TMDB)
-            {
-                Url = x.url,
-                Width = x.w,
-            }).ToList();
+                Console.WriteLine(sz);
+                var img = new MetaImage(type, MetaSource.TMDB);
+                img.Url = client.GetImageUrl(sz, path);
+                if (sz.StartsWith("w"))
+                {
+                    img.Width = ushort.Parse(sz.TrimStart('w'));
+                }
+                yield return img;
+            }
         }
 
         internal static Resolution EstimateResolution(int h, int w = 0)
