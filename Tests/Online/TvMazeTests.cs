@@ -21,7 +21,7 @@ namespace Tests.Online
         }
 
         [TestCase(Category = TVMAZE_TESTS)]
-        public async Task Lookup_ByImdbId()
+        public async Task Lookup_ByImdbId_01()
         {
             var show = await _maze.LookupAsync(GOT.ImdbID);
 
@@ -29,6 +29,16 @@ namespace Tests.Online
             Assert.NotNull(show);
             Assert.AreEqual(GOT.MazeID, show.Id);
         }
+        [TestCase(Category = TVMAZE_TESTS)]
+        public async Task Lookup_ByImdbId_02()
+        {
+            var show = await _maze.LookupAsync(TheMorningShow.ImdbID);
+
+            Log(show);
+            Assert.NotNull(show);
+            Assert.AreEqual(TheMorningShow.MazeID, show.Id);
+        }
+
         [TestCase(Category = TVMAZE_TESTS)]
         public async Task Lookup_ByTvdbId()
         {

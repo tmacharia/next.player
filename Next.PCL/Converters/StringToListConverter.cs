@@ -20,7 +20,16 @@ namespace Next.PCL.Converters
             {
                 string s = token.Value<string>();
                 if (s.IsNotEmptyOr())
-                    return s.SplitByAndTrim(",").ToList();
+                {
+                    if (s.Contains(','))
+                        return s.SplitByAndTrim(",").ToList();
+                    else
+                        return new List<string>() { s };
+                }
+            }
+            else if(token.Type == JTokenType.Array)
+            {
+                return token.Values<string>().ToList();
             }
             return new List<string>();
         }

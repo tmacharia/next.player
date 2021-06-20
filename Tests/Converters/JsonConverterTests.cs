@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Common;
 using Next.PCL.Online.Models;
 using NUnit.Framework;
@@ -43,8 +44,7 @@ namespace Tests.Converters
             string json = "{\"Genre\":\"" + s + "\"}";
             var model = json.DeserializeTo<OmdbModel>();
             Assert.NotNull(model);
-            Assert.NotNull(model.Genres);
-            Assert.AreEqual(s.Split(',').Length, model.Genres.Count);
+            Assert.That(model.Genres.Any());
         }
         [TheoriesFrom(nameof(MetaScores), UNIT_TESTS)]
         public void StringToInt(Tuple<string, int> tuple)

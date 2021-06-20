@@ -24,6 +24,7 @@ namespace Next.PCL.Online.Models.Imdb
         public override string Plot { get; set; }
 
         [JsonProperty("genre")]
+        [JsonConverter(typeof(StringToListConverter))]
         public override List<string> Genres { get; set; }
     }
 }

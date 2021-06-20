@@ -54,5 +54,10 @@ namespace Next.PCL.Online.Models
         public TvMazeExternals Externals { get; set; }
         [JsonProperty("network")]
         internal TvMazeNetwork Network { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}\nTvMazeId: {1}, TvdbId: {2}, TvRageId: {3}", base.ToString(), Id, TvdbId, Externals?.Tvrage);
+        }
     }
 }
