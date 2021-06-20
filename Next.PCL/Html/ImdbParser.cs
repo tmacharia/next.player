@@ -94,6 +94,12 @@ namespace Next.PCL.Html
             if (json.IsValid())
             {
                 var model = json.DeserializeTo<ImdbModel>();
+                if(model.Url != null)
+                {
+                    string path = model.Url.OriginalString;
+                    model.Url = (SiteUrls.IMDB + path).ParseToUri();
+                    model.ImdbId = path.SplitByAndTrim("/").Last();
+                }
                 return model;
             }
 

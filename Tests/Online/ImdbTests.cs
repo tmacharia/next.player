@@ -16,7 +16,7 @@ namespace Tests.Online
         }
 
         [TestCase(Category = IMDB_TESTS)]
-        public async Task Get_Imdb()
+        public async Task Get_Imdb_01()
         {
             var model = await _imdb.GetImdbAsync(SocialNetwork.ImdbID);
 
@@ -25,6 +25,19 @@ namespace Tests.Online
             Assert.True(model.ReleaseDate.HasValue);
             Assert.AreEqual(2010, model.ReleaseDate.Value.Year);
             Log(model);
+        }
+        [TestCase(Category = IMDB_TESTS)]
+        public async Task Get_Imdb_02()
+        {
+            var model = await _imdb.GetImdbAsync(TheMorningShow.ImdbID);
+
+            Assert.NotNull(model);
+            Assert.That(model.Genres.Any());
+            Assert.True(model.ReleaseDate.HasValue);
+            Assert.AreEqual(2019, model.ReleaseDate.Value.Year);
+            Log(model);
+            Log(model.Url);
+            Log(model.Genres);
         }
 
         [TestCase(Category = IMDB_TESTS)]
