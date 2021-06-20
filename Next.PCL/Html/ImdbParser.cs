@@ -100,6 +100,10 @@ namespace Next.PCL.Html
                     model.Url = (SiteUrls.IMDB + path).ParseToUri();
                     model.ImdbId = path.SplitByAndTrim("/").Last();
                 }
+                if(model.Trailer != null && model.Trailer.EmbedUrl != null)
+                {
+                    model.Trailer.EmbedUrl = (SiteUrls.IMDB + model.Trailer.EmbedUrl.OriginalString).ParseToUri();
+                }
                 return model;
             }
 

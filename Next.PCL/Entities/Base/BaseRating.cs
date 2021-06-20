@@ -2,7 +2,12 @@
 {
     public class BaseRating : EditableEntity, IBaseRating
     {
-        public int Votes { get; set; }
-        public double Score { get; set; }
+        public virtual int Votes { get; set; }
+        public virtual double Score { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0:N1} | {1:N0} votes", Score, Votes);
+        }
     }
 }

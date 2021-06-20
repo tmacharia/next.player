@@ -24,7 +24,11 @@ namespace Tests.Online
             Assert.That(model.Genres.Any());
             Assert.True(model.ReleaseDate.HasValue);
             Assert.AreEqual(2010, model.ReleaseDate.Value.Year);
+            Assert.NotNull(model.Trailer);
+            Assert.NotNull(model.Rating);
             Log(model);
+            Log(model.Rating);
+            Log(model.Trailer);
         }
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Imdb_02()
@@ -35,9 +39,11 @@ namespace Tests.Online
             Assert.That(model.Genres.Any());
             Assert.True(model.ReleaseDate.HasValue);
             Assert.AreEqual(2019, model.ReleaseDate.Value.Year);
+            Assert.NotNull(model.Trailer);
+            Assert.NotNull(model.Rating);
             Log(model);
-            Log(model.Url);
-            Log(model.Genres);
+            Log(model.Rating);
+            Log(model.Trailer);
         }
 
         [TestCase(Category = IMDB_TESTS)]

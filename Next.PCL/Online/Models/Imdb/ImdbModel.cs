@@ -23,6 +23,11 @@ namespace Next.PCL.Online.Models.Imdb
         [JsonProperty("description")]
         public override string Plot { get; set; }
 
+        [JsonProperty("aggregateRating")]
+        public ImdbRating Rating { get; set; }
+        [JsonProperty("trailer")]
+        public ImdbTrailer Trailer { get; set; }
+
         [JsonProperty("genre")]
         [JsonConverter(typeof(StringToListConverter))]
         public override List<string> Genres { get; set; }
