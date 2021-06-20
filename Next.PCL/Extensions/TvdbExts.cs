@@ -7,6 +7,7 @@ using HtmlAgilityPack;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Exceptions;
+using Next.PCL.Html;
 using Next.PCL.Metas;
 using Next.PCL.Static;
 

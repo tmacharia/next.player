@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using Common;
 using HtmlAgilityPack;
+using Next.PCL.Extensions;
 
-namespace Next.PCL.Extensions
+namespace Next.PCL.Html
 {
     internal static class HtmlExts
     {
