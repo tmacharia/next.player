@@ -42,7 +42,7 @@ namespace Next.PCL.Html
 
             model.AirsOn = GetAsText(lists, TvDbKeys.Airs).ParseToAirShedule();
             model.Runtime = GetNonDeterministicRuntime(GetNodesAsText(lists, TvDbKeys.Runtimes));
-            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
+            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToTvDbCompany()).ToList();
 
             model.Seasons = doc.FindAll("//div[@role='tabpanel']").FirstContainingClass("tab-official")
                                .ExtendFindAll("/ul/li").WhereHasAttrib("data-number")
@@ -60,12 +60,12 @@ namespace Next.PCL.Html
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
             model.Runtime = GetAsText(lists, TvDbKeys.Runtime)?.ParseToRuntime();
-            model.Studios = GetLinks(lists, TvDbKeys.Studio).Select(x => x.ParseToCompany()).ToList();
-            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToCompany()).ToList();
-            model.Distributors = GetLinks(lists, TvDbKeys.Distributor).Select(x => x.ParseToCompany()).ToList();
+            model.Studios = GetLinks(lists, TvDbKeys.Studio).Select(x => x.ParseToTvDbCompany()).ToList();
+            model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToTvDbCompany()).ToList();
+            model.Distributors = GetLinks(lists, TvDbKeys.Distributor).Select(x => x.ParseToTvDbCompany()).ToList();
             
             model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().LastChild.ParseDateTime();
-            model.ProductionCompanies = GetLinks(lists, TvDbKeys.ProductionCompanies).Select(x => x.ParseToCompany()).ToList();
+            model.ProductionCompanies = GetLinks(lists, TvDbKeys.ProductionCompanies).Select(x => x.ParseToTvDbCompany()).ToList();
 
             return model;
         }
@@ -96,7 +96,7 @@ namespace Next.PCL.Html
             model.Locations = GetNodes(lists, TvDbKeys.Location).Select(x => x.ParseText().ToGeoLocale()).ToList();
             model.ProductionCountries = GetNodes(lists, TvDbKeys.ProductionCountries).Select(x => x.ParseText().ToGeoLocale()).ToList();
 
-            model.OtherSites = GetLinks(lists, TvDbKeys.OtherSites).Select(x => x.ParseToMetaUrl()).ToList();
+            model.OtherSites = GetLinks(lists, TvDbKeys.OtherSites).Select(x => x.ParseToMetaUrl(MetaSource.TVDB)).ToList();
             model.Trailers = GetLinks(lists, TvDbKeys.Trailers).Select(x => x.ParseToMetaVideo()).ToList();
             model.ImdbId = model.OtherSites.GetImdbKey();
 
