@@ -5,10 +5,10 @@ using Next.PCL.Entities;
 
 namespace Next.PCL.Online.Models.Imdb
 {
-    public class ImdbTrailer : INamedEntity
+    public class ImdbTrailer : NamedEntity
     {
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public override string Name { get; set; }
         [JsonProperty("description")]
         public string Plot { get; set; }
         [JsonProperty("thumbnailUrl")]

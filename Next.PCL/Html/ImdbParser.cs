@@ -107,20 +107,22 @@ namespace Next.PCL.Html
                     model.Trailer.EmbedUrl = (SiteUrls.IMDB + model.Trailer.EmbedUrl.OriginalString).ParseToUri();
                 }
                 var blocks = doc.GetElementbyId("titleDetails")?.ExtendFindAll("div");
+                if(blocks != null && blocks.Any())
+                {
+                    model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
+                    model.OtherSites = GetLinks(blocks, ImdbKeys.OfficialSites)
+                                    .Select(x => x.ParseToMetaUrl(MetaSource.IMDB)).ToList();
+                    model.ProductionCompanies = GetLinks(blocks, ImdbKeys.ProductionCo)
+                                    .Select(x => x.ParseToCompany(MetaSource.IMDB, CompanyService.Production)).ToList();
+                    model.ProductionCountries = GetLinks(blocks, ImdbKeys.Country)
+                                    .Select(x => x.ParseText())
+                                    .Select(x => x.ToGeoLocale(true)).ToList();
 
-                model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
-                model.OtherSites = GetLinks(blocks, ImdbKeys.OfficialSites)
-                                .Select(x => x.ParseToMetaUrl(MetaSource.IMDB)).ToList();
-                model.ProductionCompanies = GetLinks(blocks, ImdbKeys.ProductionCo)
-                                .Select(x => x.ParseToCompany(MetaSource.IMDB, CompanyService.Production)).ToList();
-                model.ProductionCountries = GetLinks(blocks, ImdbKeys.Country)
-                                .Select(x => x.ParseText())
-                                .Select(x => x.ToGeoLocale(true)).ToList();
-
-                model.Revenue = new MetaRevenue();
-                model.Revenue.Budget = GetAsText(blocks, ImdbKeys.Budget, "text").ParseToDouble();
-                model.Revenue.CumulativeGross = GetAsText(blocks, ImdbKeys.WorldGross, "text").ParseToDouble();
-
+                    model.Revenue = new MetaRevenue();
+                    model.Revenue.Budget = GetAsNumber(blocks, ImdbKeys.Budget, "text");
+                    model.Revenue.CumulativeGross = GetAsNumber(blocks, ImdbKeys.WorldGross, "text");
+                }
+                
                 return model;
             }
 
@@ -220,7 +222,22 @@ namespace Next.PCL.Html
             return geo;
         }
 
-
+        private double? GetAsNumber(HtmlNodeCollection nodes, string name, string element = "/a")
+        {
+            string s = string.Join(" ", GetNodes(nodes, name, null).Where(x => x.Name != "h4").Select(x => x.ParseText())).Trim();
+            s = s.SplitByAndTrim(" ")?.FirstOrDefault();
+            if (s.IsValid()) {
+                while (true) {
+                    if (!char.IsNumber(s[0])) {
+                        s = s.Substring(1);
+                    } else {
+                        break;
+                    }
+                }
+                return s.ParseToDouble();
+            }
+            return null;
+        }
         private string GetAsText(HtmlNodeCollection nodes, string name, string element = "/a")
         {
             return nodes?.FirstOrDefault(x
@@ -229,12 +246,6 @@ namespace Next.PCL.Html
                                 .Matches(name))
                         ?.ExtendFind(element)
                         ?.ParseText();
-        }
-        private bool? SubtitleExist(HtmlNodeCollection nodes, string name)
-        {
-            return nodes?.Any(x => x.Element("h3")
-                                .ParseText()
-                                .Matches(name));
         }
         private IEnumerable<HtmlNode> GetLinks(HtmlNodeCollection nodes, string name)
         {
@@ -245,7 +256,10 @@ namespace Next.PCL.Html
             var elem = nodes?.FirstOrDefault(x => x.Element("h4").ParseText().Matches(name));
 
             if (elem == null)
+            {
+                Console.WriteLine(name + " not found");
                 return Array.Empty<HtmlNode>();
+            }
 
             if (xPath.IsValid())
             {

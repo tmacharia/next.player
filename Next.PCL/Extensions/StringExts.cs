@@ -27,7 +27,6 @@ namespace Next.PCL.Extensions
         }
         internal static double? ParseToDouble(this string s)
         {
-            Console.WriteLine(s);
             if (s.IsValid() && double.TryParse(s, out double d))
                 return d;
             return null;
