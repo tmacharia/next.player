@@ -35,17 +35,7 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
-        internal static MetaUrl ParseToMetaUrl(this HtmlNode node)
-        {
-            if(node != null)
-            {
-                if (!node.Name.EqualsOIC("a"))
-                    throw new ExpectationFailedException("a", node.Name);
-
-                return node.GetHref().ParseToUri().ParseToMetaUrl(MetaSource.TVDB);
-            }
-            return null;
-        }
+        
         internal static MetaVideo ParseToMetaVideo(this HtmlNode node)
         {
             if (node != null)
@@ -65,22 +55,9 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
-        internal static Company ParseToCompany(this HtmlNode node, CompanyService companyType = CompanyService.Network)
+        internal static Company ParseToTvDbCompany(this HtmlNode node, CompanyService companyType = CompanyService.Network)
         {
-            if (node != null)
-            {
-                if (!node.Name.EqualsOIC("a"))
-                    throw new ExpectationFailedException("a", node.Name);
-
-                var model = new Company
-                {
-                    Name = node.ParseText(),
-                    Service = companyType
-                };
-                model.Urls.Add(node.ParseToMetaUrl());
-                return model;
-            }
-            return null;
+            return node.ParseToCompany(MetaSource.TVDB, companyType);
         }
         internal static IEnumerable<MetaImage> ParseToImagesAs(this HtmlNode node, MetaImageType type)
         {
