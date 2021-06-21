@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Common;
 using HtmlAgilityPack;
 using Next.PCL.Entities;
+using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Online.Models.Imdb;
+using Next.PCL.Static;
 
 namespace Next.PCL.Html
 {
@@ -104,6 +106,21 @@ namespace Next.PCL.Html
                 {
                     model.Trailer.EmbedUrl = (SiteUrls.IMDB + model.Trailer.EmbedUrl.OriginalString).ParseToUri();
                 }
+                var blocks = doc.GetElementbyId("titleDetails")?.ExtendFindAll("div");
+
+                model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
+                model.OtherSites = GetLinks(blocks, ImdbKeys.OfficialSites)
+                                .Select(x => x.ParseToMetaUrl(MetaSource.IMDB)).ToList();
+                model.ProductionCompanies = GetLinks(blocks, ImdbKeys.ProductionCo)
+                                .Select(x => x.ParseToCompany(MetaSource.IMDB, CompanyService.Production)).ToList();
+                model.ProductionCountries = GetLinks(blocks, ImdbKeys.Country)
+                                .Select(x => x.ParseText())
+                                .Select(x => x.ToGeoLocale(true)).ToList();
+
+                model.Revenue = new MetaRevenue();
+                model.Revenue.Budget = GetAsText(blocks, ImdbKeys.Budget, "text").ParseToDouble();
+                model.Revenue.CumulativeGross = GetAsText(blocks, ImdbKeys.WorldGross, "text").ParseToDouble();
+
                 return model;
             }
 
@@ -203,5 +220,40 @@ namespace Next.PCL.Html
             return geo;
         }
 
+
+        private string GetAsText(HtmlNodeCollection nodes, string name, string element = "/a")
+        {
+            return nodes?.FirstOrDefault(x
+                            => x.Element("h4")
+                                .ParseText()
+                                .Matches(name))
+                        ?.ExtendFind(element)
+                        ?.ParseText();
+        }
+        private bool? SubtitleExist(HtmlNodeCollection nodes, string name)
+        {
+            return nodes?.Any(x => x.Element("h3")
+                                .ParseText()
+                                .Matches(name));
+        }
+        private IEnumerable<HtmlNode> GetLinks(HtmlNodeCollection nodes, string name)
+        {
+            return GetNodes(nodes, name, "a");
+        }
+        private IEnumerable<HtmlNode> GetNodes(HtmlNodeCollection nodes, string name, string xPath = "/a")
+        {
+            var elem = nodes?.FirstOrDefault(x => x.Element("h4").ParseText().Matches(name));
+
+            if (elem == null)
+                return Array.Empty<HtmlNode>();
+
+            if (xPath.IsValid())
+            {
+                if (!xPath.StartsWith("/"))
+                    xPath = '/' + xPath;
+                return elem.ExtendFindAll(xPath);
+            }
+            return elem.ChildNodes;
+        }
     }
 }

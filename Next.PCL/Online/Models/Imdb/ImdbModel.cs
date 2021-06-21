@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Next.PCL.Converters;
+using Next.PCL.Entities;
 using Next.PCL.Enums;
 
 namespace Next.PCL.Online.Models.Imdb
@@ -11,6 +12,9 @@ namespace Next.PCL.Online.Models.Imdb
         public ImdbModel()
         {
             Source = MetaSource.IMDB;
+            OtherSites = new List<MetaUrl>();
+            ProductionCompanies = new List<Company>();
+            ProductionCountries = new List<GeographicLocation>();
         }
         [JsonProperty("name")]
         public override string Name { get; set; }
@@ -27,9 +31,13 @@ namespace Next.PCL.Online.Models.Imdb
         public ImdbRating Rating { get; set; }
         [JsonProperty("trailer")]
         public ImdbTrailer Trailer { get; set; }
+        public MetaRevenue Revenue { get; set; }
 
         [JsonProperty("genre")]
         [JsonConverter(typeof(StringToListConverter))]
         public override List<string> Genres { get; set; }
+        public List<MetaUrl> OtherSites { get; set; }
+        public List<Company> ProductionCompanies { get; set; }
+        public List<GeographicLocation> ProductionCountries { get; set; }
     }
 }
