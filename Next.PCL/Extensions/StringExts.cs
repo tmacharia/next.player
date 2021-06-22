@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Common;
+using Iso8601DurationHelper;
 using Serilog;
 
 namespace Next.PCL.Extensions
@@ -84,8 +85,25 @@ namespace Next.PCL.Extensions
         {
             if (s.IsValid())
             {
-                s = s.Split(' ').First().Trim();
-                return s.ParseToInt();
+                if (s.StartsWithIOC("P")) // Parse ISO 8601 format e.g Imdb Json
+                {
+                    if(Duration.TryParse(s, out Duration dur))
+                    {
+                        if(dur.Hours > 0)
+                        {
+                            return ((int)dur.Hours * 60) + (int)dur.Minutes;
+                        }
+                        else if(dur.Minutes > 0)
+                        {
+                            return (int)dur.Minutes;
+                        }
+                    }
+                }
+                else
+                {
+                    s = s.Split(' ').First().Trim();
+                    return s.ParseToInt();
+                }
             }
             return null;
         }

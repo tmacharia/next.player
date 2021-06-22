@@ -6,6 +6,29 @@ using Next.PCL.Extensions;
 
 namespace Next.PCL.Converters
 {
+    internal class StringToMetaTypeConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(string);
+        }
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            JToken jtoken = JToken.Load(reader);
+            if (jtoken.Type == JTokenType.String)
+            {
+                string s = jtoken.Value<string>();
+                if (s.IsNotEmptyOr())
+                    return s.ParseToMetaType();
+            }
+            return MetaType.Unknown;
+        }
+        public override bool CanWrite => false;
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+    }
     internal class StringToGenderConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)

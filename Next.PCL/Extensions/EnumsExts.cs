@@ -5,6 +5,17 @@ namespace Next.PCL.Extensions
 {
     internal static class EnumsExts
     {
+        internal static MetaType ParseToMetaType(this string s)
+        {
+            if (s.IsValid())
+            {
+                if (s.EqualsOIC("movie"))
+                    return MetaType.Movie;
+                else if (s.EqualsOIC("tv,show,tvshow,series,tvseries", true))
+                    return MetaType.TvShow;
+            }
+            return MetaType.Unknown;
+        }
         internal static MetaImageType ParseToMetaImageType(this string s)
         {
             if (s.IsValid())

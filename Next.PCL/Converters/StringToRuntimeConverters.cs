@@ -5,7 +5,7 @@ using Next.PCL.Extensions;
 
 namespace Next.PCL.Converters
 {
-    internal class OmdbRuntimeConverter : JsonConverter
+    internal class StringToRuntimeConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -28,4 +28,5 @@ namespace Next.PCL.Converters
             throw new NotImplementedException();
         }
     }
+
 }
