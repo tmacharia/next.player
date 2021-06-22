@@ -15,10 +15,10 @@ namespace Next.PCL.Converters
         }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JToken token = JToken.Load(reader);
-            if (token.Type == JTokenType.String)
+            JToken jtoken = JToken.Load(reader);
+            if (jtoken.Type == JTokenType.String)
             {
-                string s = token.Value<string>();
+                string s = jtoken.Value<string>();
                 if (s.IsNotEmptyOr())
                 {
                     if (s.Contains(','))
@@ -27,9 +27,9 @@ namespace Next.PCL.Converters
                         return new List<string>() { s };
                 }
             }
-            else if(token.Type == JTokenType.Array)
+            else if(jtoken.Type == JTokenType.Array)
             {
-                return token.Values<string>().ToList();
+                return jtoken.Values<string>().ToList();
             }
             return new List<string>();
         }
@@ -47,10 +47,10 @@ namespace Next.PCL.Converters
         }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JToken token = JToken.Load(reader);
-            if (token.Type == JTokenType.String)
+            JToken jtoken = JToken.Load(reader);
+            if (jtoken.Type == JTokenType.String)
             {
-                string s = token.Value<string>();
+                string s = jtoken.Value<string>();
                 if (s.IsNotEmptyOr())
                     return s;
             }

@@ -13,10 +13,10 @@ namespace Next.PCL.Converters
         }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JToken token = JToken.Load(reader);
-            if (token.Type == JTokenType.String)
+            JToken jtoken = JToken.Load(reader);
+            if (jtoken.Type == JTokenType.String)
             {
-                string s = token.Value<string>();
+                string s = jtoken.Value<string>();
                 if (s.IsNotEmptyOr())
                 {
                     var r = s.ParseToInt();

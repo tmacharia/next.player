@@ -1,5 +1,4 @@
 ﻿using System;
-using Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Next.PCL.Enums;
@@ -15,17 +14,12 @@ namespace Next.PCL.Converters
         }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JToken token = JToken.Load(reader);
-            if (token.Type == JTokenType.String)
+            JToken jtoken = JToken.Load(reader);
+            if (jtoken.Type == JTokenType.String)
             {
-                string s = token.Value<string>();
+                string s = jtoken.Value<string>();
                 if (s.IsNotEmptyOr())
-                {
-                    if (s.EqualsOIC("Male"))
-                        return Gender.Male;
-                    else if (s.EqualsOIC("Female"))
-                        return Gender.Female;
-                }
+                    return s.ParseToGender();
             }
             return Gender.Unknown;
         }
@@ -43,14 +37,12 @@ namespace Next.PCL.Converters
         }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JToken token = JToken.Load(reader);
-            if (token.Type == JTokenType.String)
+            JToken jtoken = JToken.Load(reader);
+            if (jtoken.Type == JTokenType.String)
             {
-                string s = token.Value<string>();
+                string s = jtoken.Value<string>();
                 if (s.IsNotEmptyOr())
-                {
                     return s.ParseToProfession();
-                }
             }
             return Profession.Other;
         }
@@ -68,19 +60,12 @@ namespace Next.PCL.Converters
         }
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JToken token = JToken.Load(reader);
-            if (token.Type == JTokenType.String)
+            JToken jtoken = JToken.Load(reader);
+            if (jtoken.Type == JTokenType.String)
             {
-                string s = token.Value<string>();
+                string s = jtoken.Value<string>();
                 if (s.IsNotEmptyOr())
-                {
-                    if (s.EqualsOIC("end,ended", true))
-                        return MetaStatus.Ended;
-                    else if (s.EqualsOIC("airing"))
-                        return MetaStatus.Airing;
-                    else if (s.EqualsOIC("production,inproduction",true))
-                        return MetaStatus.InProduction;
-                }
+                    return s.ParseToMetaStatus();
             }
             return MetaStatus.Released;
         }
