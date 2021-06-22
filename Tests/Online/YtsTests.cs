@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace Tests.Online
 {
+    [Order(4)]
     [TestFixture]
     class YtsTests : TestsBase
     {

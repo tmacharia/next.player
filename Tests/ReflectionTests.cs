@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace Tests
 {
+    [Order(1)]
     [TestFixture]
     class ReflectionTests : TestsRoot
     {

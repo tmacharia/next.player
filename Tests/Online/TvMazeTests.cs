@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace Tests.Online
 {
+    [Order(3)]
     [TestFixture]
     class TvMazeTests : TestsBase
     {

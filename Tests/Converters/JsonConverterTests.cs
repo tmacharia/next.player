@@ -8,6 +8,7 @@ using Tests.TestModels;
 
 namespace Tests.Converters
 {
+    [Order(2)]
     [TestFixture]
     class JsonConverterTests : TestsBase
     {

@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace Tests.Online
 {
+    [Order(7)]
     [TestFixture]
     class ImdbTests : TestsBase
     {
