@@ -25,7 +25,7 @@ namespace Next.PCL.Online.Models
         [JsonProperty("Title")]
         public override string Name { get; set; }
         [JsonProperty("Runtime")]
-        [JsonConverter(typeof(OmdbRuntimeConverter))]
+        [JsonConverter(typeof(StringToRuntimeConverter))]
         public override int? Runtime { get; set; }
         [JsonProperty("Plot")]
         [JsonConverter(typeof(NAStringConverterResolver))]

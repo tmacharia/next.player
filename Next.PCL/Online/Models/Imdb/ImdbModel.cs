@@ -18,6 +18,9 @@ namespace Next.PCL.Online.Models.Imdb
         }
         [JsonProperty("name")]
         public override string Name { get; set; }
+        [JsonProperty("@type")]
+        [JsonConverter(typeof(StringToMetaTypeConverter))]
+        public MetaType Type { get; set; }
         [JsonProperty("image")]
         [JsonConverter(typeof(StringToUriConverter))]
         public override Uri Poster { get; set; }
@@ -26,6 +29,9 @@ namespace Next.PCL.Online.Models.Imdb
         public override DateTime? ReleaseDate { get; set; }
         [JsonProperty("description")]
         public override string Plot { get; set; }
+        [JsonProperty("duration")]
+        [JsonConverter(typeof(StringToRuntimeConverter))]
+        public override int? Runtime { get; set; }
 
         [JsonProperty("aggregateRating")]
         public ImdbRating Rating { get; set; }

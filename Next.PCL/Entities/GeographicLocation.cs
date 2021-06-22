@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Next.PCL.Entities
 {
@@ -21,7 +22,9 @@ namespace Next.PCL.Entities
 
         public override string ToString()
         {
-            return string.Format("{0} | {1} inner places", Name, Inner.Count);
+            if (Inner.Any())
+                return string.Format("{0} | {1}", Name, string.Join(";", Inner.Select(x => x.Name)));
+            return Name;
         }
     }
 }

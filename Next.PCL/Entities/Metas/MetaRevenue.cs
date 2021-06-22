@@ -16,7 +16,9 @@
         }
         public override string ToString()
         {
-            return string.Format("{0:N2}% profit, Budget: {1:C0}, Revenue: {2:C0}", ProfitMargin, Budget, CumulativeGross);
+            if (Budget.HasValue || CumulativeGross.HasValue)
+                return string.Format("{0:N2}% profit, Budget: {1:C0}, Revenue: {2:C0}", ProfitMargin, Budget, CumulativeGross);
+            return "No revenue data!";
         }
     }
 }
