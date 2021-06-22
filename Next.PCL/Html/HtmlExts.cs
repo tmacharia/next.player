@@ -179,6 +179,11 @@ namespace Next.PCL.Html
         #endregion
 
         #region Html Document
+        internal static string GetMetaProp(this HtmlDocument node, string properyName)
+            => node.DocumentNode
+                   .SelectSingleNode($"//meta[@property='{properyName}']")
+                   ?.GetAttrib("content");
+
         internal static HtmlNode Find(this HtmlDocument node, string xpath)
         {
             return node.DocumentNode.SelectSingleNode(xpath);

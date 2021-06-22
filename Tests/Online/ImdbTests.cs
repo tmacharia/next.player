@@ -1,19 +1,23 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Common;
+using Next.PCL.Enums;
 using Next.PCL.Online;
 using NUnit.Framework;
 
 namespace Tests.Online
 {
+    [TestFixture]
     class ImdbTests : TestsBase
     {
-        private readonly Imdb _imdb;
+        private Imdb _imdb;
 
-        public ImdbTests()
+        [OneTimeSetUp]
+        public void Setup()
         {
-            _imdb = new Imdb();
+            _imdb = new Imdb(MocksAndSetups.HttpOnlineClient);
         }
+
         [Order(0)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_ImdbMov_SocialNetwork()
@@ -25,14 +29,12 @@ namespace Tests.Online
             Assert.True(model.ReleaseDate.HasValue);
             Assert.AreEqual(120, model.Runtime);
             Assert.AreEqual(2010, model.ReleaseDate.Value.Year);
+            Assert.AreEqual(MetaType.Movie, model.Type);
             Assert.NotNull(model.Trailer);
             Assert.NotNull(model.Rating);
             Log(model);
             Log(model.Rating);
             Log(model.Revenue);
-            Log(model.OtherSites);
-            Log(model.ProductionCompanies);
-            Log(model.ProductionCountries);
         }
         [Order(1)]
         [TestCase(Category = IMDB_TESTS)]
@@ -43,15 +45,14 @@ namespace Tests.Online
             Assert.NotNull(model);
             Assert.That(model.Genres.Any());
             Assert.True(model.ReleaseDate.HasValue);
-            //Assert.AreEqual(60, model.Runtime);
+            Assert.AreEqual(60, model.Runtime);
             Assert.AreEqual(2019, model.ReleaseDate.Value.Year);
+            Assert.AreEqual(MetaType.TvShow, model.Type);
             Assert.NotNull(model.Trailer);
             Assert.NotNull(model.Rating);
             Log(model);
             Log(model.Rating);
-            Log(model.OtherSites);
-            Log(model.ProductionCompanies);
-            Log(model.ProductionCountries);
+            Log(model.Revenue);
         }
         [Order(2)]
         [TestCase(Category = IMDB_TESTS)]

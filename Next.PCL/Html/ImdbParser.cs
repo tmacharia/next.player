@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
+using Common.Structs;
 using HtmlAgilityPack;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
+using Next.PCL.Online;
 using Next.PCL.Online.Models.Imdb;
 using Next.PCL.Static;
 
@@ -15,6 +18,10 @@ namespace Next.PCL.Html
 {
     public class ImdbParser : BaseParser
     {
+        public ImdbParser(IHttpOnlineClient httpOnlineClient)
+            :base(httpOnlineClient)
+        { }
+
         internal async Task<List<string>> GetImageIds(string imdbId, CancellationToken cancellationToken = default)
         {
             var list = new List<string>();
@@ -96,12 +103,8 @@ namespace Next.PCL.Html
             if (json.IsValid())
             {
                 var model = json.DeserializeTo<ImdbModel>();
-                if(model.Url != null)
-                {
-                    string path = model.Url.OriginalString;
-                    model.Url = (SiteUrls.IMDB + path).ParseToUri();
-                    model.ImdbId = path.SplitByAndTrim("/").Last();
-                }
+                model.Url = doc.GetMetaProp("og:url").ParseToUri();
+                model.ImdbId = model.Url.AbsolutePath.SplitByAndTrim("/").Last();
                 if(model.Trailer != null && model.Trailer.EmbedUrl != null)
                 {
                     model.Trailer.EmbedUrl = (SiteUrls.IMDB + model.Trailer.EmbedUrl.OriginalString).ParseToUri();
@@ -109,7 +112,9 @@ namespace Next.PCL.Html
                 var blocks = doc.GetElementbyId("titleDetails")?.ExtendFindAll("div");
                 if(blocks != null && blocks.Any())
                 {
-                    model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
+                    if (!model.Runtime.HasValue)
+                        model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
+
                     model.OtherSites = GetLinks(blocks, ImdbKeys.OfficialSites)
                                     .Select(x => x.ParseToMetaUrl(MetaSource.IMDB)).ToList();
                     model.ProductionCompanies = GetLinks(blocks, ImdbKeys.ProductionCo)
@@ -117,12 +122,13 @@ namespace Next.PCL.Html
                     model.ProductionCountries = GetLinks(blocks, ImdbKeys.Country)
                                     .Select(x => x.ParseText())
                                     .Select(x => x.ToGeoLocale(true)).ToList();
-
-                    model.Revenue = new MetaRevenue();
-                    model.Revenue.Budget = GetAsNumber(blocks, ImdbKeys.Budget, "text");
-                    model.Revenue.CumulativeGross = GetAsNumber(blocks, ImdbKeys.WorldGross, "text");
+                    if(model.Type == MetaType.Movie)
+                    {
+                        model.Revenue = new MetaRevenue();
+                        model.Revenue.Budget = GetAsNumber(blocks, ImdbKeys.Budget);
+                        model.Revenue.CumulativeGross = GetAsNumber(blocks, ImdbKeys.WorldGross);
+                    }
                 }
-                
                 return model;
             }
 
@@ -222,7 +228,7 @@ namespace Next.PCL.Html
             return geo;
         }
 
-        private double? GetAsNumber(HtmlNodeCollection nodes, string name, string element = "/a")
+        private double? GetAsNumber(HtmlNodeCollection nodes, string name)
         {
             string s = string.Join(" ", GetNodes(nodes, name, null).Where(x => x.Name != "h4").Select(x => x.ParseText())).Trim();
             s = s.SplitByAndTrim(" ")?.FirstOrDefault();
@@ -257,7 +263,6 @@ namespace Next.PCL.Html
 
             if (elem == null)
             {
-                Console.WriteLine(name + " not found");
                 return Array.Empty<HtmlNode>();
             }
 

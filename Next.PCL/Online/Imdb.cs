@@ -12,9 +12,10 @@ namespace Next.PCL.Online
     public class Imdb : BaseOnline
     {
         private readonly ImdbParser _parser;
-        public Imdb()
+        public Imdb(IHttpOnlineClient httpOnlineClient)
+            :base(httpOnlineClient)
         {
-            _parser = new ImdbParser();
+            _parser = new ImdbParser(httpOnlineClient);
         }
 
         public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken cancellationToken = default)
@@ -40,7 +41,10 @@ namespace Next.PCL.Online
         {
             var uri = new Uri(string.Format("{0}/title/{1}/locations", SiteUrls.IMDB, imdbId));
             string html = await GetAsync(uri, cancellationToken);
-            return _parser.ParseFilmingLocations(html).ToList();
+            return _parser.ParseFilmingLocations(html)
+                          .OrderBy(x => x.Name)
+                          .ThenBy(x => x.Inner.Count)
+                          .ToList();
         }
     }
 }
