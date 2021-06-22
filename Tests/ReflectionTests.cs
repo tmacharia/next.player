@@ -6,7 +6,8 @@ using NUnit.Framework;
 
 namespace Tests
 {
-    class ReflectionTests : TestsBase
+    [TestFixture]
+    class ReflectionTests : TestsRoot
     {
         TMDbConfig config;
         public ReflectionTests()
