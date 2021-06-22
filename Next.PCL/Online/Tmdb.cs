@@ -32,110 +32,110 @@ namespace Next.PCL.Online
             _mapper = mapper;
         }
 
-        public async Task<TmdbMovie> GetMovieAsync(int id = 0, string imdbId = default, CancellationToken token = default)
+        public async Task<TmdbMovie> GetMovieAsync(int id = 0, string imdbId = default, CancellationToken cancellationToken = default)
         {
             Movie res = null;
             if (id > 0)
-                res = await _client.GetMovieAsync(id, extraMethods: MovieMethods.ExternalIds, cancellationToken: token);
+                res = await _client.GetMovieAsync(id, extraMethods: MovieMethods.ExternalIds, cancellationToken: cancellationToken);
             else if(imdbId.IsValid())
-                res = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: token);
+                res = await _client.GetMovieAsync(imdbId, MovieMethods.ExternalIds, cancellationToken: cancellationToken);
 
             var map = _mapper.Map<TmdbMovie>(res);
             map.Posters.AddRange(map.GetPosters(_client));
             return map;
         }
-        public async Task<List<MetaImage>> GetMovieImagesAsync(int id, CancellationToken token = default)
+        public async Task<List<MetaImage>> GetMovieImagesAsync(int id, CancellationToken cancellationToken = default)
         {
-            ImagesWithId res = await _client.GetMovieImagesAsync(id, cancellationToken: token);
+            ImagesWithId res = await _client.GetMovieImagesAsync(id, cancellationToken: cancellationToken);
             return res.GetAllImages(_client);
         }
-        public async Task<List<MetaVideo>> GetMovieVideosAsync(int id, CancellationToken token = default)
+        public async Task<List<MetaVideo>> GetMovieVideosAsync(int id, CancellationToken cancellationToken = default)
         {
-            var res = await _client.GetMovieVideosAsync(id, cancellationToken: token);
+            var res = await _client.GetMovieVideosAsync(id, cancellationToken: cancellationToken);
             return res.GetVideos();
         }
 
-        public async Task<TmdbShow> GetShowAsync(int id, CancellationToken token = default)
+        public async Task<TmdbShow> GetShowAsync(int id, CancellationToken cancellationToken = default)
         {
-            TvShow res = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: token);
+            TvShow res = await _client.GetTvShowAsync(id, TvShowMethods.ExternalIds, cancellationToken: cancellationToken);
             var map = _mapper.Map<TmdbShow>(res);
             map.Posters.AddRange(map.GetPosters(_client));
             return map;
         }
-        public async Task<List<MetaImage>> GetShowImagesAsync(int id, CancellationToken token = default)
+        public async Task<List<MetaImage>> GetShowImagesAsync(int id, CancellationToken cancellationToken = default)
         {
-            ImagesWithId res = await _client.GetTvShowImagesAsync(id, cancellationToken: token);
+            ImagesWithId res = await _client.GetTvShowImagesAsync(id, cancellationToken: cancellationToken);
             return res.GetAllImages(_client);
         }
-        public async Task<List<MetaVideo>> GetShowVideosAsync(int id, CancellationToken token = default)
+        public async Task<List<MetaVideo>> GetShowVideosAsync(int id, CancellationToken cancellationToken = default)
         {
-            var res = await _client.GetTvShowVideosAsync(id, cancellationToken: token);
+            var res = await _client.GetTvShowVideosAsync(id, cancellationToken: cancellationToken);
             return res.GetVideos();
         }
-        public async Task<List<MetaImage>> GetSeasonImagesAsync(int showId, int season, CancellationToken token = default)
+        public async Task<List<MetaImage>> GetSeasonImagesAsync(int showId, int season, CancellationToken cancellationToken = default)
         {
-            PosterImages res = await _client.GetTvSeasonImagesAsync(showId,season, cancellationToken: token);
+            PosterImages res = await _client.GetTvSeasonImagesAsync(showId,season, cancellationToken: cancellationToken);
             return res.GetPosters(_client);
         }
-        public async Task<List<MetaImage>> GetEpisodeImagesAsync(int showId, int season, int episode, CancellationToken token = default)
+        public async Task<List<MetaImage>> GetEpisodeImagesAsync(int showId, int season, int episode, CancellationToken cancellationToken = default)
         {
-            StillImages res = await _client.GetTvEpisodeImagesAsync(showId, season,episode, cancellationToken: token);
+            StillImages res = await _client.GetTvEpisodeImagesAsync(showId, season,episode, cancellationToken: cancellationToken);
             return res.GetStills(_client);
         }
 
-        public async Task<List<TmdbCrew>> GetCrewAsync(int id, MetaType type, CancellationToken token = default)
+        public async Task<List<TmdbCrew>> GetCrewAsync(int id, MetaType type, CancellationToken cancellationToken = default)
         {
             if (type == MetaType.Movie)
             {
-                var res = await _client.GetMovieCreditsAsync(id, token);
+                var res = await _client.GetMovieCreditsAsync(id, cancellationToken);
                 return res.Crew.ToList2();
             }
             else if (type == MetaType.TvShow)
             {
-                var res = await _client.GetTvShowCreditsAsync(id, null, token);
+                var res = await _client.GetTvShowCreditsAsync(id, null, cancellationToken);
                 return res.Crew.ToList2();
             }
             return null;
         }
-        public async Task<List<TmdbCast>> GetCastAsync(int id, MetaType type, CancellationToken token = default)
+        public async Task<List<TmdbCast>> GetCastAsync(int id, MetaType type, CancellationToken cancellationToken = default)
         {
             if(type == MetaType.Movie)
             {
-                var res = await _client.GetMovieCreditsAsync(id, token);
+                var res = await _client.GetMovieCreditsAsync(id, cancellationToken);
                 return res.Cast.Select(x => (TmdbCast)x).ToList();
             }
             else if (type == MetaType.TvShow)
             {
-                var res = await _client.GetTvShowCreditsAsync(id, null, token);
+                var res = await _client.GetTvShowCreditsAsync(id, null, cancellationToken);
                 return res.Cast.Select(x => x.ToTmdbCast()).ToList();
             }
             return null;
         }
-        public async Task<List<TmdbReview>> GetReviewsAsync(int id, MetaType type, CancellationToken token = default)
+        public async Task<List<TmdbReview>> GetReviewsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
         {
             if (type == MetaType.Movie)
             {
-                var res = await _client.GetMovieReviewsAsync(id, cancellationToken: token);
+                var res = await _client.GetMovieReviewsAsync(id, cancellationToken: cancellationToken);
                 return _mapper.Map<List<TmdbReview>>(res.GetList());
             }
             else if (type == MetaType.TvShow)
             {
-                var res = await _client.GetTvShowReviewsAsync(id, cancellationToken: token);
+                var res = await _client.GetTvShowReviewsAsync(id, cancellationToken: cancellationToken);
                 return _mapper.Map<List<TmdbReview>>(res.GetList());
             }
             return null;
         }
 
-        public async Task<TmdbCompany> GetCompanyAsync(int id, CancellationToken token = default)
+        public async Task<TmdbCompany> GetCompanyAsync(int id, CancellationToken cancellationToken = default)
         {
-            var res = await _client.GetCompanyAsync(id, cancellationToken: token);
+            var res = await _client.GetCompanyAsync(id, cancellationToken: cancellationToken);
             var comp = _mapper.Map<TmdbCompany>(res);
             comp.Logos.AddRange(comp.GetLogos(_client));
             return comp;
         }
-        public async Task<TmdbCompany> GetNetworkAsync(int id, CancellationToken token = default)
+        public async Task<TmdbCompany> GetNetworkAsync(int id, CancellationToken cancellationToken = default)
         {
-            var res = await _client.GetNetworkAsync(id, cancellationToken: token);
+            var res = await _client.GetNetworkAsync(id, cancellationToken: cancellationToken);
             var comp = _mapper.Map<TmdbCompany>(res);
             var imgs = await _client.GetNetworkImagesAsync(id);
             comp.Logos.AddRange(imgs.Logos.AsMetaImages(MetaImageType.Logo, _client));
@@ -143,43 +143,43 @@ namespace Next.PCL.Online
         }
 
         #region Search & Lookup
-        internal async Task<List<SearchCompany>> SearchCompanyAsync(string q, CancellationToken token = default)
+        internal async Task<List<SearchCompany>> SearchCompanyAsync(string q, CancellationToken cancellationToken = default)
         {
-            var res = await _client.SearchCompanyAsync(q, cancellationToken: token);
+            var res = await _client.SearchCompanyAsync(q, cancellationToken: cancellationToken);
             return res.GetList();
         }
-        public async Task<List<TmdbSearch>> SearchShowAsync(string q, int year = 0, bool nsfw = false, CancellationToken token = default)
+        public async Task<List<TmdbSearch>> SearchShowAsync(string q, int year = 0, bool nsfw = false, CancellationToken cancellationToken = default)
         {
-            var res = await _client.SearchTvShowAsync(q, firstAirDateYear: year, includeAdult: nsfw, cancellationToken: token);
+            var res = await _client.SearchTvShowAsync(q, firstAirDateYear: year, includeAdult: nsfw, cancellationToken: cancellationToken);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
             map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
-        public async Task<List<TmdbSearch>> SimilarShowsAsync(int id, CancellationToken token = default)
+        public async Task<List<TmdbSearch>> SimilarShowsAsync(int id, CancellationToken cancellationToken = default)
         {
-            var res = await _client.GetTvShowSimilarAsync(id, cancellationToken: token);
+            var res = await _client.GetTvShowSimilarAsync(id, cancellationToken: cancellationToken);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
             map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
-        public async Task<List<TmdbSearch>> SearchMovieAsync(string q, int year = 0, bool nsfw = false, CancellationToken token = default)
+        public async Task<List<TmdbSearch>> SearchMovieAsync(string q, int year = 0, bool nsfw = false, CancellationToken cancellationToken = default)
         {
-            var res = await _client.SearchMovieAsync(q, year: year, includeAdult: nsfw, cancellationToken: token);
+            var res = await _client.SearchMovieAsync(q, year: year, includeAdult: nsfw, cancellationToken: cancellationToken);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
             map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
-        public async Task<List<TmdbSearch>> SimilarMoviesAsync(int id, CancellationToken token = default)
+        public async Task<List<TmdbSearch>> SimilarMoviesAsync(int id, CancellationToken cancellationToken = default)
         {
-            var res = await _client.GetMovieSimilarAsync(id, cancellationToken: token);
+            var res = await _client.GetMovieSimilarAsync(id, cancellationToken: cancellationToken);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
             map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
 
-        internal async Task<List<SearchBase>> SearchAsync(string q, int year = 0, bool nsfw = false, CancellationToken token = default)
+        internal async Task<List<SearchBase>> SearchAsync(string q, int year = 0, bool nsfw = false, CancellationToken cancellationToken = default)
         {
-            var res = await _client.SearchMultiAsync(q, year: year, includeAdult: nsfw, cancellationToken: token);
+            var res = await _client.SearchMultiAsync(q, year: year, includeAdult: nsfw, cancellationToken: cancellationToken);
             return res.GetList();
         }
         #endregion

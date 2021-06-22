@@ -37,35 +37,35 @@ namespace Next.PCL.Online
             _parser = new TvDbParser(tvdbConfig);
         }
 
-        public async Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken token = default)
+        public async Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/series/{1}", SiteUrls.TVDB, tvSlugName).ParseToUri();
-            string html = await GetAsync(url, token);
+            string html = await GetAsync(url, cancellationToken);
             return _parser.ParseShow(html, url);
         }
-        public async Task<TvDbMovie> GetMovieAsync(string movieSlugName, CancellationToken token = default)
+        public async Task<TvDbMovie> GetMovieAsync(string movieSlugName, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/movies/{1}", SiteUrls.TVDB, movieSlugName).ParseToUri();
-            string html = await GetAsync(url, token);
+            string html = await GetAsync(url, cancellationToken);
             return _parser.ParseMovie(html, url);
         }
 
-        public async Task<IEnumerable<TvdbCrew>> GetCrewAsync(Uri uri, CancellationToken token = default)
+        public async Task<IEnumerable<TvdbCrew>> GetCrewAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
-            string html = await GetAsync(url, token);
+            string html = await GetAsync(url, cancellationToken);
             return _parser.ParseCrew(html);
         }
-        public async Task<IEnumerable<TvdbPerson>> GetCastAsync(Uri uri, CancellationToken token = default)
+        public async Task<IEnumerable<TvdbPerson>> GetCastAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
-            string html = await GetAsync(url, token);
+            string html = await GetAsync(url, cancellationToken);
             return _parser.ParseCast(html);
         }
-        public async Task<IEnumerable<TvdbPerson>> GetCastAndCrewAsync(Uri uri, CancellationToken token = default)
+        public async Task<IEnumerable<TvdbPerson>> GetCastAndCrewAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
-            string html = await GetAsync(url, token);
+            string html = await GetAsync(url, cancellationToken);
             var doc = _parser.ConvertToHtmlDoc(html);
 
             var cast = _parser.ParseCast(null, doc);
@@ -74,109 +74,109 @@ namespace Next.PCL.Online
             return cast.Concat(crew);
         }
 
-        public Task<Company> GetCompanyAsync(string companySlugName, CancellationToken token = default)
+        public Task<Company> GetCompanyAsync(string companySlugName, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
-            return GetCompanyAsync(url, token);
+            return GetCompanyAsync(url, cancellationToken);
         }
-        public async Task<Company> GetCompanyAsync(Uri companyUrl, CancellationToken token = default)
+        public async Task<Company> GetCompanyAsync(Uri companyUrl, CancellationToken cancellationToken = default)
         {
-            string html = await GetAsync(companyUrl, token);
+            string html = await GetAsync(companyUrl, cancellationToken);
             return _parser.ParseCompany(html, companyUrl);
         }
-        public async Task<IEnumerable<TinyTvdbModel>> GetMoviesByCompanyAsync(Uri companyUrl, CancellationToken token = default)
+        public async Task<IEnumerable<TinyTvdbModel>> GetMoviesByCompanyAsync(Uri companyUrl, CancellationToken cancellationToken = default)
         {
-            string html = await GetAsync(companyUrl, token);
+            string html = await GetAsync(companyUrl, cancellationToken);
             return _parser.ParseCompanyMedias(html, MetaType.Movie);
         }
-        public async Task<IEnumerable<TinyTvdbModel>> GetShowsByCompanyAsync(Uri companyUrl, CancellationToken token = default)
+        public async Task<IEnumerable<TinyTvdbModel>> GetShowsByCompanyAsync(Uri companyUrl, CancellationToken cancellationToken = default)
         {
-            string html = await GetAsync(companyUrl, token);
+            string html = await GetAsync(companyUrl, cancellationToken);
             return _parser.ParseCompanyMedias(html, MetaType.TvShow);
         }
-        public Task<IEnumerable<TinyTvdbModel>> GetShowsByCompanyAsync(string companySlugName, CancellationToken token = default)
+        public Task<IEnumerable<TinyTvdbModel>> GetShowsByCompanyAsync(string companySlugName, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
-            return GetShowsByCompanyAsync(url, token);
+            return GetShowsByCompanyAsync(url, cancellationToken);
         }
-        public Task<IEnumerable<TinyTvdbModel>> GetMoviesByCompanyAsync(string companySlugName, CancellationToken token = default)
+        public Task<IEnumerable<TinyTvdbModel>> GetMoviesByCompanyAsync(string companySlugName, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
-            return GetMoviesByCompanyAsync(url, token);
+            return GetMoviesByCompanyAsync(url, cancellationToken);
         }
 
 
         #region Images Section
-        public async Task<List<MetaImage>> GetArtworksAsync(Uri uri, CancellationToken token = default)
+        public async Task<List<MetaImage>> GetArtworksAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             var images = new List<MetaImage>();
 
-            images.AddRange(await GetAllPostersAsync(uri, token));
-            if (token.IsCancellationRequested)
+            images.AddRange(await GetAllPostersAsync(uri, cancellationToken));
+            if (cancellationToken.IsCancellationRequested)
                 return images;
-            images.AddRange(await GetAllBackdropsAsync(uri, token));
-            if (token.IsCancellationRequested)
+            images.AddRange(await GetAllBackdropsAsync(uri, cancellationToken));
+            if (cancellationToken.IsCancellationRequested)
                 return images;
-            images.AddRange(await GetAllIconsAsync(uri, token));
-            if (token.IsCancellationRequested)
+            images.AddRange(await GetAllIconsAsync(uri, cancellationToken));
+            if (cancellationToken.IsCancellationRequested)
                 return images;
-            images.AddRange(await GetAllBannersAsync(uri, token));
+            images.AddRange(await GetAllBannersAsync(uri, cancellationToken));
             
             return images;
         }
-        public Task<List<MetaImage>> GetAllIconsAsync(Uri uri, CancellationToken token = default)
+        public Task<List<MetaImage>> GetAllIconsAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Icon, token);
+            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Icon, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllBannersAsync(Uri uri, CancellationToken token = default)
+        public Task<List<MetaImage>> GetAllBannersAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Banner, token);
+            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Banner, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllPostersAsync(Uri uri, CancellationToken token = default)
+        public Task<List<MetaImage>> GetAllPostersAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Poster, token);
+            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Poster, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllBackdropsAsync(Uri uri, CancellationToken token = default)
+        public Task<List<MetaImage>> GetAllBackdropsAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Backdrop, token);
+            return _parser.GetAndParseImagesAsync(uri, MetaImageType.Backdrop, cancellationToken);
         }
         #endregion
 
-        public Task<TvdbSeason> GetSeasonAsync(string tvSlugName, int season, CancellationToken token = default)
+        public Task<TvdbSeason> GetSeasonAsync(string tvSlugName, int season, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/series/{1}/seasons/official/{2}", SiteUrls.TVDB, tvSlugName, season)
                             .ParseToUri();
-            return GetSeasonAsync(url, token);
+            return GetSeasonAsync(url, cancellationToken);
         }
-        public async Task<TvdbSeason> GetSeasonAsync(Uri seasonUrl, CancellationToken token = default)
+        public async Task<TvdbSeason> GetSeasonAsync(Uri seasonUrl, CancellationToken cancellationToken = default)
         {
-            string html = await GetAsync(seasonUrl, token);
+            string html = await GetAsync(seasonUrl, cancellationToken);
             return _parser.ParseSeason(html, seasonUrl);
         }
 
-        public Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int episodeID, CancellationToken token = default)
+        public Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int episodeID, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/series/{1}/episodes/{2}", SiteUrls.TVDB, tvSlugName, episodeID)
                             .ParseToUri();
-            return GetEpisodeAsync(url, token);
+            return GetEpisodeAsync(url, cancellationToken);
         }
-        public async Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int season, int episode, bool fullGet = false, CancellationToken token = default)
+        public async Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int season, int episode, bool fullGet = false, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/series/{1}/seasons/official/{2}", SiteUrls.TVDB, tvSlugName, season)
                             .ParseToUri();
-            string html = await GetAsync(url, token);
+            string html = await GetAsync(url, cancellationToken);
 
             var ep = _parser.ParseSeasonEpisodes(html)
                           .FirstOrDefault(x => x.Number == episode);
 
             if (fullGet)
-                return await GetEpisodeAsync(ep.Url, token);
+                return await GetEpisodeAsync(ep.Url, cancellationToken);
 
             return ep;
         }
-        public async Task<TvdbEpisode> GetEpisodeAsync(Uri episodeUrl, CancellationToken token = default)
+        public async Task<TvdbEpisode> GetEpisodeAsync(Uri episodeUrl, CancellationToken cancellationToken = default)
         {
-            string html = await GetAsync(episodeUrl, token);
+            string html = await GetAsync(episodeUrl, cancellationToken);
             return _parser.ParseEpisode(html, episodeUrl);
         }
     }

@@ -13,23 +13,25 @@ namespace Next.PCL.Html
         /// Calls the <paramref name="uri"/> and loads the results as a <see cref="HtmlDocument"/>
         /// </summary>
         /// <param name="uri"></param>
-        /// <param name="token">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation cancellationToken.</param>
         /// <param name="useHtmlWeb4Download">Whether to use <see cref="HtmlWeb"/> for loading html from an online resource or the simple &amp; often quick get.</param>
         /// <returns>A <see cref="HtmlDocument"/></returns>
-        protected virtual async Task<HtmlDocument> GetHtmlDocumentAsync(Uri uri, CancellationToken token = default, bool useHtmlWeb4Download = false)
+        protected virtual async Task<HtmlDocument> GetHtmlDocumentAsync(Uri uri, CancellationToken cancellationToken = default, bool useHtmlWeb4Download = false)
         {
             if (!useHtmlWeb4Download)
             {
-                string html = await GetAsync(uri, token);
+                string html = await GetAsync(uri, cancellationToken);
                 return ConvertToHtmlDoc(html);
             }
             else
             {
                 var wb = new HtmlWeb
                 {
-                    UsingCache = false
+                    UsingCache = true,
+                    UsingCacheIfExists=true,
+                    CaptureRedirect=true,
                 };
-                return await wb.LoadFromWebAsync(uri.OriginalString, token);
+                return await wb.LoadFromWebAsync(uri.OriginalString, cancellationToken);
             }
         }
         internal virtual HtmlDocument ConvertToHtmlDoc(string html)

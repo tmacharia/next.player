@@ -417,11 +417,11 @@ namespace Next.PCL.Html
             return cast;
         }
 
-        internal async Task<List<MetaImage>> GetAndParseImagesAsync(Uri uri, MetaImageType type, CancellationToken token = default)
+        internal async Task<List<MetaImage>> GetAndParseImagesAsync(Uri uri, MetaImageType type, CancellationToken cancellationToken = default)
         {
             string imageType = TvdbExts.CastImageType(type);
             var url = string.Format("{0}/artwork/{1}", uri.OriginalString.TrimEnd('/'), imageType).ParseToUri();
-            var doc = await GetHtmlDocumentAsync(url, token);
+            var doc = await GetHtmlDocumentAsync(url, cancellationToken);
             return doc.GetArtworksOfType(type);
         }
 

@@ -16,7 +16,7 @@ namespace Next.PCL.Online.Models
     {
         [JsonProperty("type")]
         public string __type { get; set; }
-        public MetaImageType ImgType => StringExts.ParseToMetaImageType(__type);
+        public MetaImageType ImgType => __type.ParseToMetaImageType();
 
         [JsonProperty("main")]
         public bool Main { get; set; }

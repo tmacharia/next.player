@@ -19,7 +19,7 @@ namespace Next.PCL.Online
                 throw new ApiKeyException("OMdb Api key is required.");
         }
 
-        public async Task<OmdbModel> FindAsync(string imdbId = default, string title = default, CancellationToken token = default, bool fullPlot = false, string type = "movie", int? year = default)
+        public async Task<OmdbModel> FindAsync(string imdbId = default, string title = default, CancellationToken cancellationToken = default, bool fullPlot = false, string type = "movie", int? year = default)
         {
             if (!title.IsValid() && !imdbId.IsValid())
                 throw new NextArgumentException("At least one param is required (title or imdbId)");
@@ -40,7 +40,7 @@ namespace Next.PCL.Online
             }
 
             var url = new Uri(sb.ToString());
-            string json = await GetAsync(url, token);
+            string json = await GetAsync(url, cancellationToken);
             if (json.IsValid())
             {
                 if (json.StartsWith("{"))

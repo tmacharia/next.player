@@ -15,14 +15,14 @@ namespace Next.PCL.Html
 {
     public class ImdbParser : BaseParser
     {
-        internal async Task<List<string>> GetImageIds(string imdbId, CancellationToken token = default)
+        internal async Task<List<string>> GetImageIds(string imdbId, CancellationToken cancellationToken = default)
         {
             var list = new List<string>();
             if (!imdbId.IsValid())
                 return list;
 
             var uri = new Uri(string.Format("{0}/title/{1}/mediaindex", SiteUrls.IMDB, imdbId));
-            var doc = await GetHtmlDocumentAsync(uri, token);
+            var doc = await GetHtmlDocumentAsync(uri, cancellationToken);
 
             var nodes = doc.FindAll("//div[@id='media_index_thumbnail_grid']/a");
             if (nodes.IsNotNullOrEmpty())

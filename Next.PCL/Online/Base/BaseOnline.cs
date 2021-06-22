@@ -25,12 +25,12 @@ namespace Next.PCL.Online
         }
         /// <summary></summary>
         /// <exception cref="OnlineException"/>
-        internal async Task<string> GetAsync(Uri uri, CancellationToken token = default)
+        internal async Task<string> GetAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             HttpClient client = GetHttpClient();
 
             var req = new HttpRequestMessage(HttpMethod.Get, uri);
-            var res = await client.SendAsync(req, HttpCompletionOption.ResponseContentRead, token);
+            var res = await client.SendAsync(req, HttpCompletionOption.ResponseContentRead, cancellationToken);
             if (res.IsSuccessStatusCode)
                 return await res.Content.ReadAsStringAsync();
             else
@@ -39,7 +39,7 @@ namespace Next.PCL.Online
                 if (code == 301 || code == 302)
                 {
                     Log.Information("{0} Redirect to {1}", code, res.Headers.Location);
-                    return await GetAsync(res.Headers.Location, token);
+                    return await GetAsync(res.Headers.Location, cancellationToken);
                 }
                 else
                 {
@@ -48,11 +48,11 @@ namespace Next.PCL.Online
                 }
             }
         }
-        internal async Task<bool> PingAsync(Uri uri, CancellationToken token = default)
+        internal async Task<bool> PingAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             HttpClient client = GetHttpClient();
             var req = new HttpRequestMessage(HttpMethod.Head, uri);
-            var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, token);
+            var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             return res.IsSuccessStatusCode;
         }
 

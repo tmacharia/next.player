@@ -17,29 +17,29 @@ namespace Next.PCL.Online
             _parser = new ImdbParser();
         }
 
-        public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken token = default)
+        public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken cancellationToken = default)
         {
             var uri = new Uri(string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId));
-            string html = await GetAsync(uri, token);
+            string html = await GetAsync(uri, cancellationToken);
             return _parser.ParseImdb(html);
         }
-        public async Task<List<ImdbReview>> GetSuggestionsAsync(string imdbId, CancellationToken token = default)
+        public async Task<List<ImdbReview>> GetSuggestionsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
             var uri = new Uri(string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId));
-            string html = await GetAsync(uri, token);
+            string html = await GetAsync(uri, cancellationToken);
             return _parser.ParseSuggestions(html).ToList();
         }
 
-        public async Task<List<ImdbReview>> GetReviewsAsync(string imdbId, CancellationToken token = default)
+        public async Task<List<ImdbReview>> GetReviewsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
             var uri = new Uri(string.Format("{0}/title/{1}/reviews", SiteUrls.IMDB, imdbId));
-            string html = await GetAsync(uri, token);
+            string html = await GetAsync(uri, cancellationToken);
             return _parser.ParseReviews(html).ToList();
         }
-        public async Task<List<GeographicLocation>> GetLocationsAsync(string imdbId, CancellationToken token = default)
+        public async Task<List<GeographicLocation>> GetLocationsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
             var uri = new Uri(string.Format("{0}/title/{1}/locations", SiteUrls.IMDB, imdbId));
-            string html = await GetAsync(uri, token);
+            string html = await GetAsync(uri, cancellationToken);
             return _parser.ParseFilmingLocations(html).ToList();
         }
     }
