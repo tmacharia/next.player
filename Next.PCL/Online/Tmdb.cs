@@ -15,11 +15,10 @@ using TMDbLib.Objects.Movies;
 using TMDbLib.Objects.TvShows;
 using Next.PCL.Metas;
 using AutoMapper;
-using TMDbLib.Objects.Reviews;
 
 namespace Next.PCL.Online
 {
-    public class Tmdb : BaseOnline
+    public class Tmdb 
     {
         private readonly IMapper _mapper;
         private readonly TMDbClient _client;

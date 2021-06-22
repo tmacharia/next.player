@@ -10,7 +10,8 @@ using Tests.Attributes;
 
 namespace Tests.Online
 {
-    internal class TvdbTests : TestsBase
+    [TestFixture]
+    class TvdbTests : TestsRoot
     {
         private Tvdb _tvdb;
 
@@ -20,9 +21,9 @@ namespace Tests.Online
         private static readonly Uri SHOW_EP_URL = new("https://thetvdb.com/series/liseys-story/episodes/8221744");
 
         [OneTimeSetUp]
-        public void Setup_Tests()
+        public void Setup()
         {
-            _tvdb = new Tvdb();
+            _tvdb = new Tvdb(MocksAndSetups.HttpOnlineClient, MocksAndSetups.AutoMapper);
         }
 
 

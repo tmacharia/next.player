@@ -5,13 +5,15 @@ using NUnit.Framework;
 
 namespace Tests.Online
 {
+    [TestFixture]
     class YtsTests : TestsBase
     {
-        private readonly Yts _yts;
+        private Yts _yts;
 
-        public YtsTests()
+        [OneTimeSetUp]
+        public void Setup()
         {
-            _yts = new Yts();
+            _yts = new Yts(MocksAndSetups.HttpOnlineClient);
         }
         [TestCase(Category = YTS_TESTS)]
         public async Task Get_By_ID()
@@ -44,7 +46,7 @@ namespace Tests.Online
             Log(model.Id);
         }
 
-
+        [Test]
         [TestCase(Category = YTS_TESTS)]
         public async Task Get_Suggestions_ByID()
         {

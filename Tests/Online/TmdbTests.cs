@@ -8,18 +8,15 @@ using Tests.Attributes;
 
 namespace Tests.Online
 {
+    [TestFixture]
     class TmdbTests : TestsBase
     {
-        private readonly Tmdb _tmdb;
-
-        public TmdbTests()
-        {
-            _tmdb = new Tmdb(Settings.TmdbApiKey, AutoMapper);
-        }
+        private Tmdb _tmdb;
 
         [OneTimeSetUp]
         public async Task Setup()
         {
+            _tmdb = new Tmdb(MocksAndSetups.Settings.TmdbApiKey, MocksAndSetups.AutoMapper);
             await _tmdb.ConfigureAsync();
         }
 

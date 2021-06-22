@@ -9,6 +9,10 @@ namespace Next.PCL.Html
 {
     public class BaseParser : BaseOnline
     {
+        public BaseParser(IHttpOnlineClient httpOnlineClient)
+            :base(httpOnlineClient)
+        { }
+
         /// <summary>
         /// Calls the <paramref name="uri"/> and loads the results as a <see cref="HtmlDocument"/>
         /// </summary>

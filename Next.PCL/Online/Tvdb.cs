@@ -26,15 +26,23 @@ namespace Next.PCL.Online
             private set { _parser.Config = value; }
         }
 
-        public Tvdb()
+        public Tvdb(IHttpOnlineClient httpOnlineClient)
+            :base(httpOnlineClient)
         {
-            _parser = new TvDbParser();
             _mapper = new Mapper(AutomapperConfig.Configure());
+            _parser = new TvDbParser(httpOnlineClient, _mapper);
         }
-        public Tvdb(TvdbConfig tvdbConfig, IMapper autoMapper)
+        public Tvdb(IHttpOnlineClient httpOnlineClient, IMapper autoMapper)
+            : base(httpOnlineClient)
         {
             _mapper = autoMapper;
-            _parser = new TvDbParser(tvdbConfig);
+            _parser = new TvDbParser(httpOnlineClient, autoMapper);
+        }
+        public Tvdb(TvdbConfig tvdbConfig, IHttpOnlineClient httpOnlineClient, IMapper autoMapper)
+            :base(httpOnlineClient)
+        {
+            _mapper = autoMapper;
+            _parser = new TvDbParser(tvdbConfig, httpOnlineClient, autoMapper);
         }
 
         public async Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken cancellationToken = default)

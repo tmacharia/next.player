@@ -23,6 +23,10 @@ namespace Next.PCL.Online
     /// </remarks>
     public class TvMaze : BaseOnline
     {
+        public TvMaze(IHttpOnlineClient httpOnlineClient)
+            :base(httpOnlineClient)
+        { }
+
         public Task<TvMazeModel> GetShowByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return RequestAsync<TvMazeModel>($"/shows/{id}", cancellationToken);

@@ -5,13 +5,15 @@ using NUnit.Framework;
 
 namespace Tests.Online
 {
+    [TestFixture]
     class TvMazeTests : TestsBase
     {
-        private readonly TvMaze _maze;
+        private TvMaze _maze;
 
-        public TvMazeTests()
+        [OneTimeSetUp]
+        public void Setup()
         {
-            _maze = new TvMaze();
+            _maze = new TvMaze(MocksAndSetups.HttpOnlineClient);
         }
 
         [TestCase(Category = TVMAZE_TESTS)]

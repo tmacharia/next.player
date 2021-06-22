@@ -10,6 +10,10 @@ namespace Next.PCL.Online
 {
     public class Yts : BaseOnline
     {
+        public Yts(IHttpOnlineClient httpOnlineClient)
+            :base(httpOnlineClient)
+        { }
+
         public async Task<YtsMovie> GetMovieByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var res = await RequestAsync<YtsMovieSingleResponse>($"/movie_details.json?movie_id={id}&with_images=true", cancellationToken);

@@ -13,7 +13,8 @@ namespace Next.PCL.Online
     {
         private readonly string API_KEY = "";
 
-        public Omdb(string apiKey)
+        public Omdb(string apiKey, IHttpOnlineClient httpOnlineClient)
+            :base(httpOnlineClient)
         {
             if (!apiKey.IsValid())
                 throw new ApiKeyException("OMdb Api key is required.");

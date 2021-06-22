@@ -12,6 +12,7 @@ using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Metas;
+using Next.PCL.Online;
 using Next.PCL.Online.Models.Tvdb;
 using Next.PCL.Static;
 
@@ -27,7 +28,17 @@ namespace Next.PCL.Html
 
         internal TvdbConfig Config { get; set; }
 
-        public TvDbParser(TvdbConfig tvdbConfig = default, IMapper autoMapper = default)
+        public TvDbParser(IHttpOnlineClient httpOnlineClient, IMapper autoMapper = default)
+            : base(httpOnlineClient)
+        {
+            Config = new TvdbConfig();
+            _mapper = autoMapper ?? new Mapper(AutomapperConfig.Configure());
+        }
+        public TvDbParser(
+            TvdbConfig tvdbConfig,
+            IHttpOnlineClient httpOnlineClient,
+            IMapper autoMapper)
+            :base(httpOnlineClient)
         {
             Config = tvdbConfig ?? new TvdbConfig();
             _mapper = autoMapper ?? new Mapper(AutomapperConfig.Configure());
