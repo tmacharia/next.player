@@ -130,9 +130,9 @@ namespace Next.PCL.Extensions
                     Key = x.Key,
                     Height = (ushort)x.Size,
                     Source = MetaSource.TMDB,
-                    Type = StringExts.ParseToMetaVideoType(x.Type),
+                    Type = x.Type.ParseToMetaVideoType(),
                     Platform = StreamingPlatform.Youtube,
-                    Resolution = EstimateResolution(x.Size),
+                    Resolution = MetaImageExts.EstimateResolution(x.Size),
                     Url = SocialExts.GetYoubetubeUrl(x.Key),
                 }).ToList();
             return new List<MetaVideo>();
@@ -168,7 +168,7 @@ namespace Next.PCL.Extensions
             {
                 Width = (ushort)x.Width,
                 Height = (ushort)x.Height,
-                Resolution = EstimateResolution(x.Height, x.Width),
+                Resolution = MetaImageExts.EstimateResolution(x.Height, x.Width),
                 Url = client.GetImageUrl("{RM_TO_SET}", x.FilePath)
             }).ToList();
             return null;
@@ -215,11 +215,6 @@ namespace Next.PCL.Extensions
                 }
                 yield return img;
             }
-        }
-
-        internal static Resolution EstimateResolution(int h, int w = 0)
-        {
-            return Resolution.HD;
         }
     }
 }

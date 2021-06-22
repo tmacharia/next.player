@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Common;
-using Next.PCL.Enums;
 using Serilog;
 
 namespace Next.PCL.Extensions
@@ -91,67 +90,7 @@ namespace Next.PCL.Extensions
             return null;
         }
 
-        internal static MetaImageType ParseToMetaImageType(string s)
-        {
-            if (s.IsValid())
-            {
-                if (s.Matches("poster"))
-                    return MetaImageType.Poster;
-                else if (s.MatchesAny("backdrop", "background"))
-                    return MetaImageType.Backdrop;
-                else if (s.Matches("banner"))
-                    return MetaImageType.Banner;
-                else if (s.Matches("typography"))
-                    return MetaImageType.Typography;
-            }
-            return MetaImageType.Image;
-        }
-        internal static Profession ParseToProfession(this string s)
-        {
-            if (s.IsValid())
-            {
-                if (s.Matches("Director"))
-                    return Profession.Director;
-                else if (s.Matches("Writer"))
-                    return Profession.Writer;
-                else if (s.Matches("Producer"))
-                    return Profession.Producer;
-            }
-            return Profession.Other;
-        }
-        internal static MetaVideoType ParseToMetaVideoType(string type)
-        {
-            if (type.IsValid())
-            {
-                if (type.EqualsOIC("trailer"))
-                    return MetaVideoType.Trailer;
-            }
-            return MetaVideoType.Clip;
-        }
-        internal static MetaStatus ParseToMetaStatus(this string s)
-        {
-            if (s.IsValid())
-            {
-                if (s.MatchesAny("airing", "continuing"))
-                    return MetaStatus.Airing;
-                if (s.Matches("ended"))
-                    return MetaStatus.Ended;
-                if (s.Matches("production"))
-                    return MetaStatus.InProduction;
-                if (s.Matches("completed"))
-                    return MetaStatus.Released;
-            }
-            return MetaStatus.Released;
-        }
-        internal static CompanyService ParseToCompanyType(this string s)
-        {
-            if (s.IsValid())
-            {
-                if (s.Matches("production"))
-                    return CompanyService.Production;
-            }
-            return CompanyService.Network;
-        }
+        
         /// <summary>
         /// Splits a string into substrings based on the strings in an array. 
         /// <br/>

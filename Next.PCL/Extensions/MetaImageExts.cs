@@ -9,5 +9,9 @@ namespace Next.PCL.Extensions
         {
             return Resolution.WVGA;
         }
+        internal static Resolution EstimateResolution(int h, int w = 0)
+        {
+            return Resolution.HD;
+        }
     }
 }
