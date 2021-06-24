@@ -26,16 +26,18 @@ namespace Tests.Online
             var model = await _imdb.GetImdbAsync(SocialNetwork.ImdbID);
 
             Assert.NotNull(model);
-            Assert.That(model.Genres.Any());
             Assert.True(model.ReleaseDate.HasValue);
             Assert.AreEqual(120, model.Runtime);
             Assert.AreEqual(2010, model.ReleaseDate.Value.Year);
             Assert.AreEqual(MetaType.Movie, model.Type);
             Assert.NotNull(model.Trailer);
             Assert.NotNull(model.Rating);
+            Assert.That(model.Genres.Any());
+            Assert.That(model.Cast.Any());
             Log(model);
             Log(model.Rating);
             Log(model.Revenue);
+            Log(model.Cast);
         }
         [Order(1)]
         [TestCase(Category = IMDB_TESTS)]

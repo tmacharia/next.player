@@ -12,6 +12,7 @@ namespace Next.PCL.Online.Models.Imdb
         public ImdbModel()
         {
             Source = MetaSource.IMDB;
+            Cast = new List<ImdbCast>();
             OtherSites = new List<MetaUrl>();
             ProductionCompanies = new List<Company>();
             ProductionCountries = new List<GeographicLocation>();
@@ -38,6 +39,9 @@ namespace Next.PCL.Online.Models.Imdb
         [JsonProperty("trailer")]
         public ImdbTrailer Trailer { get; set; }
         public MetaRevenue Revenue { get; set; }
+
+        [JsonProperty("actor")]
+        public List<ImdbCast> Cast { get; set; }
 
         [JsonProperty("genre")]
         [JsonConverter(typeof(StringToListConverter))]

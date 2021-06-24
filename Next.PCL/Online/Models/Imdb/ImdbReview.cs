@@ -2,6 +2,10 @@
 
 namespace Next.PCL.Online.Models.Imdb
 {
+    public class ImdbSuggestion
+    {
+
+    }
     public class ImdbReview
     {
         public Uri Url { get; set; }
