@@ -1,33 +1,36 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Next.PCL.Services;
+using System;
 using System.Collections.Generic;
 
 namespace Next.Console_
 {
-    //[SimpleJob(RuntimeMoniker.NetCoreApp30)]
+    [RankColumn]
+    [MemoryDiagnoser]
+    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
     public class SearchQueryFormatterBenchmarks
     {
-        private ISearchQueryFormatter _searchQueryFormatter;
+        private const int OPS = 10;
+        private Random _random = new Random();
+        private ISearchQueryFormatter _searchQueryFormatter = new SearchQueryFormatter();
 
-        [GlobalSetup]
-        public void Setup()
+
+        [Benchmark(OperationsPerInvoke = OPS)]
+        public void QueryFormat_OneTitle()
         {
-            _searchQueryFormatter = new SearchQueryFormatter();
+            int k = _random.Next(0, YtsMovieFileNames.Count);
+            _searchQueryFormatter.CleanAndFormat(YtsMovieFileNames[k]);
         }
 
         [Benchmark]
-        public void CleanAndFormat_OnlyOne()
+        public void QueryFormat_MultipleTitles()
         {
-            _searchQueryFormatter.CleanAndFormat(YtsMovieFileNames[0]);
-        }
-
-        [Benchmark]
-        public void CleanAndFormat_All28()
-        {
-            foreach (var query in YtsMovieFileNames)
+            for (int i = 0; i < OPS; i++)
             {
-                _searchQueryFormatter.CleanAndFormat(query);
+                int k = _random.Next(0, YtsMovieFileNames.Count);
+                _searchQueryFormatter.CleanAndFormat(YtsMovieFileNames[k]);
             }
         }
 
