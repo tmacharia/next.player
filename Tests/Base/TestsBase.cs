@@ -25,6 +25,10 @@ namespace Tests
             new DateTimeFormat("07 Feb 2020","dd MMM yyyy"), // from OMDB
             new DateTimeFormat("2011-04-17", "yyyy-MM-dd") // from TVMaze
         };
+        internal static List<MovieTestModel> Movies => new()
+        {
+            new MovieTestModel(SocialNetwork.ImdbID,120,2010,SocialNetwork.Name)
+        };
         internal static List<Tuple<string, int>> MetaScores => new()
         {
             new Tuple<string, int>("8", 8),
