@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using Next.PCL.Services;
 using System;
 using System.Collections.Generic;
@@ -8,8 +7,6 @@ namespace Next.Console_
 {
     [RankColumn]
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net50, baseline: true)]
-    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
     public class SearchQueryFormatterBenchmarks
     {
         private const int OPS = 10;
