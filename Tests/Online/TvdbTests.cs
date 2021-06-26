@@ -46,7 +46,7 @@ namespace Tests.Online
             Assert.That(tv.Genres.Any());
             Assert.That(tv.Genres.Contains("Crime"));
             Assert.That(tv.Networks.Any());
-            Assert.That(tv.Networks.Contains("HBO"));
+            Assert.That(tv.Networks.AnyEquals("HBO"));
 
             Assert.That(tv.Posters.Any());
             Assert.That(tv.Backdrops.Any());
@@ -82,7 +82,7 @@ namespace Tests.Online
             Assert.That(tv.Genres.Any());
             Assert.That(tv.Genres.Contains("Drama"));
             Assert.That(tv.Networks.Any());
-            Assert.That(tv.Networks.Contains("Starz"));
+            Assert.That(tv.Networks.AnyEquals("Starz"));
 
             Assert.That(tv.Posters.Any());
             Assert.That(tv.Backdrops.Any());
@@ -117,7 +117,7 @@ namespace Tests.Online
             Assert.That(tv.Genres.Any());
             Assert.That(tv.Genres.Contains("Sport"));
             Assert.That(tv.Networks.Any());
-            Assert.That(tv.Networks.Contains("Netflix"));
+            Assert.That(tv.Networks.AnyEquals("Netflix"));
 
             Assert.That(tv.Posters.Any());
             Assert.That(tv.Backdrops.Any());
@@ -370,7 +370,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Role.IsValid()));
-            Assert.That(list.Contains("Robert Downey Jr."));
+            Assert.That(list.AnyEquals("Robert Downey Jr."));
             Log(list);
         }
         [Case(TVDB_TESTS, CAST_TESTS, MOVIE_TESTS)]

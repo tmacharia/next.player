@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Next.PCL.Enums;
 using Next.PCL.Exceptions;
 using Next.PCL.Online;
+using Next.PCL.Extensions;
 using NUnit.Framework;
 using Tests.Attributes;
 
@@ -38,6 +39,10 @@ namespace Tests.Online
             Assert.AreEqual(GOT.TmDbID, show.Id);
             Assert.AreEqual(GOT.ImdbID, show.ExternalIds.ImdbId);
             //Assert.Greater(0, show.Posters.Count);
+
+            Log(show.OriginalName);
+            Log(show.NumberOfSeasons);
+            show.Seasons.ForEach(x => Log(x.Name));
         }
 
         [Case(TMDB_TESTS, SHOW_TESTS)]
@@ -107,6 +112,20 @@ namespace Tests.Online
 
             Assert.That(list.Any());
             Log(list);
+        }
+
+        [Case(TMDB_TESTS)]
+        public async Task Get_Movie_Credits()
+        {
+            var credits = await _tmdb.GetCreditsAsync(SocialNetwork.TmDbID, MetaType.Movie);
+
+            Assert.NotNull(credits);
+            // Jesse Eisenberg
+            Assert.That(credits.Cast.AnyMatches("Jesse Eisenberg"));
+            Assert.That(credits.Cast.AnyMatches("Justin Timberlake"));
+            Assert.That(credits.Crew.AnyMatches("Aaron Sorkin"));
+            Log(credits);
+            Log(credits.Crew);
         }
     }
 }

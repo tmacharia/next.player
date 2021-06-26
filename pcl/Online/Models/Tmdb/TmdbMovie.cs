@@ -22,6 +22,14 @@ namespace Next.PCL.Online.Models
         }
         public List<MetaImage> Posters { get; set; }
     }
+    public class TmdbSeason : TvSeason, IPosterPath
+    {
+        public TmdbSeason()
+        {
+            Posters = new List<MetaImage>();
+        }
+        public List<MetaImage> Posters { get; set; }
+    }
     public interface ITmdbEntity : IPosterPath
     {
         List<Genre> Genres { get; set; }

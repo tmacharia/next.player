@@ -7,7 +7,6 @@ using TMDbLib.Objects.Search;
 using Next.PCL.Enums;
 using TMDbLib.Objects.General;
 using Next.PCL.Online.Models;
-using System.Linq;
 using System.IO;
 using Common;
 using Next.PCL.Exceptions;
@@ -15,6 +14,7 @@ using TMDbLib.Objects.Movies;
 using TMDbLib.Objects.TvShows;
 using Next.PCL.Metas;
 using AutoMapper;
+using Next.PCL.Configurations;
 
 namespace Next.PCL.Online
 {
@@ -23,11 +23,14 @@ namespace Next.PCL.Online
         private readonly IMapper _mapper;
         private readonly TMDbClient _client;
 
-        public Tmdb(string apiKey, IMapper mapper)
+        internal TmdbConfig Config { get; set; }
+
+        public Tmdb(string apiKey, IMapper mapper, TmdbConfig tmdbConfig = default)
         {
             if (!apiKey.IsValid())
                 throw new ApiKeyException("TMdb Api key is required.");
             _client = new TMDbClient(apiKey);
+            Config = tmdbConfig ?? new TmdbConfig();
             _mapper = mapper;
         }
 
@@ -71,6 +74,13 @@ namespace Next.PCL.Online
             var res = await _client.GetTvShowVideosAsync(id, cancellationToken: cancellationToken);
             return res.GetVideos();
         }
+        public async Task<TmdbSeason> GetSeasonAsync(int showId, int season, CancellationToken cancellationToken = default)
+        {
+            TvSeason res = await _client.GetTvSeasonAsync(showId, season, cancellationToken: cancellationToken);
+            var map = _mapper.Map<TmdbSeason>(res);
+            map.Posters.AddRange(map.GetPosters(_client));
+            return map;
+        }
         public async Task<List<MetaImage>> GetSeasonImagesAsync(int showId, int season, CancellationToken cancellationToken = default)
         {
             PosterImages res = await _client.GetTvSeasonImagesAsync(showId,season, cancellationToken: cancellationToken);
@@ -82,33 +92,51 @@ namespace Next.PCL.Online
             return res.GetStills(_client);
         }
 
-        public async Task<List<TmdbCrew>> GetCrewAsync(int id, MetaType type, CancellationToken cancellationToken = default)
+        public async Task<Entities.Credits> GetCreditsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
         {
+            Entities.Credits credits = new Entities.Credits();
             if (type == MetaType.Movie)
             {
                 var res = await _client.GetMovieCreditsAsync(id, cancellationToken);
-                return res.Crew.ToList2();
+                credits.Crew.AddRange(GetCrew(res.Crew));
+                foreach (var c in res.Cast)
+                {
+                    if (c.ProfilePath.IsValid())
+                    {
+                        var cast = _mapper.Map<Entities.Cast>(c);
+                        cast = cast.AddProfileImages(c.ProfilePath, _client);
+                        credits.Cast.Add(cast);
+                    }
+                }
             }
             else if (type == MetaType.TvShow)
             {
                 var res = await _client.GetTvShowCreditsAsync(id, null, cancellationToken);
-                return res.Crew.ToList2();
+                credits.Crew.AddRange(GetCrew(res.Crew));
+                foreach (var c in res.Cast)
+                {
+                    if (c.ProfilePath.IsValid())
+                    {
+                        var cast = _mapper.Map<Entities.Cast>(c);
+                        cast = cast.AddProfileImages(c.ProfilePath, _client);
+                        credits.Cast.Add(cast);
+                    }
+                }
             }
-            return null;
+            return credits;
         }
-        public async Task<List<TmdbCast>> GetCastAsync(int id, MetaType type, CancellationToken cancellationToken = default)
+        private IEnumerable<Entities.FilmMaker> GetCrew(List<Crew> crews)
         {
-            if(type == MetaType.Movie)
+            foreach (var c in crews)
             {
-                var res = await _client.GetMovieCreditsAsync(id, cancellationToken);
-                return res.Cast.Select(x => (TmdbCast)x).ToList();
+                var filmMaker = _mapper.Map<Entities.FilmMaker>(c);
+                filmMaker.Role = c.Department.ParseToProfession();
+                if (filmMaker.Role != Profession.Other)
+                {
+                    filmMaker = filmMaker.AddProfileImages(c.ProfilePath, _client);
+                    yield return filmMaker;
+                }
             }
-            else if (type == MetaType.TvShow)
-            {
-                var res = await _client.GetTvShowCreditsAsync(id, null, cancellationToken);
-                return res.Cast.Select(x => x.ToTmdbCast()).ToList();
-            }
-            return null;
         }
         public async Task<List<TmdbReview>> GetReviewsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
         {
@@ -125,19 +153,22 @@ namespace Next.PCL.Online
             return null;
         }
 
-        public async Task<TmdbCompany> GetCompanyAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Entities.Company> GetCompanyAsync(int id, CancellationToken cancellationToken = default)
         {
             var res = await _client.GetCompanyAsync(id, cancellationToken: cancellationToken);
-            var comp = _mapper.Map<TmdbCompany>(res);
-            comp.Logos.AddRange(comp.GetLogos(_client));
+            var comp = _mapper.Map<Entities.Company>(res);
+            comp.Urls.AddToThis(res.Homepage.ParseToUri().ParseToMetaUrl(MetaSource.TMDB));
+            comp.Images.AddRange(_client.ExtractImages(res, MetaImageType.Logo, x => x.LogoPath, x => x.Config.Images.LogoSizes));
             return comp;
         }
-        public async Task<TmdbCompany> GetNetworkAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Entities.Company> GetNetworkAsync(int id, CancellationToken cancellationToken = default)
         {
             var res = await _client.GetNetworkAsync(id, cancellationToken: cancellationToken);
-            var comp = _mapper.Map<TmdbCompany>(res);
             var imgs = await _client.GetNetworkImagesAsync(id);
-            comp.Logos.AddRange(imgs.Logos.AsMetaImages(MetaImageType.Logo, _client));
+            var comp = _mapper.Map<Entities.Company>(res);
+            comp.Service = CompanyService.Network;
+            comp.Urls.AddToThis(res.Homepage.ParseToUri().ParseToMetaUrl(MetaSource.TMDB));
+            comp.Images.AddRange(imgs.Logos.AsMetaImages(MetaImageType.Logo, _client));
             return comp;
         }
 
