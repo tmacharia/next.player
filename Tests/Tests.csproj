@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Next.PCL\Next.PCL.csproj" />
+    <ProjectReference Include="..\pcl\Next.PCL.csproj" />
   </ItemGroup>
 
 </Project>
