@@ -138,17 +138,17 @@ namespace Next.PCL.Online
                 }
             }
         }
-        public async Task<List<TmdbReview>> GetReviewsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
+        public async Task<List<Entities.ReviewComment>> GetReviewsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
         {
             if (type == MetaType.Movie)
             {
                 var res = await _client.GetMovieReviewsAsync(id, cancellationToken: cancellationToken);
-                return _mapper.Map<List<TmdbReview>>(res.GetList());
+                return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
             }
             else if (type == MetaType.TvShow)
             {
                 var res = await _client.GetTvShowReviewsAsync(id, cancellationToken: cancellationToken);
-                return _mapper.Map<List<TmdbReview>>(res.GetList());
+                return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
             }
             return null;
         }

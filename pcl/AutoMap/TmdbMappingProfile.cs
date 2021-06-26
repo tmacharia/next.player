@@ -19,7 +19,7 @@ namespace Next.PCL.AutoMap
             CreateMap<TvShow, TmdbShow>(MemberList.Source);
             CreateMap<TvSeason, TmdbSeason>(MemberList.Source);
 
-            CreateMap<ReviewBase, TmdbReview>(MemberList.Source);
+            CreateMap<ReviewBase, Entities.ReviewComment>(MemberList.Source);
 
             CreateMap<SearchTv, TmdbSearch>(MemberList.None)
                 .ForMember(x => x.ReleaseDate, x => x.MapFrom(f => f.FirstAirDate));

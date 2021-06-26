@@ -77,8 +77,8 @@ namespace Tests.Online
             Log(movies);
         }
 
-        [Case(TMDB_TESTS, SHOW_TESTS)]
-        public async Task Get_Show_Reviews()
+        [Case(TMDB_TESTS)]
+        public async Task Get_Reviews()
         {
             var list = await _tmdb.GetReviewsAsync(GOT.TmDbID, MetaType.TvShow);
 

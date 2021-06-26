@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Next.PCL.Entities;
+using System;
 
 namespace Next.PCL.Online.Models.Imdb
 {
@@ -6,15 +7,9 @@ namespace Next.PCL.Online.Models.Imdb
     {
 
     }
-    public class ImdbReview
+    public class ImdbReview : ReviewComment
     {
-        public Uri Url { get; set; }
-        public double? Score { get; set; }
-        public string Title { get; set; }
-        public DateTime? Timestamp { get; set; }
-        public string Review { get; set; }
-        public string Reviewer { get; set; }
-        public Uri ReviewerUrl { get; set; }
+        public Uri AuthorUrl { get; set; }
 
         public int? MarkedAsUseful { get; set; }
         public int? TotalEngagement { get; set; }
@@ -36,7 +31,7 @@ namespace Next.PCL.Online.Models.Imdb
 
         public override string ToString()
         {
-            return string.Format("{0:N0}/10 by {1}, {2:N2}% agreed", Score, Reviewer, QuorumScore);
+            return string.Format("{0:N0}/10 by {1}, {2:N2}% agreed", Score, Author, QuorumScore);
         }
     }
 }
