@@ -164,11 +164,11 @@
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Next.PCL\Next.PCL.csproj">
+    <ProjectReference Include="..\pcl\Next.PCL.csproj">
       <Project>{bb5a5f41-c7bf-4233-9041-76a825aa216b}</Project>
       <Name>Next.PCL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Next.WRC\Next.WRC.csproj">
+    <ProjectReference Include="..\wrc\Next.WRC.csproj">
       <Project>{3c39fb93-9973-4a2f-8075-935d7b5c2ec5}</Project>
       <Name>Next.WRC</Name>
     </ProjectReference>
