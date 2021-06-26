@@ -153,6 +153,7 @@ namespace Tests.Online
             Assert.That(mov.Genres.Any());
             Assert.That(mov.Genres.Contains("Science Fiction"));
 
+            Assert.That(mov.Cast.Any());
             Assert.That(mov.Studios.Any());
             Assert.That(mov.Studios.AnyMatches("Paramount"));
             Assert.That(mov.ProductionCompanies.Any());
@@ -183,6 +184,7 @@ namespace Tests.Online
             Assert.That(mov.Genres.Any());
             Assert.That(mov.Genres.Contains("Drama"));
 
+            Assert.That(mov.Cast.Any());
             Assert.That(mov.Studios.Any());
             Assert.That(mov.Studios.AnyMatches("Sony"));
             Assert.That(mov.ProductionCompanies.Any());

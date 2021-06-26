@@ -112,9 +112,6 @@ namespace Next.PCL.Html
                 var blocks = doc.GetElementbyId("titleDetails")?.ExtendFindAll("div");
                 if(blocks != null && blocks.Any())
                 {
-                    if (!model.Runtime.HasValue)
-                        model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
-
                     model.OtherSites = GetLinks(blocks, ImdbKeys.OfficialSites)
                                     .Select(x => x.ParseToMetaUrl(MetaSource.IMDB)).ToList();
                     model.ProductionCompanies = GetLinks(blocks, ImdbKeys.ProductionCo)
@@ -127,6 +124,12 @@ namespace Next.PCL.Html
                         model.Revenue = new MetaRevenue();
                         model.Revenue.Budget = GetAsNumber(blocks, ImdbKeys.Budget);
                         model.Revenue.CumulativeGross = GetAsNumber(blocks, ImdbKeys.WorldGross);
+                    }
+                    else if(model.Type == MetaType.TvShow)
+                    {
+                        model.Runtime = doc.Find("//div[@class='title_wrapper']/div/time")?.GetAttrib("datetime").ParseToRuntime();
+                        if (!model.Runtime.HasValue)
+                            model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
                     }
                 }
                 return model;
