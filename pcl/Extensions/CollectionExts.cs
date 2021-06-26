@@ -11,5 +11,10 @@ namespace Next.PCL.Extensions
                 return true;
             return false;
         }
+        public static void AddToThis<T>(this List<T> ts, T item)
+        {
+            if (item != null)
+                ts.Add(item);
+        }
     }
 }

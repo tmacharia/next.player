@@ -11,6 +11,14 @@ namespace Next.PCL.Extensions
             where TEntity : INamedEntity
         {
             if (value.IsValid())
+                return query.Any(x => x.Name.Contains(value));
+
+            return false;
+        }
+        public static bool AnyEquals<TEntity>(this IEnumerable<TEntity> query, string value)
+            where TEntity : INamedEntity
+        {
+            if (value.IsValid())
                 return query.Any(x => x.Name.EqualsOIC(value));
 
             return false;

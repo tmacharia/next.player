@@ -35,11 +35,11 @@ namespace Next.PCL.Extensions
         {
             if (s.IsValid())
             {
-                if (s.Matches("Director"))
+                if (s.MatchesAny("director, directing"))
                     return Profession.Director;
-                else if (s.Matches("Writer"))
+                else if (s.MatchesAny("writer", "writing"))
                     return Profession.Writer;
-                else if (s.Matches("Producer"))
+                else if (s.MatchesAny("producer", "production"))
                     return Profession.Producer;
             }
             return Profession.Other;
@@ -48,9 +48,9 @@ namespace Next.PCL.Extensions
         {
             if (s.IsValid())
             {
-                if (s.EqualsOIC("Male"))
+                if (s.EqualsOIC("male"))
                     return Gender.Male;
-                else if (s.EqualsOIC("Female"))
+                else if (s.EqualsOIC("female"))
                     return Gender.Female;
             }
             return Gender.Unknown;
