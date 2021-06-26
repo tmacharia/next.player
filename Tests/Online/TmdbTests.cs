@@ -38,11 +38,8 @@ namespace Tests.Online
             Assert.NotNull(show.ExternalIds);
             Assert.AreEqual(GOT.TmDbID, show.Id);
             Assert.AreEqual(GOT.ImdbID, show.ExternalIds.ImdbId);
-            //Assert.Greater(0, show.Posters.Count);
 
-            Log(show.OriginalName);
-            Log(show.NumberOfSeasons);
-            show.Seasons.ForEach(x => Log(x.Name));
+            Log(show);
         }
 
         [Case(TMDB_TESTS, SHOW_TESTS)]
@@ -54,6 +51,7 @@ namespace Tests.Online
             Assert.Greater(shows.Count, 0);
             Assert.AreEqual(GOT.Name, shows[0].Name);
             Assert.AreEqual(GOT.TmDbID, shows[0].Id);
+            Log(shows);
         }
 
         [Case(TMDB_TESTS, MOVIE_TESTS)]
@@ -65,6 +63,7 @@ namespace Tests.Online
             Assert.NotNull(mov.ExternalIds);
             Assert.AreEqual(SocialNetwork.TmDbID, mov.Id);
             Assert.AreEqual(SocialNetwork.ImdbID, mov.ExternalIds.ImdbId);
+            Log(mov);
         }
         [Case(TMDB_TESTS, MOVIE_TESTS)]
         public async Task Search_Movie_ByQuery()
@@ -75,6 +74,7 @@ namespace Tests.Online
             Assert.Greater(movies.Count, 0);
             Assert.AreEqual(SocialNetwork.Name, movies[0].Name);
             Assert.AreEqual(SocialNetwork.TmDbID, movies[0].Id);
+            Log(movies);
         }
 
         [Case(TMDB_TESTS, SHOW_TESTS)]
