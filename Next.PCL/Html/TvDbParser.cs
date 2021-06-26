@@ -67,14 +67,15 @@ namespace Next.PCL.Html
         {
             var doc = ConvertToHtmlDoc(html);
             var model = _mapper.Map<TvDbMovie>(ParseCommonModel(html, movieUrl, doc));
-
+            
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 
             model.Runtime = GetAsText(lists, TvDbKeys.Runtime)?.ParseToRuntime();
             model.Studios = GetLinks(lists, TvDbKeys.Studio).Select(x => x.ParseToTvDbCompany()).ToList();
             model.Networks = GetLinks(lists, TvDbKeys.Networks).Select(x => x.ParseToTvDbCompany()).ToList();
             model.Distributors = GetLinks(lists, TvDbKeys.Distributor).Select(x => x.ParseToTvDbCompany()).ToList();
-            
+            model.Cast = ParseCast("", doc).ToList();
+
             model.ReleaseDate = GetNodes(lists, TvDbKeys.Released).FirstOrDefault().LastChild.ParseDateTime();
             model.ProductionCompanies = GetLinks(lists, TvDbKeys.ProductionCompanies).Select(x => x.ParseToTvDbCompany()).ToList();
 
