@@ -18,6 +18,6 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore ./Next.PCL/Next.PCL.csproj
+      run: dotnet restore ./pcl/Next.PCL.csproj
     - name: Build
-      run: dotnet build ./Next.PCL/Next.PCL.csproj --no-restore
+      run: dotnet build ./pcl/Next.PCL.csproj --no-restore
