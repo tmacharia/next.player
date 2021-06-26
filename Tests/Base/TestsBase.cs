@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using AutoMapper;
-using Common;
-using Next.PCL.AutoMap;
 using Tests.TestModels;
 
 namespace Tests
