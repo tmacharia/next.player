@@ -4,9 +4,12 @@ using Common;
 using Next.PCL.Enums;
 using Next.PCL.Online;
 using NUnit.Framework;
+using Tests.Attributes;
+using Tests.TestModels;
 
 namespace Tests.Online
 {
+    [Order(7)]
     [TestFixture]
     class ImdbTests : TestsBase
     {
@@ -19,22 +22,25 @@ namespace Tests.Online
         }
 
         [Order(0)]
-        [TestCase(Category = IMDB_TESTS)]
-        public async Task Get_ImdbMov_SocialNetwork()
+        [TheoriesFrom(nameof(Movies), IMDB_TESTS)]
+        public async Task Get_ImdbMov(MovieTestModel mov)
         {
-            var model = await _imdb.GetImdbAsync(SocialNetwork.ImdbID);
+            var model = await _imdb.GetImdbAsync(mov.ImdbID);
 
             Assert.NotNull(model);
-            Assert.That(model.Genres.Any());
             Assert.True(model.ReleaseDate.HasValue);
-            Assert.AreEqual(120, model.Runtime);
-            Assert.AreEqual(2010, model.ReleaseDate.Value.Year);
+            Assert.AreEqual(mov.Name, model.Name);
+            Assert.AreEqual(mov.Runtime, model.Runtime);
+            Assert.AreEqual(mov.Year, model.ReleaseDate.Value.Year);
             Assert.AreEqual(MetaType.Movie, model.Type);
             Assert.NotNull(model.Trailer);
             Assert.NotNull(model.Rating);
+            Assert.That(model.Genres.Any());
+            Assert.That(model.Cast.Any());
             Log(model);
             Log(model.Rating);
             Log(model.Revenue);
+            Log(model.Cast);
         }
         [Order(1)]
         [TestCase(Category = IMDB_TESTS)]

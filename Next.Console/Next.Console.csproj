@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+	<TargetFrameworks>netcoreapp3.1;net50</TargetFrameworks>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
+		<PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.0" />
+	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Next.PCL\Next.PCL.csproj" />
+  </ItemGroup>
+
+</Project>

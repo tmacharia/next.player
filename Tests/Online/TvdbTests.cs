@@ -10,6 +10,7 @@ using Tests.Attributes;
 
 namespace Tests.Online
 {
+    [Order(6)]
     [TestFixture]
     class TvdbTests : TestsRoot
     {

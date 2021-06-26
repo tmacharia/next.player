@@ -8,6 +8,7 @@ using Tests.Attributes;
 
 namespace Tests.Online
 {
+    [Order(5)]
     [TestFixture]
     class TmdbTests : TestsBase
     {

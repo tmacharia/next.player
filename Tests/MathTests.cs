@@ -6,6 +6,7 @@ using Tests.TestModels;
 
 namespace Tests
 {
+    [Order(0)]
     [TestFixture]
     class MathTests : TestsRoot
     {

@@ -3,6 +3,7 @@ using AutoMapper;
 using Common;
 using Next.PCL.AutoMap;
 using Next.PCL.Online;
+using Next.PCL.Services;
 using Tests.TestModels;
 
 namespace Tests
@@ -12,6 +13,7 @@ namespace Tests
         private static IMapper _mapper;
         private static IHttpOnlineClient _httpOnlineClient;
         private static TestSettingsModel _testSettingsModel;
+        private static ISearchQueryFormatter _searchQueryFormatter;
 
         internal static IMapper AutoMapper
         {
@@ -35,6 +37,18 @@ namespace Tests
                 return _httpOnlineClient;
             }
         }
+        internal static ISearchQueryFormatter SearchQueryFormatter
+        {
+            get
+            {
+                if (_searchQueryFormatter == null)
+                {
+                    _searchQueryFormatter = new SearchQueryFormatter();
+                }
+                return _searchQueryFormatter;
+            }
+        }
+
         internal static TestSettingsModel Settings
         {
             get
