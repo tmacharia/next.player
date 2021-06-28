@@ -130,8 +130,8 @@ namespace Next.PCL.Online
             foreach (var c in crews)
             {
                 var filmMaker = _mapper.Map<Entities.FilmMaker>(c);
-                filmMaker.Role = c.Department.ParseToProfession();
-                if (filmMaker.Role != Profession.Other)
+                filmMaker.Profession = c.Department.ParseToProfession();
+                if (filmMaker.Profession != Profession.Other)
                 {
                     filmMaker = filmMaker.AddProfileImages(c.ProfilePath, _client);
                     yield return filmMaker;
