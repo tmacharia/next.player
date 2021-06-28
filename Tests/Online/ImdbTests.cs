@@ -69,9 +69,9 @@ namespace Tests.Online
             Assert.NotNull(list);
             Assert.That(list.Any());
             Assert.That(list.All(x => x.Score.HasValue));
-            Assert.That(list.All(x => x.Review.IsValid()));
+            Assert.That(list.All(x => x.Content.IsValid()));
             Assert.That(list.All(x => x.Timestamp.HasValue));
-            Assert.That(list.All(x => x.Reviewer.IsValid()));
+            Assert.That(list.All(x => x.Author.IsValid()));
             Log(list);
         }
         [Order(3)]

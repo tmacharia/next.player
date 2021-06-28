@@ -19,7 +19,7 @@ namespace Next.PCL.AutoMap
             CreateMap<TvShow, TmdbShow>(MemberList.Source);
             CreateMap<TvSeason, TmdbSeason>(MemberList.Source);
 
-            CreateMap<ReviewBase, TmdbReview>(MemberList.Source);
+            CreateMap<ReviewBase, Entities.ReviewComment>(MemberList.Source);
 
             CreateMap<SearchTv, TmdbSearch>(MemberList.None)
                 .ForMember(x => x.ReleaseDate, x => x.MapFrom(f => f.FirstAirDate));
@@ -30,12 +30,12 @@ namespace Next.PCL.AutoMap
                 .ForMember(x => x.Id, x => x.MapFrom(f => f.Id))
                 .ForMember(x => x.Name, x => x.MapFrom(f => f.Name))
                 .ForMember(x => x.Order, x => x.MapFrom(f => f.Order))
-                .ForMember(x => x.Character, x => x.MapFrom(f => f.Character));
+                .ForMember(x => x.Role, x => x.MapFrom(f => f.Character));
             CreateMap<TMDbLib.Objects.TvShows.Cast, Entities.Cast>(MemberList.None)
                 .ForMember(x => x.Id, x => x.MapFrom(f => f.Id))
                 .ForMember(x => x.Name, x => x.MapFrom(f => f.Name))
                 .ForMember(x => x.Order, x => x.MapFrom(f => f.Order))
-                .ForMember(x => x.Character, x => x.MapFrom(f => f.Character));
+                .ForMember(x => x.Role, x => x.MapFrom(f => f.Character));
             CreateMap<TMDbLib.Objects.General.Crew, Entities.FilmMaker>(MemberList.None)
                 .ForMember(x => x.Id, x => x.MapFrom(f => f.Id))
                 .ForMember(x => x.Name, x => x.MapFrom(f => f.Name));

@@ -1,13 +1,15 @@
-﻿using Newtonsoft.Json;
-
-namespace Next.PCL.Entities
+﻿namespace Next.PCL.Entities
 {
     public class Cast : Person
     {
+        public Cast() :base()
+        { }
+        public Cast(Person person, string character)
+            :base(person)
+        {
+            Role = character;
+        }
+
         public int Order { get; set; }
-        [JsonProperty(
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-        public string Character { get; set; }
     }
 }

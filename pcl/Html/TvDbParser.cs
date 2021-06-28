@@ -289,27 +289,28 @@ namespace Next.PCL.Html
                 Uri url = (SiteUrls.TVDB + href).ParseToUri();
                 int id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0;
 
-                var person = new TvdbPerson
+                var person = new Person
                 {
                     Id = id,
-                    Url = url,
                     Name = link.ParseText()
                 };
+                person.Urls.Add(url.ParseToMetaUrl(MetaSource.TVDB));
+
                 string type = tds[1].ParseText();
                 var prf = type.ParseToProfession();
-                if(prf != Profession.Other)
-                    model.Crews.Add(new TvdbCrew(person) { Profession = prf });
+                if (prf != Profession.Other)
+                    model.Crews.Add(new FilmMaker(person, prf));
                 else
                 {
                     string role = tds[2].ParseText();
-                    model.Guests.Add(new TvdbCast(person) { Role = role.IsValid() ? role : type });
+                    model.Guests.Add(new Cast(person, role.IsValid() ? role : type));
                 }
             }
 
             return model;
         }
 
-        internal IEnumerable<TvdbPerson> ParseCast(string html, HtmlDocument document = default)
+        internal IEnumerable<Cast> ParseCast(string html, HtmlDocument document = default)
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
@@ -332,7 +333,7 @@ namespace Next.PCL.Html
                 }
             }
         }
-        internal IEnumerable<TvdbCrew> ParseCrew(string html, HtmlDocument document = default)
+        internal IEnumerable<FilmMaker> ParseCrew(string html, HtmlDocument document = default)
         {
             var doc = document ?? ConvertToHtmlDoc(html);
 
@@ -349,7 +350,7 @@ namespace Next.PCL.Html
              .Concat(ParseAllCrew(writers, Profession.Writer))
              .Concat(ParseAllCrew(producers, Profession.Producer));
         }
-        private IEnumerable<TvdbCrew> ParseAllCrew(HtmlNodeCollection nodes, Profession profession)
+        private IEnumerable<FilmMaker> ParseAllCrew(HtmlNodeCollection nodes, Profession profession)
         {
             if (nodes != null)
             {
@@ -361,21 +362,22 @@ namespace Next.PCL.Html
                 }
             }
         }
-        private TvdbCrew ParseSingleCrew(HtmlNode node, Profession profession)
+        private FilmMaker ParseSingleCrew(HtmlNode node, Profession profession)
         {
             string href = node.GetHref();
 
             if (!href.IsValid())
                 return null;
 
-            return new TvdbCrew(profession)
+            var crew = new FilmMaker(profession)
             {
                 Name = node.ParseText(),
-                Url = (SiteUrls.TVDB + href).ParseToUri(),
                 Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0,
             };
+            crew.Urls.Add((SiteUrls.TVDB + href).ParseToUri().ParseToMetaUrl(MetaSource.TVDB));
+            return crew;
         }
-        private TvdbPerson ParseSingleCast_Grid(HtmlNode node)
+        private Cast ParseSingleCast_Grid(HtmlNode node)
         {
             string name = node.Element("h3")?.Element("#text").ParseText();
             string character = node.Element("h3")?.Element("small").ParseText().Substring(2).Trim();
@@ -384,7 +386,7 @@ namespace Next.PCL.Html
             if (!imgUrl.IsValid())
                 return null;
 
-            var cast = new TvdbPerson();
+            var cast = new Cast();
             cast.Name = name;
             cast.Role = character;
 
@@ -397,20 +399,20 @@ namespace Next.PCL.Html
                 // get the url for the person.
                 if (node.ParentNode.Is("a"))
                 {
-                    cast.Url = string.Format("{0}{1}", SiteUrls.TVDB, node.ParentNode.GetHref()).ParseToUri();
+                    cast.Urls.Add(string.Format("{0}{1}", SiteUrls.TVDB, node.ParentNode.GetHref()).ParseToUri().ParseToMetaUrl(MetaSource.TVDB));
                 }
             }
             else
             {
                 var vs = imgUrl.Split('/');
                 cast.Id = vs.ElementAt(vs.Length - 2).ParseToInt() ?? 0;
-                cast.Url = string.Format("{0}/people/{1}", SiteUrls.TVDB, cast.Id).ParseToUri();
                 cast.Images.Add(imgUrl.ParseToUri().CreateImage(MetaImageType.Profile));
+                cast.Urls.Add(string.Format("{0}/people/{1}", SiteUrls.TVDB, cast.Id).ParseToUri().ParseToMetaUrl(MetaSource.TVDB));
             }
             
             return cast;
         }
-        private TvdbPerson ParseSingleCast_Tabular(HtmlNode node)
+        private Cast ParseSingleCast_Tabular(HtmlNode node)
         {
             var link = node.ExtendFind("td/a");
             string character = node.Elements("td").LastOrDefault().ParseText();
@@ -418,13 +420,13 @@ namespace Next.PCL.Html
             if (link == null || !character.IsValid())
                 return null;
 
-            var cast = new TvdbPerson();
+            var cast = new Cast();
             cast.Role = character;
             cast.Name = link.ParseText();
 
             string href = link.GetHref();
             cast.Id = href.SplitByAndTrim("/").Last().ParseToInt() ?? 0;
-            cast.Url = string.Format("{0}{1}", SiteUrls.TVDB, href).ParseToUri();
+            cast.Urls.Add(string.Format("{0}{1}", SiteUrls.TVDB, href).ParseToUri().ParseToMetaUrl(MetaSource.TVDB));
 
             return cast;
         }

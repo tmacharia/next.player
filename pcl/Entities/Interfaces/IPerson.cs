@@ -8,7 +8,7 @@ namespace Next.PCL.Entities
     }
     public interface IFilmMaker : IPerson
     {
-        Profession Role { get; set; }
+        Profession Profession { get; set; }
     }
     public interface ICompany : IPerson
     {

@@ -333,6 +333,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Images.Count > 0));
+
             Log(list);
         }
         [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
@@ -344,6 +345,7 @@ namespace Tests.Online
             Assert.That(list.Any());
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
+
             Log(list);
         }
         [Case(TVDB_TESTS, CAST_TESTS, SHOW_TESTS)]
@@ -357,6 +359,7 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Role.IsValid()));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.Any(x => x.Images.Count > 0));
+
             Log(list);
         }
 
@@ -382,7 +385,6 @@ namespace Tests.Online
             Assert.That(list.Any());
             Assert.That(list.All(x => x.Id > 0));
             Assert.That(list.All(x => x.Name.IsValid()));
-            Assert.That(list.All(x => x.Role.IsValid()));
             Assert.That(list.Any(x => x.Profession == Profession.Writer));
             Assert.That(list.Any(x => x.Profession == Profession.Director));
             Assert.That(list.Any(x => x.Profession == Profession.Producer));

@@ -20,7 +20,7 @@ namespace Next.PCL.Online.Models.Tvdb
             Banners = new List<MetaImage>();
             Posters = new List<MetaImage>();
             Backdrops = new List<MetaImage>();
-            Cast = new List<TvdbPerson>();
+            Cast = new List<Cast>();
 
             OtherSites = new List<MetaUrl>();
             Trailers = new List<MetaVideo>();
@@ -38,7 +38,7 @@ namespace Next.PCL.Online.Models.Tvdb
         public List<MetaImage> Banners { get; set; }
         public List<MetaImage> Posters { get; set; }
         public List<MetaImage> Backdrops { get; set; }
-        public List<TvdbPerson> Cast { get; set; }
+        public List<Cast> Cast { get; set; }
 
         public List<MetaUrl> OtherSites { get; set; }
         public List<MetaVideo> Trailers { get; set; }

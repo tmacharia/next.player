@@ -9,8 +9,8 @@ namespace Next.PCL.Online.Models.Tvdb
     {
         public TvdbEpisode()
         {
-            Crews = new List<TvdbCrew>();
-            Guests = new List<TvdbCast>();
+            Crews = new List<FilmMaker>();
+            Guests = new List<Cast>();
             Images = new List<MetaImage>();
         }
         public int Id { get; set; }
@@ -22,8 +22,8 @@ namespace Next.PCL.Online.Models.Tvdb
         public string Plot { get; set; }
         public DateTime? AirDate { get; set; }
 
-        public List<TvdbCrew> Crews { get; set; }
-        public List<TvdbCast> Guests { get; set; }
+        public List<FilmMaker> Crews { get; set; }
+        public List<Cast> Guests { get; set; }
         public List<MetaImage> Images { get; set; }
     }
 }

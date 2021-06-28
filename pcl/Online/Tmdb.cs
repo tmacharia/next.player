@@ -130,25 +130,25 @@ namespace Next.PCL.Online
             foreach (var c in crews)
             {
                 var filmMaker = _mapper.Map<Entities.FilmMaker>(c);
-                filmMaker.Role = c.Department.ParseToProfession();
-                if (filmMaker.Role != Profession.Other)
+                filmMaker.Profession = c.Department.ParseToProfession();
+                if (filmMaker.Profession != Profession.Other)
                 {
                     filmMaker = filmMaker.AddProfileImages(c.ProfilePath, _client);
                     yield return filmMaker;
                 }
             }
         }
-        public async Task<List<TmdbReview>> GetReviewsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
+        public async Task<List<Entities.ReviewComment>> GetReviewsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
         {
             if (type == MetaType.Movie)
             {
                 var res = await _client.GetMovieReviewsAsync(id, cancellationToken: cancellationToken);
-                return _mapper.Map<List<TmdbReview>>(res.GetList());
+                return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
             }
             else if (type == MetaType.TvShow)
             {
                 var res = await _client.GetTvShowReviewsAsync(id, cancellationToken: cancellationToken);
-                return _mapper.Map<List<TmdbReview>>(res.GetList());
+                return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
             }
             return null;
         }

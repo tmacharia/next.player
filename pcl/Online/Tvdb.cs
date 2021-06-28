@@ -58,19 +58,19 @@ namespace Next.PCL.Online
             return _parser.ParseMovie(html, url);
         }
 
-        public async Task<IEnumerable<TvdbCrew>> GetCrewAsync(Uri uri, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<FilmMaker>> GetCrewAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
             string html = await GetAsync(url, cancellationToken);
             return _parser.ParseCrew(html);
         }
-        public async Task<IEnumerable<TvdbPerson>> GetCastAsync(Uri uri, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Cast>> GetCastAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
             string html = await GetAsync(url, cancellationToken);
             return _parser.ParseCast(html);
         }
-        public async Task<IEnumerable<TvdbPerson>> GetCastAndCrewAsync(Uri uri, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Person>> GetCastAndCrewAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
             string html = await GetAsync(url, cancellationToken);
@@ -79,7 +79,7 @@ namespace Next.PCL.Online
             var cast = _parser.ParseCast(null, doc);
             var crew = _parser.ParseCrew(null, doc);
 
-            return cast.Concat(crew);
+            return cast.Concat(crew.Cast<Person>());
         }
 
         public Task<Company> GetCompanyAsync(string companySlugName, CancellationToken cancellationToken = default)

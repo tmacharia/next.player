@@ -149,9 +149,9 @@ namespace Next.PCL.Html
             {
                 Title = link.ParseText(),
                 Url = link.GetHref().ParseToUri(),
-                Reviewer = user.ParseText(),
-                ReviewerUrl = user.GetHref().ParseToUri(),
-                Review = content.Element("div").ParseText(),
+                Author = user.ParseText(),
+                AuthorUrl = user.GetHref().ParseToUri(),
+                Content = content.Element("div").ParseText(),
                 Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
                 Score = node.ExtendFind("div/span[@class='rating-other-user-rating']/span")?.ParseDouble()
             };
@@ -184,9 +184,9 @@ namespace Next.PCL.Html
             {
                 Title = link.ParseText(),
                 Url = link.GetHref().ParseToUri(),
-                Reviewer = user.ParseText(),
-                ReviewerUrl = user.GetHref().ParseToUri(),
-                Review = content.Element("div").ParseText(),
+                Author = user.ParseText(),
+                AuthorUrl = user.GetHref().ParseToUri(),
+                Content = content.Element("div").ParseText(),
                 Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
                 Score = node.ExtendFind("div/span[@class='rating-other-user-rating']/span")?.ParseDouble()
             };
