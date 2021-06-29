@@ -140,7 +140,24 @@ namespace Next.PCL.Html
 
         private ImdbSuggestion ParseSingleImdbSuggestion(HtmlNode node)
         {
-            var suggestion = new ImdbSuggestion();
+            string imdbId = node.GetAttrib("data-tconst");
+            var rec_poster = node.ExtendFind("div[@class='rec_poster']");
+            var rec_info = node.ExtendFind("div[@class='rec_details']/div[@class='rec-info']");
+            var rec_title = rec_info.ExtendFind("div/div[@class='rec-title']");
+            var rec_genres = rec_info.ExtendFind("div/div[@class='rec-cert-genre']");
+            var rec_rating = rec_info.ExtendFind("div/div[@class='rec-rating']");
+
+            var suggestion = new ImdbSuggestion
+            {
+                ImdbId = imdbId,
+                Name = rec_title.ExtendFind("a").ParseText(),
+                Poster = rec_poster.ExtendFind("/a/img").GetAttrib("src").ParseToUri(),
+                Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri(),
+                Plot = rec_rating.ExtendFind("div[@class='rec-outline']/p").ParseText(),
+                Genres = rec_genres.ParseText().Replace('|', ',').SplitByAndTrim(",").ToList(),
+                Score = rec_rating.ExtendFind("div/span[@class='rating-rating']/span").ParseDouble(),
+                ReleaseDate = new DateTime(rec_title.Elements("span").Last().ParseText('(', ')').ParseToInt().Value, 1, 1)
+            };
 
             return suggestion;
         }

@@ -8,5 +8,6 @@ namespace Next.PCL.Online.Models.Imdb
         {
             Source = MetaSource.IMDB;
         }
+        public double? Score { get; set; }
     }
 }
