@@ -49,11 +49,11 @@ namespace Next.PCL.Html
         }
 
 
-        internal IEnumerable<ImdbReview> ParseSuggestions(string html, HtmlDocument htmlDocument = default)
+        internal IEnumerable<ImdbSuggestion> ParseSuggestions(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
-            var nodes = doc.FindAll("//div[@class='lister-item-content']");
+            var nodes = doc.FindAll("//div[@class='rec_overview']");
             if (nodes.IsNotNullOrEmpty())
             {
                 foreach (var node in nodes)
@@ -138,40 +138,11 @@ namespace Next.PCL.Html
             return null;
         }
 
-        private ImdbReview ParseSingleImdbSuggestion(HtmlNode node)
+        private ImdbSuggestion ParseSingleImdbSuggestion(HtmlNode node)
         {
-            var link = node.ExtendFind("a[@class='title']");
-            var display = node.ExtendFind("div[@class='display-name-date']");
-            var user = display.ExtendFind("span/a");
-            var content = node.ExtendFind("div[@class='content']");
+            var suggestion = new ImdbSuggestion();
 
-            var review = new ImdbReview
-            {
-                Title = link.ParseText(),
-                Url = link.GetHref().ParseToUri(),
-                Author = user.ParseText(),
-                AuthorUrl = user.GetHref().ParseToUri(),
-                Content = content.Element("div").ParseText(),
-                Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
-                Score = node.ExtendFind("div/span[@class='rating-other-user-rating']/span")?.ParseDouble()
-            };
-
-            string stats = content.ExtendFindAll("div")?.FirstContainingClass("actions")?.FirstChild?.ParseText();
-            if (stats.IsValid())
-            {
-                stats = stats.Replace("out of", "");
-                stats = stats.Replace("found this helpful", "");
-                stats = stats.TrimEnd('.').Trim();
-
-                var tks = stats.SplitByAndTrim(" ").ToArray();
-                if (tks.Length == 2)
-                {
-                    review.MarkedAsUseful = tks[0].ParseToInt();
-                    review.TotalEngagement = tks[1].ParseToInt();
-                }
-            }
-
-            return review;
+            return suggestion;
         }
         private ImdbReview ParseSingleImdbReview(HtmlNode node)
         {
