@@ -147,17 +147,16 @@ namespace Next.PCL.Html
             var rec_genres = rec_info.ExtendFind("div/div[@class='rec-cert-genre']");
             var rec_rating = rec_info.ExtendFind("div/div[@class='rec-rating']");
 
-            var suggestion = new ImdbSuggestion
-            {
-                ImdbId = imdbId,
-                Name = rec_title.ExtendFind("a").ParseText(),
-                Poster = rec_poster.ExtendFind("/a/img").GetAttrib("src").ParseToUri(),
-                Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri(),
-                Plot = rec_rating.ExtendFind("div[@class='rec-outline']/p").ParseText(),
-                Genres = rec_genres.ParseText().Replace('|', ',').SplitByAndTrim(",").ToList(),
-                Score = rec_rating.ExtendFind("div/span[@class='rating-rating']/span").ParseDouble(),
-                ReleaseDate = new DateTime(rec_title.Elements("span").Last().ParseText('(', ')').ParseToInt().Value, 1, 1)
-            };
+            var suggestion = new ImdbSuggestion();
+            suggestion.ImdbId = imdbId;
+            suggestion.Name = rec_title.ExtendFind("a").ParseText();
+            suggestion.Poster = rec_poster.ExtendFind("/a/img").GetAttrib("src").ParseToUri();
+            suggestion.Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri();
+            suggestion.Plot = rec_rating.ExtendFind("div[@class='rec-outline']/p").ParseText();
+            suggestion.Genres = rec_genres.ParseText().Replace('|', ',').SplitByAndTrim(",").ToList();
+            suggestion.Score = rec_rating.ExtendFind("div/span[@class='rating-rating']/span").ParseDouble();
+            suggestion.ReleaseDate = new DateTime(rec_title.Elements("span").Last().ParseText('(', ')').ParseToInt().Value, 1, 1);
+
 
             return suggestion;
         }
