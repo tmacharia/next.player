@@ -24,7 +24,7 @@ namespace Next.PCL.Online
             string html = await GetAsync(uri, cancellationToken);
             return _parser.ParseImdb(html);
         }
-        public async Task<List<ImdbReview>> GetSuggestionsAsync(string imdbId, CancellationToken cancellationToken = default)
+        public async Task<List<ImdbSuggestion>> GetSuggestionsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
             var uri = new Uri(string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId));
             string html = await GetAsync(uri, cancellationToken);

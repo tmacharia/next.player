@@ -42,6 +42,7 @@ namespace Tests.Online
             Log(model.Revenue);
             Log(model.Cast);
         }
+
         [Order(1)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_ImdbTV_MorningShow()
@@ -60,6 +61,7 @@ namespace Tests.Online
             Log(model.Rating);
             Log(model.Revenue);
         }
+
         [Order(2)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Reviews()
@@ -74,6 +76,21 @@ namespace Tests.Online
             Assert.That(list.All(x => x.Author.IsValid()));
             Log(list);
         }
+
+        [Order(2)]
+        [TestCase(Category = IMDB_TESTS)]
+        public async Task Get_Suggestions()
+        {
+            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.ImdbId.IsValid()));
+            Assert.That(list.All(x => x.ReleaseDate.HasValue));
+
+            Log(list);
+        }
+
         [Order(3)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_FilmingLocations()

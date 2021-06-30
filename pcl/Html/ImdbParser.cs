@@ -49,11 +49,11 @@ namespace Next.PCL.Html
         }
 
 
-        internal IEnumerable<ImdbReview> ParseSuggestions(string html, HtmlDocument htmlDocument = default)
+        internal IEnumerable<ImdbSuggestion> ParseSuggestions(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
-            var nodes = doc.FindAll("//div[@class='lister-item-content']");
+            var nodes = doc.FindAll("//div[@class='rec_overview']");
             if (nodes.IsNotNullOrEmpty())
             {
                 foreach (var node in nodes)
@@ -138,40 +138,27 @@ namespace Next.PCL.Html
             return null;
         }
 
-        private ImdbReview ParseSingleImdbSuggestion(HtmlNode node)
+        private ImdbSuggestion ParseSingleImdbSuggestion(HtmlNode node)
         {
-            var link = node.ExtendFind("a[@class='title']");
-            var display = node.ExtendFind("div[@class='display-name-date']");
-            var user = display.ExtendFind("span/a");
-            var content = node.ExtendFind("div[@class='content']");
+            string imdbId = node.GetAttrib("data-tconst");
+            var rec_poster = node.ExtendFind("div[@class='rec_poster']");
+            var rec_info = node.ExtendFind("div[@class='rec_details']/div[@class='rec-info']");
+            var rec_title = rec_info.ExtendFind("div/div[@class='rec-title']");
+            var rec_genres = rec_info.ExtendFind("div/div[@class='rec-cert-genre']");
+            var rec_rating = rec_info.ExtendFind("div/div[@class='rec-rating']");
 
-            var review = new ImdbReview
-            {
-                Title = link.ParseText(),
-                Url = link.GetHref().ParseToUri(),
-                Author = user.ParseText(),
-                AuthorUrl = user.GetHref().ParseToUri(),
-                Content = content.Element("div").ParseText(),
-                Timestamp = display.ExtendFind("span[@class='review-date']").ParseDateTime(),
-                Score = node.ExtendFind("div/span[@class='rating-other-user-rating']/span")?.ParseDouble()
-            };
+            var suggestion = new ImdbSuggestion();
+            suggestion.ImdbId = imdbId;
+            suggestion.Name = rec_title.ExtendFind("a").ParseText();
+            suggestion.Poster = rec_poster.ExtendFind("/a/img").GetAttrib("src").ParseToUri();
+            suggestion.Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri();
+            suggestion.Plot = rec_rating.ExtendFind("div[@class='rec-outline']/p").ParseText();
+            suggestion.Genres = rec_genres.ParseText().Replace('|', ',').SplitByAndTrim(",").ToList();
+            suggestion.Score = rec_rating.ExtendFind("div/span[@class='rating-rating']/span").ParseDouble();
+            suggestion.ReleaseDate = new DateTime(rec_title.Elements("span").Last().ParseText('(', ')').ParseToInt().Value, 1, 1);
 
-            string stats = content.ExtendFindAll("div")?.FirstContainingClass("actions")?.FirstChild?.ParseText();
-            if (stats.IsValid())
-            {
-                stats = stats.Replace("out of", "");
-                stats = stats.Replace("found this helpful", "");
-                stats = stats.TrimEnd('.').Trim();
 
-                var tks = stats.SplitByAndTrim(" ").ToArray();
-                if (tks.Length == 2)
-                {
-                    review.MarkedAsUseful = tks[0].ParseToInt();
-                    review.TotalEngagement = tks[1].ParseToInt();
-                }
-            }
-
-            return review;
+            return suggestion;
         }
         private ImdbReview ParseSingleImdbReview(HtmlNode node)
         {

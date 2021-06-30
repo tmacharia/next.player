@@ -3,10 +3,6 @@ using System;
 
 namespace Next.PCL.Online.Models.Imdb
 {
-    public class ImdbSuggestion
-    {
-
-    }
     public class ImdbReview : ReviewComment
     {
         public Uri AuthorUrl { get; set; }
