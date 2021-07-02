@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
@@ -48,7 +49,16 @@ namespace Next.PCL.Html
             return list;
         }
 
-
+        internal async Task<IEnumerable<ImdbSuggestion>> ParseSuggestionsAsync(Uri imdbUrl, CancellationToken cancellationToken = default)
+        {
+            var doc = await GetHtmlDocumentAsync(imdbUrl, cancellationToken, true);
+            return ParseSuggestions(null, doc);
+        }
+        internal async Task<IEnumerable<ImdbUserList>> ParseUserListsAsync(Uri imdbUrl, CancellationToken cancellationToken = default)
+        {
+            var doc = await GetHtmlDocumentAsync(imdbUrl, cancellationToken, false);
+            return ParseUserLists(null, doc);
+        }
         internal IEnumerable<ImdbSuggestion> ParseSuggestions(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
@@ -59,6 +69,21 @@ namespace Next.PCL.Html
                 foreach (var node in nodes)
                 {
                     var rv = ParseSingleImdbSuggestion(node);
+                    if (rv != null)
+                        yield return rv;
+                }
+            }
+        }
+        internal IEnumerable<ImdbSuggestion> ParseSuggestions2(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var nodes = doc.FindAll("//div[@class='lister-item mode-detail']");
+            if (nodes.IsNotNullOrEmpty())
+            {
+                foreach (var node in nodes)
+                {
+                    var rv = ParseSingleImdbSuggestion2(node);
                     if (rv != null)
                         yield return rv;
                 }
@@ -75,6 +100,21 @@ namespace Next.PCL.Html
                 foreach (var node in nodes)
                 {
                     var rv = ParseSingleImdbReview(node);
+                    if (rv != null)
+                        yield return rv;
+                }
+            }
+        }
+        internal IEnumerable<ImdbUserList> ParseUserLists(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var nodes = doc.FindAll("//div[contains(@class, 'list-preview')]");
+            if (nodes.IsNotNullOrEmpty())
+            {
+                foreach (var node in nodes)
+                {
+                    var rv = ParseSingleUserList(node);
                     if (rv != null)
                         yield return rv;
                 }
@@ -154,6 +194,7 @@ namespace Next.PCL.Html
             suggestion.Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri();
             suggestion.Plot = rec_rating.ExtendFind("div[@class='rec-outline']/p").ParseText();
             suggestion.Genres = rec_genres.ParseText().Replace('|', ',').SplitByAndTrim(",").ToList();
+            Console.WriteLine(rec_rating.ExtendFind("div[@class='rating rating-list']/span[@class='rating-rating']").ParseText());
             suggestion.Score = rec_rating.ExtendFind("div/span[@class='rating-rating']/span").ParseDouble();
             suggestion.ReleaseDate = new DateTime(rec_title.Elements("span").Last().ParseText('(', ')').ParseToInt().Value, 1, 1);
 
@@ -195,6 +236,38 @@ namespace Next.PCL.Html
 
             return review;
         }
+        private ImdbUserList ParseSingleUserList(HtmlNode node)
+        {
+            try
+            {
+                var img = node.ExtendFind("div/a/img");
+                var link = node.ExtendFind("div/strong/a");
+                var href = link?.GetHref()?.SplitByAndTrim("?")?.FirstOrDefault();
+                var meta = node.ExtendFind("div[@class='list_meta']")?.FirstChild?.ParseText();
+
+                var ulist = new ImdbUserList();
+                ulist.Name = link?.ParseText();
+                ulist.ListId = href.Split('/').LastOrDefault();
+                ulist.Url = (SiteUrls.IMDB + href).ParseToUri();
+                if(img != null)
+                {
+                    ulist.ImageUrl = img?.GetAttrib("src").ParseToUri();
+
+                    //Console.WriteLine(string.Join(",", img.Attributes.Select(x => x.Name)));
+                }
+
+
+                var rg = Regex.Match(meta, @"\d+");
+                if (rg.Success)
+                    ulist.TitlesCount = meta.Substring(rg.Index, rg.Length).ParseToInt();
+
+                return ulist;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
         private GeographicLocation ParseSingleFilmingLocation(HtmlNode node)
         {
             var places = node?.ExtendFind("dt/a")?.ParseText().SplitByAndTrim(",").ToArray();
@@ -216,6 +289,40 @@ namespace Next.PCL.Html
                 });
             }
             return geo;
+        }
+        private ImdbSuggestion ParseSingleImdbSuggestion2(HtmlNode node)
+        {
+            var rec_poster = node.ExtendFind("div/a/img");
+            string imdbId = rec_poster.GetAttrib("data-tconst");
+            var infos = node.ExtendFindAll("div/p/span");
+            var hd3 = node.ExtendFind("div/h3").ParseText();
+
+            //var rec_info = node.ExtendFind("div[@class='rec_details']/div[@class='rec-info']");
+            //var rec_title = rec_info.ExtendFind("div/div[@class='rec-title']");
+            //var rec_genres = rec_info.ExtendFind("div/div[@class='rec-cert-genre']");
+            //var rec_rating = rec_info.ExtendFind("div/div[@class='rec-rating']");
+
+            var suggestion = new ImdbSuggestion();
+            suggestion.ImdbId = imdbId;
+            suggestion.Name = rec_poster.GetAttrib("alt");
+            suggestion.Poster = rec_poster.GetAttrib("src").ParseToUri();
+            suggestion.Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri();
+            suggestion.Runtime = infos.FirstContainingClass("runtime").ParseText().ParseToRuntime();
+            suggestion.Genres = infos.FirstContainingClass("genre").ParseText().SplitByAndTrim(",").ToList();
+            suggestion.Score = node.ExtendFind("div/div/div/span[@class='ipl-rating-star__rating']").ParseDouble();
+
+            var rg = Regex.Match(hd3, @"\d{4}");
+            if (rg.Success)
+            {
+                int? year = hd3.Substring(rg.Index, rg.Length).ParseToInt();
+                suggestion.ReleaseDate = new DateTime(year.Value, 1, 1);
+            }
+            //suggestion.Plot = rec_rating.ExtendFind("div[@class='rec-outline']/p").ParseText();
+            //suggestion.Score = rec_rating.ExtendFind("div/span[@class='rating-rating']/span").ParseDouble();
+
+
+
+            return suggestion;
         }
 
         private double? GetAsNumber(HtmlNodeCollection nodes, string name)

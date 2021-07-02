@@ -31,8 +31,8 @@ namespace Next.PCL.Html
             {
                 var wb = new HtmlWeb
                 {
-                    UsingCache = true,
-                    UsingCacheIfExists=true,
+                    //UsingCache = true,
+                    //UsingCacheIfExists=true,
                     CaptureRedirect=true,
                 };
                 return await wb.LoadFromWebAsync(uri.OriginalString, cancellationToken);
