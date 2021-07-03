@@ -21,7 +21,7 @@ namespace Next.PCL.Online
             :base(httpOnlineClient)
         {
             _parser = new ImdbParser(httpOnlineClient);
-            _appCache = lazyCache;
+            _appCache = lazyCache ?? new NextMemoryCache();
         }
 
         public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken cancellationToken = default)
@@ -39,8 +39,8 @@ namespace Next.PCL.Online
         {
             Uri url = GenerateUrl(imdbId, null, "lists");
 
-            List<ImdbUserList> lists;
             string listsWithTitleKey = string.Format("userlists-containing-{0}", imdbId);
+
             Func<Task<List<ImdbUserList>>> factory = async () =>
             {
                 var ulists = await _parser.ParseUserListsAsync(url, cancellationToken);
@@ -48,14 +48,8 @@ namespace Next.PCL.Online
                             .ThenByDescending(x => x.Name.Length)
                             .ToList();
             };
-            if (_appCache.TryGet(listsWithTitleKey, out lists))
-                return lists;
-            else
-            {
-                lists = await factory.Invoke();
-                _appCache.TryAdd(listsWithTitleKey, lists);
-                return lists;
-            }
+
+            return await _appCache.GetOrAddAsync(listsWithTitleKey, factory);
         }
         public async Task<List<ImdbSuggestion>> GetSuggestionsAsync(string imdbId, int page = 1, CancellationToken cancellationToken = default)
         {
@@ -66,9 +60,9 @@ namespace Next.PCL.Online
 
             ImdbUserList selected = ulists[page - 1];
 
-            List<ImdbSuggestion> suggestions;
             string userListKey = string.Format("userlist-{0}", selected.ListId);
-            Func<Task<List<ImdbSuggestion>>> userListSuggestionsFactory = async () =>
+
+            Func<Task<List<ImdbSuggestion>>> factory = async () =>
             {
                 string html = await GetAsync(GenerateUrl(selected.ListId, null, "list"), cancellationToken);
 
@@ -79,14 +73,7 @@ namespace Next.PCL.Online
                     .ToList();
             };
 
-            if (_appCache.TryGet(userListKey, out suggestions))
-                return suggestions;
-            else
-            {
-                suggestions = await userListSuggestionsFactory.Invoke();
-                _appCache.TryAdd(userListKey, suggestions);
-                return suggestions;
-            }
+            return await _appCache.GetOrAddAsync(userListKey, factory);
         }
         public async Task<List<GeographicLocation>> GetLocationsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
