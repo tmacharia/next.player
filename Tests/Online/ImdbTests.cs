@@ -19,10 +19,16 @@ namespace Tests.Online
         [OneTimeSetUp]
         public void Setup()
         {
-            _imdb = new Imdb(MocksAndSetups.HttpOnlineClient);
+            _imdb = new Imdb(MocksAndSetups.HttpOnlineClient, MocksAndSetups.NaiveCache);
         }
 
         [Order(0)]
+        [TestCase(Category = IMDB_TESTS)]
+        public void WrongPageNo_OnGetSuggestions_ThrowEx()
+        {
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 0));
+        }
+        [Order(1)]
         [TheoriesFrom(nameof(Movies), IMDB_TESTS)]
         public async Task Get_ImdbMov(MovieTestModel mov)
         {
@@ -44,7 +50,7 @@ namespace Tests.Online
             Log(model.Cast);
         }
 
-        [Order(1)]
+        [Order(2)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_ImdbTV_MorningShow()
         {
@@ -63,7 +69,7 @@ namespace Tests.Online
             Log(model.Revenue);
         }
 
-        [Order(2)]
+        [Order(1)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Reviews()
         {
@@ -78,7 +84,7 @@ namespace Tests.Online
             Log(list);
         }
 
-        [Order(2)]
+        [Order(1)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_FilmingLocations()
         {
@@ -91,7 +97,7 @@ namespace Tests.Online
             Log(list);
         }
 
-
+        [Order(1)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_UserLists()
         {
@@ -103,12 +109,7 @@ namespace Tests.Online
             Log(list);
         }
 
-        [TestCase(Category = IMDB_TESTS)]
-        public void Get_Suggestions_WrongPageNo_ThrowEx()
-        {
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 0));
-        }
-
+        [Order(3)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Suggestions_Page1()
         {
@@ -122,10 +123,25 @@ namespace Tests.Online
             Log(list);
         }
 
+        [Order(4)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Suggestions_Page2()
         {
             var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 2);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.ImdbId.IsValid()));
+            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbID)), "Should query id be part of suggestions?");
+
+            Log(list);
+        }
+
+        [Order(5)]
+        [TestCase(Category = IMDB_TESTS)]
+        public async Task Get_Suggestions_Page3_1()
+        {
+            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 1);
 
             Assert.NotNull(list);
             Assert.That(list.Any());

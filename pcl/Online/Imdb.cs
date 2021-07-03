@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
-using LazyCache;
 using Next.PCL.Entities;
 using Next.PCL.Html;
+using Next.PCL.Infra;
 using Next.PCL.Online.Models.Imdb;
 
 namespace Next.PCL.Online
@@ -15,14 +15,13 @@ namespace Next.PCL.Online
     public class Imdb : BaseOnline
     {
         private readonly ImdbParser _parser;
-        private readonly IAppCache _cache;
+        private readonly INextMemoryCache _appCache;
 
-        public Imdb(IHttpOnlineClient httpOnlineClient, IAppCache lazyCache = default)
+        public Imdb(IHttpOnlineClient httpOnlineClient, INextMemoryCache lazyCache = default)
             :base(httpOnlineClient)
         {
             _parser = new ImdbParser(httpOnlineClient);
-            _cache = lazyCache
-                ?? new CachingService();
+            _appCache = lazyCache;
         }
 
         public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken cancellationToken = default)
@@ -36,11 +35,12 @@ namespace Next.PCL.Online
             string html = await GetAsync(GenerateUrl(imdbId, "reviews"), cancellationToken);
             return _parser.ParseReviews(html).ToList();
         }
-        public Task<List<ImdbUserList>> GetUserListsWithAsync(string imdbId, CancellationToken cancellationToken = default)
+        public async Task<List<ImdbUserList>> GetUserListsWithAsync(string imdbId, CancellationToken cancellationToken = default)
         {
             Uri url = GenerateUrl(imdbId, null, "lists");
-            string key = string.Format("{0}-{1}", imdbId, nameof(ImdbUserList).ToLower());
 
+            List<ImdbUserList> lists;
+            string listsWithTitleKey = string.Format("userlists-containing-{0}", imdbId);
             Func<Task<List<ImdbUserList>>> factory = async () =>
             {
                 var ulists = await _parser.ParseUserListsAsync(url, cancellationToken);
@@ -48,36 +48,45 @@ namespace Next.PCL.Online
                             .ThenByDescending(x => x.Name.Length)
                             .ToList();
             };
-
-            if (_cache != null)
-                return _cache.GetOrAddAsync(key, factory);
-            return factory.Invoke();
+            if (_appCache.TryGet(listsWithTitleKey, out lists))
+                return lists;
+            else
+            {
+                lists = await factory.Invoke();
+                _appCache.TryAdd(listsWithTitleKey, lists);
+                return lists;
+            }
         }
         public async Task<List<ImdbSuggestion>> GetSuggestionsAsync(string imdbId, int page = 1, CancellationToken cancellationToken = default)
         {
             if (page <= 0)
                 throw new ArgumentOutOfRangeException(nameof(page));
 
-            List<ImdbUserList> ulists;
-
-            string key = string.Format("{0}-{1}", imdbId, nameof(ImdbUserList).ToLower());
-
-            Func<Task<List<ImdbUserList>>> factory = () => GetUserListsWithAsync(imdbId, cancellationToken);
-
-            if (_cache == null)
-                ulists = await factory.Invoke();
-            else
-                ulists = await _cache.GetOrAddAsync(key, factory);
+            List<ImdbUserList> ulists = await GetUserListsWithAsync(imdbId, cancellationToken);
 
             ImdbUserList selected = ulists[page - 1];
 
-            string html = await GetAsync(GenerateUrl(selected.ListId, null, "list"), cancellationToken);
+            List<ImdbSuggestion> suggestions;
+            string userListKey = string.Format("userlist-{0}", selected.ListId);
+            Func<Task<List<ImdbSuggestion>>> userListSuggestionsFactory = async () =>
+            {
+                string html = await GetAsync(GenerateUrl(selected.ListId, null, "list"), cancellationToken);
 
-            var list = _parser.ParseSuggestions2(html);
+                var list = _parser.ParseSuggestions2(html);
 
-            return list.Where(x => !x.ImdbId.EqualsOIC(imdbId))
-                .OrderByDescending(x => x.Score)
-                .ToList();
+                return list.Where(x => !x.ImdbId.EqualsOIC(imdbId))
+                    .OrderByDescending(x => x.Score)
+                    .ToList();
+            };
+
+            if (_appCache.TryGet(userListKey, out suggestions))
+                return suggestions;
+            else
+            {
+                suggestions = await userListSuggestionsFactory.Invoke();
+                _appCache.TryAdd(userListKey, suggestions);
+                return suggestions;
+            }
         }
         public async Task<List<GeographicLocation>> GetLocationsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
