@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Common;
 using Next.PCL.Enums;
@@ -90,22 +91,7 @@ namespace Tests.Online
             Log(list);
         }
 
-        [Order(3)]
-        //[Ignore("")]
-        [TestCase(Category = IMDB_TESTS)]
-        public async Task Get_Suggestions()
-        {
-            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID);
 
-            Assert.NotNull(list);
-            Assert.That(list.Any());
-            Assert.That(list.All(x => x.ImdbId.IsValid()));
-            //Assert.That(list.All(x => x.ReleaseDate.HasValue));
-
-            Log(list);
-        }
-
-        [Order(3)]
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_UserLists()
         {
@@ -113,6 +99,38 @@ namespace Tests.Online
 
             Assert.NotNull(list);
             Assert.That(list.Any());
+
+            Log(list);
+        }
+
+        [TestCase(Category = IMDB_TESTS)]
+        public void Get_Suggestions_WrongPageNo_ThrowEx()
+        {
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 0));
+        }
+
+        [TestCase(Category = IMDB_TESTS)]
+        public async Task Get_Suggestions_Page1()
+        {
+            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 1);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.ImdbId.IsValid()));
+            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbID)),"Should query id be part of suggestions?");
+
+            Log(list);
+        }
+
+        [TestCase(Category = IMDB_TESTS)]
+        public async Task Get_Suggestions_Page2()
+        {
+            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 2);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.ImdbId.IsValid()));
+            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbID)), "Should query id be part of suggestions?");
 
             Log(list);
         }
