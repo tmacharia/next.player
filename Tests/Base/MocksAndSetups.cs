@@ -2,6 +2,7 @@
 using AutoMapper;
 using Common;
 using Next.PCL.AutoMap;
+using Next.PCL.Infra;
 using Next.PCL.Online;
 using Next.PCL.Services;
 using Tests.TestModels;
@@ -11,6 +12,7 @@ namespace Tests
     class MocksAndSetups
     {
         private static IMapper _mapper;
+        private static INextMemoryCache _cache;
         private static IHttpOnlineClient _httpOnlineClient;
         private static TestSettingsModel _testSettingsModel;
         private static ISearchQueryFormatter _searchQueryFormatter;
@@ -24,6 +26,18 @@ namespace Tests
                     _mapper = new Mapper(AutomapperConfig.Configure());
                 }
                 return _mapper;
+            }
+        }
+        internal static INextMemoryCache NaiveCache
+        {
+            get
+            {
+                if (_cache == null)
+                {
+                    var mock = new NextMemoryCache();
+                    _cache = mock;
+                }
+                return _cache;
             }
         }
         internal static IHttpOnlineClient HttpOnlineClient
