@@ -10,18 +10,22 @@ namespace Next.PCL
         {
             string folder = Path.Combine(FileSys.AppFolder, "logs");
             string logs_file = Path.Combine(folder, $"{GlobalClock.Now:dd-MMM-yyy}.txt");
-            string errors_file = Path.Combine(folder, "errors.txt");
+            string errors_log_file = Path.Combine(folder, "errors.txt");
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .Enrich.FromLogContext()
-                .WriteTo.Conditional(
+            var config = new LoggerConfiguration()
+                        .Enrich.FromLogContext()
+                        .WriteTo.Console();
+
+#if RELEASE
+            config = config.WriteTo.Conditional(
                     x => x.Level == LogEventLevel.Error,
-                    s => s.File(errors_file))
+                    s => s.File(errors_log_file))
                 .WriteTo.Conditional(
                     x => x.Level != LogEventLevel.Error,
-                    s => s.File(logs_file))
-                .CreateLogger();
+                    s => s.File(logs_file));
+#endif
+
+            Log.Logger = config.CreateLogger();
 
             Log.Information("Serilog started!");
         }
