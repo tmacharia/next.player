@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Next.PCL.Infra
 {
-    public interface INextMemoryCache
+    public interface INaiveCache
     {
         bool ContainsKey(string key);
 

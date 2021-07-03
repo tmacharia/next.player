@@ -12,7 +12,7 @@ namespace Tests
     class MocksAndSetups
     {
         private static IMapper _mapper;
-        private static INextMemoryCache _cache;
+        private static INaiveCache _cache;
         private static IHttpOnlineClient _httpOnlineClient;
         private static TestSettingsModel _testSettingsModel;
         private static ISearchQueryFormatter _searchQueryFormatter;
@@ -28,7 +28,7 @@ namespace Tests
                 return _mapper;
             }
         }
-        internal static INextMemoryCache NaiveCache
+        internal static INaiveCache NaiveCache
         {
             get
             {

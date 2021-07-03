@@ -15,9 +15,9 @@ namespace Next.PCL.Online
     public class Imdb : BaseOnline
     {
         private readonly ImdbParser _parser;
-        private readonly INextMemoryCache _appCache;
+        private readonly INaiveCache _appCache;
 
-        public Imdb(IHttpOnlineClient httpOnlineClient, INextMemoryCache lazyCache = default)
+        public Imdb(IHttpOnlineClient httpOnlineClient, INaiveCache lazyCache = default)
             :base(httpOnlineClient)
         {
             _parser = new ImdbParser(httpOnlineClient);

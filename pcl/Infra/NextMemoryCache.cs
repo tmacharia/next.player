@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Next.PCL.Infra
 {
-    public class NextMemoryCache : INextMemoryCache
+    public class NextMemoryCache : INaiveCache
     {
         private readonly ConcurrentDictionary<string, object> _naiveCache;
 
