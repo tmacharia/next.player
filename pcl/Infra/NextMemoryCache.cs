@@ -1,14 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Next.PCL.Infra
 {
-    public interface INextMemoryCache
-    {
-        bool ContainsKey(string key);
-        bool TryGet<TItem>(string key, out TItem item);
-        bool TryGet(string key, out object obj);
-        bool TryAdd(string key, object obj);
-    }
     public class NextMemoryCache : INextMemoryCache
     {
         private readonly ConcurrentDictionary<string, object> _naiveCache;
@@ -19,17 +14,26 @@ namespace Next.PCL.Infra
         }
 
         public bool ContainsKey(string key) => _naiveCache.ContainsKey(key);
-        public bool TryGet(string key, out object obj) => _naiveCache.TryGetValue(key, out obj);
-        public bool TryGet<TItem>(string key, out TItem item)
+
+        public TItem Get<TItem>(string key)
         {
-            if(TryGet(key, out object obj))
-            {
-                item = (TItem)obj;
-                return true;
-            }
-            item = default(TItem);
-            return false;
+            if (_naiveCache.TryGetValue(key, out object obj))
+                return (TItem)obj;
+            return default(TItem);
         }
+
+        
+        public async Task<TItem> GetOrAddAsync<TItem>(string key, Func<Task<TItem>> executor)
+        {
+            if (ContainsKey(key))
+                return Get<TItem>(key);
+            else
+            {
+                var result = await executor.Invoke();
+                return (TItem)_naiveCache.AddOrUpdate(key, result, (a, b) => result);
+            }
+        }
+
         public bool TryAdd(string key, object obj) => _naiveCache.TryAdd(key, obj);
     }
 }
