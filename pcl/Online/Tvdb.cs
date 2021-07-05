@@ -187,7 +187,12 @@ namespace Next.PCL.Online
         }
         public async Task<TvdbSeason> GetSeasonAsync(Uri seasonUrl, CancellationToken cancellationToken = default)
         {
-            string html = await GetAsync(seasonUrl, cancellationToken);
+            string cacheKey = string.Format("tvdb-season-{0}", seasonUrl);
+
+            Func<Task<string>> factory = () => GetAsync(seasonUrl, cancellationToken);
+
+            string html = await _appCache.GetOrAddAsync(cacheKey, factory);
+
             return _parser.ParseSeason(html, seasonUrl);
         }
 
@@ -199,9 +204,14 @@ namespace Next.PCL.Online
         }
         public async Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int season, int episode, bool fullGet = false, CancellationToken cancellationToken = default)
         {
-            var url = string.Format("{0}/series/{1}/seasons/official/{2}", SiteUrls.TVDB, tvSlugName, season)
+            var seasonUrl = string.Format("{0}/series/{1}/seasons/official/{2}", SiteUrls.TVDB, tvSlugName, season)
                             .ParseToUri();
-            string html = await GetAsync(url, cancellationToken);
+
+            string cacheKey = string.Format("tvdb-season-{0}", seasonUrl);
+
+            Func<Task<string>> factory = () => GetAsync(seasonUrl, cancellationToken);
+
+            string html = await _appCache.GetOrAddAsync(cacheKey, factory);
 
             var ep = _parser.ParseSeasonEpisodes(html)
                           .FirstOrDefault(x => x.Number == episode);
