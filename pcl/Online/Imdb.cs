@@ -39,7 +39,7 @@ namespace Next.PCL.Online
         {
             Uri url = GenerateUrl(imdbId, null, "lists");
 
-            string listsWithTitleKey = string.Format("userlists-containing-{0}", imdbId);
+            string cacheKey = string.Format("userlists-containing-{0}", imdbId);
 
             Func<Task<List<ImdbUserList>>> factory = async () =>
             {
@@ -49,7 +49,7 @@ namespace Next.PCL.Online
                             .ToList();
             };
 
-            return await _appCache.GetOrAddAsync(listsWithTitleKey, factory);
+            return await _appCache.GetOrAddAsync(cacheKey, factory);
         }
         public async Task<List<ImdbSuggestion>> GetSuggestionsAsync(string imdbId, int page = 1, CancellationToken cancellationToken = default)
         {
@@ -60,7 +60,7 @@ namespace Next.PCL.Online
 
             ImdbUserList selected = ulists[page - 1];
 
-            string userListKey = string.Format("userlist-{0}", selected.ListId);
+            string cacheKey = string.Format("userlist-{0}", selected.ListId);
 
             Func<Task<List<ImdbSuggestion>>> factory = async () =>
             {
@@ -73,7 +73,7 @@ namespace Next.PCL.Online
                     .ToList();
             };
 
-            return await _appCache.GetOrAddAsync(userListKey, factory);
+            return await _appCache.GetOrAddAsync(cacheKey, factory);
         }
         public async Task<List<GeographicLocation>> GetLocationsAsync(string imdbId, CancellationToken cancellationToken = default)
         {

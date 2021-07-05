@@ -65,20 +65,44 @@ namespace Next.PCL.Online
 
         public async Task<IEnumerable<FilmMaker>> GetCrewAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
-            string html = await GetAsync(url, cancellationToken);
+            string cacheKey = string.Format("tvdb-people-{0}", uri);
+
+            Func<Task<string>> factory = () =>
+            {
+                var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
+                return GetAsync(url, cancellationToken);
+            };
+
+            string html = await _appCache.GetOrAddAsync(cacheKey, factory);
+
             return _parser.ParseCrew(html);
         }
         public async Task<IEnumerable<Cast>> GetCastAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
-            string html = await GetAsync(url, cancellationToken);
+            string cacheKey = string.Format("tvdb-people-{0}", uri);
+
+            Func<Task<string>> factory = () =>
+            {
+                var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
+                return GetAsync(url, cancellationToken);
+            };
+
+            string html = await _appCache.GetOrAddAsync(cacheKey, factory);
+
             return _parser.ParseCast(html);
         }
         public async Task<IEnumerable<Person>> GetCastAndCrewAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
-            string html = await GetAsync(url, cancellationToken);
+            string cacheKey = string.Format("tvdb-people-{0}", uri);
+
+            Func<Task<string>> factory = () =>
+            {
+                var url = string.Format("{0}/people", uri.OriginalString.TrimEnd('/')).ParseToUri();
+                return GetAsync(url, cancellationToken);
+            };
+
+            string html = await _appCache.GetOrAddAsync(cacheKey, factory);
+
             var doc = _parser.ConvertToHtmlDoc(html);
 
             var cast = _parser.ParseCast(null, doc);
