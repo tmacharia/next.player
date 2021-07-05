@@ -34,7 +34,7 @@ namespace Tests
             {
                 if (_cache == null)
                 {
-                    var mock = new NextMemoryCache();
+                    var mock = new NaiveMemoryCache();
                     _cache = mock;
                 }
                 return _cache;

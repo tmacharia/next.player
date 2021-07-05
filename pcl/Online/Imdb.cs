@@ -21,7 +21,7 @@ namespace Next.PCL.Online
             :base(httpOnlineClient)
         {
             _parser = new ImdbParser(httpOnlineClient);
-            _appCache = lazyCache ?? new NextMemoryCache();
+            _appCache = lazyCache ?? new NaiveMemoryCache();
         }
 
         public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken cancellationToken = default)
