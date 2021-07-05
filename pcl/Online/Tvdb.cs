@@ -10,6 +10,7 @@ using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Html;
+using Next.PCL.Infra;
 using Next.PCL.Metas;
 using Next.PCL.Online.Models.Tvdb;
 
@@ -19,6 +20,7 @@ namespace Next.PCL.Online
     {
         private readonly IMapper _mapper;
         private readonly TvDbParser _parser;
+        protected readonly INaiveCache _appCache;
 
         internal TvdbConfig Config
         {
@@ -26,22 +28,25 @@ namespace Next.PCL.Online
             private set { _parser.Config = value; }
         }
 
-        public Tvdb(IHttpOnlineClient httpOnlineClient)
+        public Tvdb(IHttpOnlineClient httpOnlineClient, INaiveCache lazyCache)
             :base(httpOnlineClient)
         {
+            _appCache = lazyCache;
             _mapper = new Mapper(AutomapperConfig.Configure());
             _parser = new TvDbParser(httpOnlineClient, _mapper);
         }
-        public Tvdb(IHttpOnlineClient httpOnlineClient, IMapper autoMapper)
+        public Tvdb(IHttpOnlineClient httpOnlineClient, IMapper autoMapper, INaiveCache lazyCache)
             : base(httpOnlineClient)
         {
             _mapper = autoMapper;
+            _appCache = lazyCache;
             _parser = new TvDbParser(httpOnlineClient, autoMapper);
         }
-        public Tvdb(TvdbConfig tvdbConfig, IHttpOnlineClient httpOnlineClient, IMapper autoMapper)
+        public Tvdb(TvdbConfig tvdbConfig, IHttpOnlineClient httpOnlineClient, IMapper autoMapper, INaiveCache lazyCache)
             :base(httpOnlineClient)
         {
             _mapper = autoMapper;
+            _appCache = lazyCache;
             _parser = new TvDbParser(tvdbConfig, httpOnlineClient, autoMapper);
         }
 

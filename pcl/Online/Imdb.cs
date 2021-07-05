@@ -15,13 +15,13 @@ namespace Next.PCL.Online
     public class Imdb : BaseOnline
     {
         private readonly ImdbParser _parser;
-        private readonly INaiveCache _appCache;
+        protected readonly INaiveCache _appCache;
 
-        public Imdb(IHttpOnlineClient httpOnlineClient, INaiveCache lazyCache = default)
+        public Imdb(IHttpOnlineClient httpOnlineClient, INaiveCache lazyCache)
             :base(httpOnlineClient)
         {
+            _appCache = lazyCache;
             _parser = new ImdbParser(httpOnlineClient);
-            _appCache = lazyCache ?? new NaiveMemoryCache();
         }
 
         public async Task<ImdbModel> GetImdbAsync(string imdbId, CancellationToken cancellationToken = default)

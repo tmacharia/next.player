@@ -24,7 +24,7 @@ namespace Tests.Online
         [OneTimeSetUp]
         public void Setup()
         {
-            _tvdb = new Tvdb(MocksAndSetups.HttpOnlineClient, MocksAndSetups.AutoMapper);
+            _tvdb = new Tvdb(MocksAndSetups.HttpOnlineClient, MocksAndSetups.AutoMapper, MocksAndSetups.NaiveCache);
         }
 
 
