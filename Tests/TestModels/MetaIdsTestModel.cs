@@ -1,8 +1,8 @@
 ﻿namespace Tests.TestModels
 {
-    struct MetaTestModel
+    struct MetaIdsTestModel
     {
-        public MetaTestModel(string imdb, int maze, int tvdb, int tmdb, int yts, string name)
+        public MetaIdsTestModel(string imdb, int maze, int tvdb, int tmdb, int yts, string name)
         {
             MazeID = maze;
             TmDbID = tmdb;

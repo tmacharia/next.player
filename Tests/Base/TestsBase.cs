@@ -6,9 +6,9 @@ namespace Tests
 {
     class TestsBase : TestsRoot
     {
-        internal static MetaTestModel GOT => new("tt0944947", 82, 121361, 1399, 0, "Game of Thrones");
-        internal static MetaTestModel SocialNetwork => new("tt1285016", 82, 2240, 37799, 3726, "The Social Network");
-        internal static MetaTestModel TheMorningShow => new("tt7203552", 41524, 361563, 0, 0, "The Morning Show");
+        internal static MetaIdsTestModel GOT => new("tt0944947", 82, 121361, 1399, 0, "Game of Thrones");
+        internal static MetaIdsTestModel SocialNetwork => new("tt1285016", 82, 2240, 37799, 3726, "The Social Network");
+        internal static MetaIdsTestModel TheMorningShow => new("tt7203552", 41524, 361563, 0, 0, "The Morning Show");
 
         internal static List<string> Genres => new()
         {

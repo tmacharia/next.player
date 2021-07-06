@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -50,17 +51,27 @@ namespace Next.PCL.Online
             _parser = new TvDbParser(tvdbConfig, httpOnlineClient, autoMapper);
         }
 
-        public async Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken cancellationToken = default)
+        public Task<TvDbShow> GetShowAsync(string tvSlugName, CancellationToken cancellationToken = default)
         {
+            tvSlugName = Sluggify(tvSlugName);
             var url = string.Format("{0}/series/{1}", SiteUrls.TVDB, tvSlugName).ParseToUri();
-            string html = await GetAsync(url, cancellationToken);
-            return _parser.ParseShow(html, url);
+            return GetShowAsync(url, cancellationToken);
         }
-        public async Task<TvDbMovie> GetMovieAsync(string movieSlugName, CancellationToken cancellationToken = default)
+        public async Task<TvDbShow> GetShowAsync(Uri tvShowUrl, CancellationToken cancellationToken = default)
         {
+            string html = await GetAsync(tvShowUrl, cancellationToken);
+            return _parser.ParseShow(html, tvShowUrl);
+        }
+        public Task<TvDbMovie> GetMovieAsync(string movieSlugName, CancellationToken cancellationToken = default)
+        {
+            movieSlugName = Sluggify(movieSlugName);
             var url = string.Format("{0}/movies/{1}", SiteUrls.TVDB, movieSlugName).ParseToUri();
-            string html = await GetAsync(url, cancellationToken);
-            return _parser.ParseMovie(html, url);
+            return GetMovieAsync(url, cancellationToken);
+        }
+        public async Task<TvDbMovie> GetMovieAsync(Uri movieUrl, CancellationToken cancellationToken = default)
+        {
+            string html = await GetAsync(movieUrl, cancellationToken);
+            return _parser.ParseMovie(html, movieUrl);
         }
 
         public async Task<IEnumerable<FilmMaker>> GetCrewAsync(Uri uri, CancellationToken cancellationToken = default)
@@ -113,6 +124,8 @@ namespace Next.PCL.Online
 
         public Task<Company> GetCompanyAsync(string companySlugName, CancellationToken cancellationToken = default)
         {
+            companySlugName = Sluggify(companySlugName);
+
             var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
             return GetCompanyAsync(url, cancellationToken);
         }
@@ -133,11 +146,15 @@ namespace Next.PCL.Online
         }
         public Task<IEnumerable<TinyTvdbModel>> GetShowsByCompanyAsync(string companySlugName, CancellationToken cancellationToken = default)
         {
+            companySlugName = Sluggify(companySlugName);
+
             var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
             return GetShowsByCompanyAsync(url, cancellationToken);
         }
         public Task<IEnumerable<TinyTvdbModel>> GetMoviesByCompanyAsync(string companySlugName, CancellationToken cancellationToken = default)
         {
+            companySlugName = Sluggify(companySlugName);
+
             var url = string.Format("{0}/companies/{1}", SiteUrls.TVDB, companySlugName).ParseToUri();
             return GetMoviesByCompanyAsync(url, cancellationToken);
         }
@@ -181,6 +198,8 @@ namespace Next.PCL.Online
 
         public Task<TvdbSeason> GetSeasonAsync(string tvSlugName, int season, CancellationToken cancellationToken = default)
         {
+            tvSlugName = Sluggify(tvSlugName);
+
             var url = string.Format("{0}/series/{1}/seasons/official/{2}", SiteUrls.TVDB, tvSlugName, season)
                             .ParseToUri();
             return GetSeasonAsync(url, cancellationToken);
@@ -198,12 +217,16 @@ namespace Next.PCL.Online
 
         public Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int episodeID, CancellationToken cancellationToken = default)
         {
+            tvSlugName = Sluggify(tvSlugName);
+
             var url = string.Format("{0}/series/{1}/episodes/{2}", SiteUrls.TVDB, tvSlugName, episodeID)
                             .ParseToUri();
             return GetEpisodeAsync(url, cancellationToken);
         }
         public async Task<TvdbEpisode> GetEpisodeAsync(string tvSlugName, int season, int episode, bool fullGet = false, CancellationToken cancellationToken = default)
         {
+            tvSlugName = Sluggify(tvSlugName);
+
             var seasonUrl = string.Format("{0}/series/{1}/seasons/official/{2}", SiteUrls.TVDB, tvSlugName, season)
                             .ParseToUri();
 
@@ -225,6 +248,18 @@ namespace Next.PCL.Online
         {
             string html = await GetAsync(episodeUrl, cancellationToken);
             return _parser.ParseEpisode(html, episodeUrl);
+        }
+
+        public string Sluggify(string name)
+        {
+            if (name.Contains('-'))
+                name = name.Replace('-', ' ');
+
+            name = Regex.Replace(name, "[^A-Za-z0-9 ]", "");
+
+            return name
+                .Replace(" ", "-")
+                .ToLower();
         }
     }
 }

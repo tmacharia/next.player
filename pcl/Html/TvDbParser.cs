@@ -61,6 +61,9 @@ namespace Next.PCL.Html
                                .Where(x => x != null).OrderBy(x => x.Number)
                                .ToList();
 
+            if (model.Seasons.Any())
+                model.ReleaseDate = model.Seasons.First(x => x.Number == 1).AirDate;
+
             return model;
         }
         internal TvDbMovie ParseMovie(string html, Uri movieUrl)

@@ -22,5 +22,10 @@ namespace Next.PCL.Online.Models.Tvdb
 
         public List<MetaImage> Posters { get; set; }
         public List<TvdbEpisode> Episodes { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", Number, Name);
+        }
     }
 }

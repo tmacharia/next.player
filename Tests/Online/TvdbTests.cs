@@ -7,6 +7,8 @@ using Next.PCL.Online;
 using Next.PCL.Extensions;
 using NUnit.Framework;
 using Tests.Attributes;
+using Tests.TestModels;
+using System.Collections;
 
 namespace Tests.Online
 {
@@ -16,122 +18,107 @@ namespace Tests.Online
     {
         private Tvdb _tvdb;
 
-        private const string SHOW_SLUG = "liseys-story";
-        private static readonly Uri MOVIE_URL = new("https://thetvdb.com/movies/iron-man");
-        private static readonly Uri SHOW_URL = new("https://thetvdb.com/series/true-detective");
-        private static readonly Uri SHOW_EP_URL = new("https://thetvdb.com/series/liseys-story/episodes/8221744");
-
         [OneTimeSetUp]
         public void Setup()
         {
             _tvdb = new Tvdb(MocksAndSetups.HttpOnlineClient, MocksAndSetups.AutoMapper, MocksAndSetups.NaiveCache);
         }
 
-
         #region Tv Shows
-        [Case(TVDB_TESTS, SHOW_TESTS)]
-        public async Task Get_Show_BySlug_01()
+        [ComboCase(nameof(TvShows), TVDB_TESTS, SHOW_TESTS)]
+        public async Task GetShow_ByUrl(TvdbTestModel model)
         {
-            var tv = await _tvdb.GetShowAsync("true-detective");
+            var tv = await _tvdb.GetShowAsync(model.Url);
 
             Assert.NotNull(tv);
-            Assert.AreEqual("True Detective", tv.Name);
-            Assert.AreEqual(270633, tv.Id);
+            Assert.AreEqual(model.Id, tv.Id);
+            Assert.AreEqual(model.Name, tv.Name);
+            Assert.AreEqual(model.ImdbID, tv.ImdbId);
+            Assert.AreEqual(model.Status, tv.Status);
 
-            Assert.NotNull(tv.AirsOn);
-            Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);
-            Assert.That(tv.Runtime.HasValue);
-            Assert.NotZero(tv.Runtime.Value);
-
-            Assert.That(tv.Genres.Any());
-            Assert.That(tv.Genres.Contains("Crime"));
-            Assert.That(tv.Networks.Any());
-            Assert.That(tv.Networks.AnyEquals("HBO"));
-
+            if (model.DayOfWeek.HasValue)
+            {
+                Assert.NotNull(tv.AirsOn);
+                Assert.AreEqual(model.DayOfWeek, tv.AirsOn.DayOfWeek);
+            }
+            if (model.Year.HasValue)
+            {
+                Assert.That(tv.ReleaseDate.HasValue);
+                Assert.AreEqual(model.Year, tv.ReleaseDate.Value.Year);
+            }
+            if (model.Genre.IsValid())
+            {
+                Assert.That(tv.Genres.Any());
+                Assert.That(tv.Genres.Contains(model.Genre));
+            }
+            if (model.Network.IsValid())
+            {
+                Assert.That(tv.Networks.Any());
+                Assert.That(tv.Networks.AnyEquals(model.Network));
+            }
+           
             Assert.That(tv.Posters.Any());
             Assert.That(tv.Backdrops.Any());
-
             Assert.That(tv.OtherSites.Any());
             Assert.That(tv.OtherSites.All(x => x.Url != null));
             Assert.That(tv.OtherSites.All(x => x.Source == MetaSource.TVDB));
             Assert.That(tv.OtherSites.Any(x => x.Domain == OtherSiteDomain.IMDB));
 
-            Assert.That(tv.Seasons.Any());
-            Assert.AreEqual(4, tv.Seasons.Count);
-            Assert.That(tv.Seasons.All(x => x.AirDate.HasValue && x.LastAirDate.HasValue));
+            if (model.SeasonsCount.HasValue)
+            {
+                Assert.That(tv.Seasons.Any());
+                Assert.AreEqual(model.SeasonsCount, tv.Seasons.Count);
 
-            tv.Seasons.ForEach(x => Log("{0}, {1}", x.Number, x.Name));
-            Log("\n==========\n");
-            tv.OtherSites.ForEach(x => Log(x));
+                Log(tv.Seasons);
+            }
         }
-        [Case(TVDB_TESTS, SHOW_TESTS)]
-        public async Task Get_Show_BySlug_02()
+
+        [ComboCase(nameof(TvShows), TVDB_TESTS, SHOW_TESTS)]
+        public async Task GetShow_BySlug(TvdbTestModel model)
         {
-            var tv = await _tvdb.GetShowAsync("blindspotting-2021");
+            var tv = await _tvdb.GetShowAsync(model.Name);
 
             Assert.NotNull(tv);
-            Assert.AreEqual("Blindspotting", tv.Name);
-            Assert.AreEqual(392720, tv.Id);
-            Assert.AreEqual(MetaStatus.Airing, tv.Status);
+            Assert.AreEqual(model.Id, tv.Id);
+            Assert.AreEqual(model.Name, tv.Name);
+            Assert.AreEqual(model.ImdbID, tv.ImdbId);
+            Assert.AreEqual(model.Status, tv.Status);
 
-            Assert.NotNull(tv.AirsOn);
-            Assert.AreEqual(DayOfWeek.Sunday, tv.AirsOn.DayOfWeek);
-            Assert.That(tv.Runtime.HasValue);
-            Assert.NotZero(tv.Runtime.Value);
-
-            Assert.That(tv.Genres.Any());
-            Assert.That(tv.Genres.Contains("Drama"));
-            Assert.That(tv.Networks.Any());
-            Assert.That(tv.Networks.AnyEquals("Starz"));
+            if (model.DayOfWeek.HasValue)
+            {
+                Assert.NotNull(tv.AirsOn);
+                Assert.AreEqual(model.DayOfWeek, tv.AirsOn.DayOfWeek);
+            }
+            if (model.Year.HasValue)
+            {
+                Assert.That(tv.ReleaseDate.HasValue);
+                Assert.AreEqual(model.Year, tv.ReleaseDate.Value.Year);
+            }
+            if (model.Genre.IsValid())
+            {
+                Assert.That(tv.Genres.Any());
+                Assert.That(tv.Genres.Contains(model.Genre));
+            }
+            if (model.Network.IsValid())
+            {
+                Assert.That(tv.Networks.Any());
+                Assert.That(tv.Networks.AnyEquals(model.Network));
+            }
 
             Assert.That(tv.Posters.Any());
             Assert.That(tv.Backdrops.Any());
-
             Assert.That(tv.OtherSites.Any());
-            Assert.That(tv.Trailers.Any());
-            Assert.That(tv.Trailers.All(x => x.Url != null));
+            Assert.That(tv.OtherSites.All(x => x.Url != null));
+            Assert.That(tv.OtherSites.All(x => x.Source == MetaSource.TVDB));
+            Assert.That(tv.OtherSites.Any(x => x.Domain == OtherSiteDomain.IMDB));
 
-            Assert.That(tv.Seasons.Any());
-            Assert.AreEqual(1, tv.Seasons.Count);
-            Assert.That(tv.Seasons.Where(x => x.Number > 0).All(x => x.AirDate.HasValue && x.LastAirDate.HasValue));
+            if (model.SeasonsCount.HasValue)
+            {
+                Assert.That(tv.Seasons.Any());
+                Assert.AreEqual(model.SeasonsCount, tv.Seasons.Count);
 
-            tv.Seasons.ForEach(x => Log("{0}, {1}", x.Number, x.Name));
-            Log("\n==========\n");
-            tv.Trailers.ForEach(x => Log(x.Url));
-        }
-        [Case(TVDB_TESTS, SHOW_TESTS)]
-        public async Task Get_Show_BySlug_03()
-        {
-            var tv = await _tvdb.GetShowAsync("formula-1-drive-to-survive");
-
-            Assert.NotNull(tv);
-            Assert.AreEqual("Formula 1: Drive to Survive", tv.Name);
-            Assert.AreEqual(359913, tv.Id);
-            Assert.AreEqual(MetaStatus.Airing, tv.Status);
-
-            Assert.NotNull(tv.AirsOn);
-            Assert.AreEqual(DayOfWeek.Friday, tv.AirsOn.DayOfWeek);
-            Assert.That(tv.Runtime.HasValue);
-            Assert.NotZero(tv.Runtime.Value);
-
-            Assert.That(tv.Genres.Any());
-            Assert.That(tv.Genres.Contains("Sport"));
-            Assert.That(tv.Networks.Any());
-            Assert.That(tv.Networks.AnyEquals("Netflix"));
-
-            Assert.That(tv.Posters.Any());
-            Assert.That(tv.Backdrops.Any());
-
-            Assert.That(tv.OtherSites.Any());
-            Assert.That(tv.Trailers.Any());
-            Assert.That(tv.Trailers.All(x => x.Url != null));
-
-            Assert.That(tv.Seasons.Any());
-            Assert.AreEqual(4, tv.Seasons.Count);
-
-            tv.Seasons.ForEach(x => Log("{0}, {1}", x.Number, x.Name));
-            Log("\n==========\n");
-            tv.Trailers.ForEach(x => Log(x.Url));
+                Log(tv.Seasons);
+            }
         }
         #endregion
 
@@ -144,7 +131,6 @@ namespace Tests.Online
             Assert.NotNull(mov);
             Assert.AreEqual("Iron Man", mov.Name);
             Assert.AreEqual(108, mov.Id);
-            Assert.AreEqual(MOVIE_URL, mov.Url);
             Assert.AreEqual(MetaStatus.Released, mov.Status);
             Assert.IsTrue(mov.ReleaseDate.HasValue);
             Assert.AreEqual(30, mov.ReleaseDate.Value.Day);
@@ -218,7 +204,6 @@ namespace Tests.Online
 
             Assert.NotNull(list);
             Assert.That(list.Any());
-            Assert.That(list.All(x => x != null));
             Assert.That(list.All(x => x.Url != null));
             Assert.That(list.All(x => x.Name.IsValid()));
             Assert.That(list.All(x => x.Posters.Any()));
@@ -231,7 +216,6 @@ namespace Tests.Online
             var list = model.ToList();
 
             Assert.NotNull(list);
-            Assert.That(list.Any());
             Assert.That(list.All(x => x != null));
             Assert.That(list.All(x => x.Url != null));
             Assert.That(list.All(x => x.Name.IsValid()));
@@ -273,43 +257,13 @@ namespace Tests.Online
         #endregion
 
         #region Episodes
-        [Case(TVDB_TESTS, EPISODE_TESTS)]
-        public async Task Get_Episode_ByUrl()
-        {
-            var ep = await _tvdb.GetEpisodeAsync(SHOW_EP_URL);
-
-            Assert.NotNull(ep);
-            Assert.AreEqual(8221744, ep.Id);
-            Assert.AreEqual(SHOW_EP_URL, ep.Url);
-            Assert.That(ep.Plot.IsValid());
-            Assert.AreEqual("Bool Hunt", ep.Name);
-            Assert.AreEqual(50, ep.Runtime);
-            Assert.AreEqual(4, ep.AirDate.Value.Day);
-            Assert.AreEqual(6, ep.AirDate.Value.Month);
-            Assert.AreEqual(2021, ep.AirDate.Value.Year);
-            Assert.That(ep.Images.Any());
-        }
-        [Case(TVDB_TESTS, EPISODE_TESTS)]
-        public async Task Get_Episode_ByNumber()
-        {
-            var ep = await _tvdb.GetEpisodeAsync(SHOW_SLUG, 1, 1);
-
-            Assert.NotNull(ep);
-            Assert.AreEqual(8221744, ep.Id);
-            Assert.AreEqual(SHOW_EP_URL, ep.Url);
-            Assert.AreEqual("Bool Hunt", ep.Name);
-            Assert.AreEqual("S01E01", ep.Notation);
-            Assert.AreEqual(50, ep.Runtime);
-            Assert.AreEqual(4, ep.AirDate.Value.Day);
-            Assert.AreEqual(6, ep.AirDate.Value.Month);
-            Assert.AreEqual(2021, ep.AirDate.Value.Year);
-        }
-        [Case(TVDB_TESTS, CAST_TESTS)]
+        [Case(TVDB_TESTS, EPISODE_TESTS, CAST_TESTS)]
         public async Task Get_Episode_WithCastAndCrew()
         {
             var ep = await _tvdb.GetEpisodeAsync("true-detective", 4592328);
 
             Assert.NotNull(ep);
+            Assert.AreEqual(4592328, ep.Id);
             Assert.NotNull(ep.Crews);
             Assert.NotNull(ep.Guests);
             Assert.GreaterOrEqual(ep.Crews.Count, 1);
@@ -406,5 +360,54 @@ namespace Tests.Online
             Assert.That(imgs.Any(x => x.Type == MetaImageType.Backdrop));
         }
         #endregion
+
+        public static IEnumerable TvShows
+        {
+            get
+            {
+                yield return new TvdbTestModel()
+                {
+                    Id = 270633,
+                    ImdbID = "tt2356777",
+                    Name = "True Detective",
+                    Year = 2014,
+                    Status = MetaStatus.Airing,
+                    DayOfWeek = DayOfWeek.Sunday,
+                    Genre = "Crime",
+                    Network = "HBO",
+                    SeasonsCount = 4,
+                    Url = new("https://thetvdb.com/series/true-detective")
+                };
+                yield return new TvdbTestModel()
+                {
+                    Id = 360115,
+                    ImdbID = "tt0455275",
+                    Name = "Prison Break",
+                    Year = 2005,
+                    Status = MetaStatus.Ended,
+                    DayOfWeek = DayOfWeek.Tuesday,
+                    Genre = "Crime",
+                    Network = "FOX",
+                    SeasonsCount = 6,
+                    Url = new("https://www.thetvdb.com/series/prison-break")
+                };
+                yield return new TvdbTestModel()
+                {
+                    Id = 359913,
+                    ImdbID = "tt8289930",
+                    Name = "Formula 1: Drive to Survive",
+                    Year = 2019,
+                    Status = MetaStatus.Airing,
+                    DayOfWeek = DayOfWeek.Friday,
+                    Genre = "Sport",
+                    Network = "Netflix",
+                    SeasonsCount = 4,
+                    Url = new("https://www.thetvdb.com/series/formula-1-drive-to-survive")
+                };
+            }
+        }
+
+        private static readonly Uri MOVIE_URL = new("https://thetvdb.com/movies/iron-man");
+        private static readonly Uri SHOW_URL = new("https://thetvdb.com/series/true-detective");
     }
 }
