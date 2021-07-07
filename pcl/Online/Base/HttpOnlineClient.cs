@@ -45,8 +45,9 @@ namespace Next.PCL.Online
                 }
                 else
                 {
-                    Log.Error("http error {0} | {1}", res.StatusCode, res.ReasonPhrase);
-                    throw new OnlineException(code, res.ReasonPhrase);
+                    string msg = await res.Content.ReadAsStringAsync();
+                    Log.Error("http error {0} | {1}\n{2}", res.StatusCode, res.ReasonPhrase, msg);
+                    throw new OnlineException(code, res.ReasonPhrase, msg);
                 }
             }
         }
