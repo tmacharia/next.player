@@ -15,10 +15,11 @@ using TMDbLib.Objects.TvShows;
 using Next.PCL.Metas;
 using AutoMapper;
 using Next.PCL.Configurations;
+using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Tmdb 
+    public class Tmdb : IMetaServiceProvider
     {
         private readonly IMapper _mapper;
         private readonly TMDbClient _client;

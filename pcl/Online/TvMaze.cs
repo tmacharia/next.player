@@ -6,6 +6,7 @@ using Common;
 using Next.PCL.Enums;
 using Next.PCL.Exceptions;
 using Next.PCL.Online.Models;
+using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
@@ -21,7 +22,7 @@ namespace Next.PCL.Online
     /// You can satisfy the attribution requirement by linking back to TVmaze from within your application or website,
     /// for example using the URLs available in the API.
     /// </remarks>
-    public class TvMaze : BaseOnline
+    public class TvMaze : BaseOnline, IMetaServiceProvider
     {
         public TvMaze(IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)

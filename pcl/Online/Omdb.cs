@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Common;
 using Next.PCL.Exceptions;
 using Next.PCL.Online.Models;
+using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Omdb : BaseOnline
+    public class Omdb : BaseOnline, IMetaServiceProvider
     {
         private readonly string API_KEY = "";
 

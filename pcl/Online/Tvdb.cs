@@ -14,10 +14,11 @@ using Next.PCL.Html;
 using Next.PCL.Infra;
 using Next.PCL.Metas;
 using Next.PCL.Online.Models.Tvdb;
+using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Tvdb : BaseOnline
+    public class Tvdb : BaseOnline, IMetaServiceProvider
     {
         private readonly IMapper _mapper;
         private readonly TvDbParser _parser;

@@ -9,4 +9,8 @@
             _searchQueryFormatter = searchQueryFormatter;
         }
     }
+    public interface IMetaServiceProvider
+    {
+
+    }
 }

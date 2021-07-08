@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Common;
 using Next.PCL.Exceptions;
 using Next.PCL.Online.Models.Yts;
+using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Yts : BaseOnline
+    public class Yts : BaseOnline, IMetaServiceProvider
     {
         public Yts(IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)

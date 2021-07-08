@@ -9,10 +9,11 @@ using Next.PCL.Entities;
 using Next.PCL.Html;
 using Next.PCL.Infra;
 using Next.PCL.Online.Models.Imdb;
+using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Imdb : BaseOnline
+    public class Imdb : BaseOnline, IMetaServiceProvider
     {
         private readonly ImdbParser _parser;
         protected readonly INaiveCache _appCache;
