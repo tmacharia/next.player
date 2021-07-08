@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
@@ -22,7 +23,7 @@ namespace Next.PCL.Online
     /// You can satisfy the attribution requirement by linking back to TVmaze from within your application or website,
     /// for example using the URLs available in the API.
     /// </remarks>
-    public class TvMaze : BaseOnline, IMetaServiceProvider
+    public class TvMaze : BaseOnline, IMetaServiceProvider<TvMazeModel>
     {
         public TvMaze(IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)
@@ -68,9 +69,10 @@ namespace Next.PCL.Online
         {
             return RequestAsync<TvMazeModel>($"/singlesearch/shows?q={query}", cancellationToken);
         }
-        public Task<List<TvMazeSearchModel>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        public async Task<List<TvMazeModel>> SearchAsync(string query, CancellationToken cancellationToken = default)
         {
-            return RequestAsync<List<TvMazeSearchModel>>($"/search/shows?q={query}", cancellationToken);
+            var list = await RequestAsync<List<TvMazeSearchModel>>($"/search/shows?q={query}", cancellationToken);
+            return list.Select(x => x.Show).ToList();
         }
         public Task<TvMazeModel> LookupAsync(string imdbId = default, int tvdbId = default, CancellationToken cancellationToken = default)
         {

@@ -13,7 +13,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Imdb : BaseOnline, IMetaServiceProvider
+    public class Imdb : BaseOnline, IMetaServiceProvider<ImdbModel>
     {
         private readonly ImdbParser _parser;
         protected readonly INaiveCache _appCache;
@@ -96,6 +96,11 @@ namespace Next.PCL.Online
                 sb.Append(suffix);
             }
             return new Uri(sb.ToString());
+        }
+
+        public Task<List<ImdbModel>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

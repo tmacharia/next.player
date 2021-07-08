@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Omdb : BaseOnline, IMetaServiceProvider
+    public class Omdb : BaseOnline, IMetaServiceProvider<OmdbModel>
     {
         private readonly string API_KEY = "";
 
@@ -73,6 +74,11 @@ namespace Next.PCL.Online
                 }
             }
             return null;
+        }
+
+        public Task<List<OmdbModel>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

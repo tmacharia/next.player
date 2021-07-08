@@ -18,7 +18,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Tvdb : BaseOnline, IMetaServiceProvider
+    public class Tvdb : BaseOnline, IMetaServiceProvider<TvDbShow>
     {
         private readonly IMapper _mapper;
         private readonly TvDbParser _parser;
@@ -261,6 +261,11 @@ namespace Next.PCL.Online
             return name
                 .Replace(" ", "-")
                 .ToLower();
+        }
+
+        public Task<List<TvDbShow>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }
