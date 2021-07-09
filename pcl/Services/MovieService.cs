@@ -18,7 +18,7 @@ namespace Next.PCL.Services
         {
             var query = _searchQueryFormatter.CleanAndFormat(q);
 
-            var ytsResponse = await _yts.SearchAsync(query.Term, cancellationToken);
+            var ytsResponse = await _yts.SearchAsync(query.Term, cancellationToken: cancellationToken);
         }
     }
 }

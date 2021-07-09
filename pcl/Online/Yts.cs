@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
+using Next.PCL.Enums;
 using Next.PCL.Exceptions;
 using Next.PCL.Online.Models.Yts;
 using Next.PCL.Services;
@@ -25,7 +26,7 @@ namespace Next.PCL.Online
             var res = await RequestAsync<YtsMovieListResponse>($"/movie_suggestions.json?movie_id={id}", cancellationToken);
             return res.Movies;
         }
-        public async Task<List<YtsMovie>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        public async Task<List<YtsMovie>> SearchAsync(string query, MetaType metaType = MetaType.Movie, CancellationToken cancellationToken = default)
         {
             var res = await RequestAsync<YtsMovieListResponse>($"/list_movies.json?query_term={query}", cancellationToken);
             return res.Movies;

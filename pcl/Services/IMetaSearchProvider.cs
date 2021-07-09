@@ -10,7 +10,7 @@ namespace Next.PCL.Services
     public interface IMetaSearchProvider<TResponse>
         where TResponse : IBaseOnlineModel
     {
-        Task<List<TResponse>> SearchAsync(string query, CancellationToken cancellationToken = default);
+        Task<List<TResponse>> SearchAsync(string query, MetaType metaType = MetaType.TvShow, CancellationToken cancellationToken = default);
     }
     public interface IMetaReviewsProvider
     {

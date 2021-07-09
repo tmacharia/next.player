@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
+using Next.PCL.Enums;
 using Next.PCL.Exceptions;
 using Next.PCL.Online.Models;
 using Next.PCL.Services;
@@ -76,7 +77,7 @@ namespace Next.PCL.Online
             return null;
         }
 
-        public Task<List<OmdbModel>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        public Task<List<OmdbModel>> SearchAsync(string query, MetaType metaType = MetaType.Movie, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

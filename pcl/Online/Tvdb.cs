@@ -263,7 +263,7 @@ namespace Next.PCL.Online
                 .ToLower();
         }
 
-        public Task<List<TvDbShow>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        public Task<List<TvDbShow>> SearchAsync(string query, MetaType metaType = MetaType.TvShow, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

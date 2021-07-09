@@ -69,7 +69,7 @@ namespace Next.PCL.Online
         {
             return RequestAsync<TvMazeModel>($"/singlesearch/shows?q={query}", cancellationToken);
         }
-        public async Task<List<TvMazeModel>> SearchAsync(string query, CancellationToken cancellationToken = default)
+        public async Task<List<TvMazeModel>> SearchAsync(string query, MetaType metaType = MetaType.TvShow, CancellationToken cancellationToken = default)
         {
             var list = await RequestAsync<List<TvMazeSearchModel>>($"/search/shows?q={query}", cancellationToken);
             return list.Select(x => x.Show).ToList();
