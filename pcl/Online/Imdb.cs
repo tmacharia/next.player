@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common;
 using Next.PCL.Entities;
+using Next.PCL.Enums;
 using Next.PCL.Html;
 using Next.PCL.Infra;
 using Next.PCL.Online.Models.Imdb;
@@ -13,7 +14,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Imdb : BaseOnline, IMetaSearchProvider<ImdbModel>
+    public class Imdb : BaseOnline, IMetaReviewsProvider
     {
         private readonly ImdbParser _parser;
         protected readonly INaiveCache _appCache;
@@ -31,10 +32,10 @@ namespace Next.PCL.Online
             return _parser.ParseImdb(html);
         }
         
-        public async Task<List<ImdbReview>> GetReviewsAsync(string imdbId, CancellationToken cancellationToken = default)
+        public async Task<List<ReviewComment>> GetReviewsAsync(string imdbId, MetaType metaType = MetaType.TvShow, CancellationToken cancellationToken = default)
         {
             string html = await GetAsync(GenerateUrl(imdbId, "reviews"), cancellationToken);
-            return _parser.ParseReviews(html).ToList();
+            return _parser.ParseReviews(html).Cast<ReviewComment>().ToList();
         }
         public async Task<List<ImdbUserList>> GetUserListsWithAsync(string imdbId, CancellationToken cancellationToken = default)
         {
@@ -96,11 +97,6 @@ namespace Next.PCL.Online
                 sb.Append(suffix);
             }
             return new Uri(sb.ToString());
-        }
-
-        public Task<List<ImdbModel>> SearchAsync(string query, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
     }
 }
