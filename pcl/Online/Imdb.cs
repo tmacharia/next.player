@@ -13,7 +13,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Imdb : BaseOnline, IMetaServiceProvider<ImdbModel>
+    public class Imdb : BaseOnline, IMetaSearchProvider<ImdbModel>
     {
         private readonly ImdbParser _parser;
         protected readonly INaiveCache _appCache;

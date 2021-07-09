@@ -10,7 +10,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Omdb : BaseOnline, IMetaServiceProvider<OmdbModel>
+    public class Omdb : BaseOnline, IMetaSearchProvider<OmdbModel>
     {
         private readonly string API_KEY = "";
 

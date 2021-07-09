@@ -9,7 +9,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Yts : BaseOnline, IMetaServiceProvider<YtsMovie>
+    public class Yts : BaseOnline, IMetaSearchProvider<YtsMovie>
     {
         public Yts(IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)

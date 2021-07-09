@@ -23,7 +23,7 @@ namespace Next.PCL.Online
     /// You can satisfy the attribution requirement by linking back to TVmaze from within your application or website,
     /// for example using the URLs available in the API.
     /// </remarks>
-    public class TvMaze : BaseOnline, IMetaServiceProvider<TvMazeModel>
+    public class TvMaze : BaseOnline, IMetaSearchProvider<TvMazeModel>
     {
         public TvMaze(IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)
