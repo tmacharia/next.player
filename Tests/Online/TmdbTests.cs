@@ -80,7 +80,7 @@ namespace Tests.Online
         [Case(TMDB_TESTS)]
         public async Task Get_Reviews()
         {
-            var list = await _tmdb.GetReviewsAsync(GOT.TmDbID, MetaType.TvShow);
+            var list = await _tmdb.GetReviewsAsync(GOT.TmDbID.ToString(), MetaType.TvShow);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
@@ -89,7 +89,7 @@ namespace Tests.Online
         [Case(TMDB_TESTS, MOVIE_TESTS)]
         public async Task Get_Movie_Reviews()
         {
-            var list = await _tmdb.GetReviewsAsync(SocialNetwork.TmDbID, MetaType.Movie);
+            var list = await _tmdb.GetReviewsAsync(SocialNetwork.TmDbID.ToString(), MetaType.Movie);
 
             Assert.NotNull(list);
             Assert.That(list.Any());

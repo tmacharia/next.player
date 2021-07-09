@@ -15,10 +15,11 @@ using TMDbLib.Objects.TvShows;
 using Next.PCL.Metas;
 using AutoMapper;
 using Next.PCL.Configurations;
+using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Tmdb 
+    public class Tmdb : IMetaReviewsProvider
     {
         private readonly IMapper _mapper;
         private readonly TMDbClient _client;
@@ -138,17 +139,22 @@ namespace Next.PCL.Online
                 }
             }
         }
-        public async Task<List<Entities.ReviewComment>> GetReviewsAsync(int id, MetaType type, CancellationToken cancellationToken = default)
+
+        public async Task<List<Entities.ReviewComment>> GetReviewsAsync(string metaId, MetaType type, CancellationToken cancellationToken = default)
         {
-            if (type == MetaType.Movie)
+            int? id = metaId.ParseToInt();
+            if (id.HasValue)
             {
-                var res = await _client.GetMovieReviewsAsync(id, cancellationToken: cancellationToken);
-                return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
-            }
-            else if (type == MetaType.TvShow)
-            {
-                var res = await _client.GetTvShowReviewsAsync(id, cancellationToken: cancellationToken);
-                return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
+                if (type == MetaType.Movie)
+                {
+                    var res = await _client.GetMovieReviewsAsync(id.Value, cancellationToken: cancellationToken);
+                    return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
+                }
+                else if (type == MetaType.TvShow)
+                {
+                    var res = await _client.GetTvShowReviewsAsync(id.Value, cancellationToken: cancellationToken);
+                    return _mapper.Map<List<Entities.ReviewComment>>(res.GetList());
+                }
             }
             return null;
         }
