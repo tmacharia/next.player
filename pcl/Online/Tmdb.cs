@@ -185,9 +185,9 @@ namespace Next.PCL.Online
             var res = await _client.SearchCompanyAsync(q, cancellationToken: cancellationToken);
             return res.GetList();
         }
-        public async Task<List<TmdbSearch>> SearchShowAsync(string q, int year = 0, bool nsfw = false, CancellationToken cancellationToken = default)
+        public async Task<List<TmdbSearch>> SearchShowAsync(string q, int year = 0, CancellationToken cancellationToken = default)
         {
-            var res = await _client.SearchTvShowAsync(q, firstAirDateYear: year, includeAdult: nsfw, cancellationToken: cancellationToken);
+            var res = await _client.SearchTvShowAsync(q, firstAirDateYear: year, includeAdult: Config.IncludeAdult, cancellationToken: cancellationToken);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
             map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
@@ -199,9 +199,9 @@ namespace Next.PCL.Online
             map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
         }
-        public async Task<List<TmdbSearch>> SearchMovieAsync(string q, int year = 0, bool nsfw = false, CancellationToken cancellationToken = default)
+        public async Task<List<TmdbSearch>> SearchMovieAsync(string q, int year = 0, CancellationToken cancellationToken = default)
         {
-            var res = await _client.SearchMovieAsync(q, year: year, includeAdult: nsfw, cancellationToken: cancellationToken);
+            var res = await _client.SearchMovieAsync(q, year: year, includeAdult: Config.IncludeAdult, cancellationToken: cancellationToken);
             var map = _mapper.Map<List<TmdbSearch>>(res.GetList());
             map.ForEach(x => x.Posters.AddRange(x.GetPosters(_client)));
             return map;
@@ -214,9 +214,9 @@ namespace Next.PCL.Online
             return map;
         }
 
-        internal async Task<List<SearchBase>> SearchAsync(string q, int year = 0, bool nsfw = false, CancellationToken cancellationToken = default)
+        internal async Task<List<SearchBase>> SearchAsync(string q, int year = 0, CancellationToken cancellationToken = default)
         {
-            var res = await _client.SearchMultiAsync(q, year: year, includeAdult: nsfw, cancellationToken: cancellationToken);
+            var res = await _client.SearchMultiAsync(q, year: year, includeAdult: Config.IncludeAdult, cancellationToken: cancellationToken);
             return res.GetList();
         }
         #endregion
