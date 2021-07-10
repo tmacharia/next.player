@@ -12,6 +12,8 @@ namespace Next.PCL.Online
 {
     public class Yts : BaseOnline, IMetaSearchProvider<YtsMovie>
     {
+        public MetaSource Source => MetaSource.YTS_MX;
+
         public Yts(IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)
         { }

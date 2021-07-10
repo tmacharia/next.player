@@ -19,6 +19,8 @@ namespace Next.PCL.Online
         private readonly ImdbParser _parser;
         protected readonly INaiveCache _appCache;
 
+        public MetaSource Source => MetaSource.IMDB;
+
         public Imdb(IHttpOnlineClient httpOnlineClient, INaiveCache lazyCache)
             :base(httpOnlineClient)
         {

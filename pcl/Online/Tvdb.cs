@@ -29,6 +29,7 @@ namespace Next.PCL.Online
             get { return _parser.Config; }
             private set { _parser.Config = value; }
         }
+        public MetaSource Source => MetaSource.TVDB;
 
         public Tvdb(IHttpOnlineClient httpOnlineClient, INaiveCache lazyCache)
             :base(httpOnlineClient)

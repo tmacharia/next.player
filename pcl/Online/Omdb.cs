@@ -15,6 +15,8 @@ namespace Next.PCL.Online
     {
         private readonly string API_KEY = "";
 
+        public MetaSource Source => MetaSource.OMDB;
+
         public Omdb(string apiKey, IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)
         {

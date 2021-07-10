@@ -25,6 +25,7 @@ namespace Next.PCL.Online
         private readonly TMDbClient _client;
 
         internal TmdbConfig Config { get; set; }
+        public MetaSource Source => MetaSource.TMDB;
 
         public Tmdb(string apiKey, IMapper mapper, TmdbConfig tmdbConfig = default)
         {

@@ -25,6 +25,8 @@ namespace Next.PCL.Online
     /// </remarks>
     public class TvMaze : BaseOnline, IMetaSearchProvider<TvMazeModel>
     {
+        public MetaSource Source => MetaSource.TVMAZE;
+
         public TvMaze(IHttpOnlineClient httpOnlineClient)
             :base(httpOnlineClient)
         { }
