@@ -57,7 +57,7 @@ namespace Next.PCL.Online.Models
 
         public override string ToString()
         {
-            return string.Format("{0}\nTvMazeId: {1}, TvdbId: {2}, TvRageId: {3}", base.ToString(), Id, TvdbId, Externals?.Tvrage);
+            return string.Format("{4:yyyy}, {0}\nTvMazeId: {1}, TvdbId: {2}, TvRageId: {3}", base.ToString(), Id, TvdbId, Externals?.Tvrage, ReleaseDate);
         }
     }
 }

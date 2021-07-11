@@ -21,5 +21,10 @@ namespace Next.PCL.Online.Models
 
         public Uri SmallPoster => Image?.Medium;
         public Uri LargePoster => Image?.Original;
+
+        public override string ToString()
+        {
+            return string.Format("No. {0}", Number);
+        }
     }
 }

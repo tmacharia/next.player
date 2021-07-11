@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Next.PCL.Exceptions;
 using Next.PCL.Online;
 using NUnit.Framework;
+using Tests.Attributes;
+using Tests.TestModels;
 
 namespace Tests.Online
 {
@@ -23,33 +26,58 @@ namespace Tests.Online
             Assert.ThrowsAsync<NextArgumentException>(() => _maze.LookupAsync());
         }
 
-        [TestCase(Category = TVMAZE_TESTS)]
-        public async Task Lookup_ByImdbId_01()
+        [ComboCase(nameof(TvShows), TVMAZE_TESTS, SHOW_TESTS)]
+        public async Task GetShow_ById(TvShowTestModel model)
         {
-            var show = await _maze.LookupAsync(GOT.ImdbID);
+            var show = await _maze.GetShowByIdAsync(model.TvMazeId);
+
+            Assert.NotNull(show);
+
+            Assert.AreEqual(model.TvMazeId, show.Id);
+            Assert.AreEqual(model.ImdbId, show.ImdbId);
+            Assert.AreEqual(model.Name, show.Name);
 
             Log(show);
-            Assert.NotNull(show);
-            Assert.AreEqual(GOT.MazeID, show.Id);
         }
-        [TestCase(Category = TVMAZE_TESTS)]
-        public async Task Lookup_ByImdbId_02()
+
+        [ComboCase(nameof(TvShows), TVMAZE_TESTS, SHOW_TESTS)]
+        public async Task Lookup_ByImdbId(TvShowTestModel model)
         {
-            var show = await _maze.LookupAsync(TheMorningShow.ImdbID);
+            var show = await _maze.LookupAsync(model.ImdbId);
+
+            Assert.NotNull(show);
+
+            Assert.AreEqual(model.TvMazeId, show.Id);
+            Assert.AreEqual(model.ImdbId, show.ImdbId);
+            Assert.AreEqual(model.Name, show.Name);
 
             Log(show);
+        }
+        [ComboCase(nameof(TvShows), TVMAZE_TESTS, SHOW_TESTS)]
+        public async Task Lookup_ByTvdbId(TvShowTestModel model)
+        {
+            var show = await _maze.LookupAsync(tvdbId: model.TvDbId);
+
             Assert.NotNull(show);
-            Assert.AreEqual(TheMorningShow.MazeID, show.Id);
+
+            Assert.AreEqual(model.TvMazeId, show.Id);
+            Assert.AreEqual(model.ImdbId, show.ImdbId);
+            Assert.AreEqual(model.Name, show.Name);
+
+            Log(show);
         }
 
-        [TestCase(Category = TVMAZE_TESTS)]
-        public async Task Lookup_ByTvdbId()
+        [Case(TVMAZE_TESTS, SEASON_TESTS)]
+        public async Task GetSeasons_ByShowId()
         {
-            var show = await _maze.LookupAsync(null,GOT.TvDbID);
+            var list = await _maze.GetSeasonsAsync(Veep.TvMazeId);
 
-            Assert.NotNull(show);
-            Assert.AreEqual(GOT.MazeID, show.Id);
-            Assert.AreEqual(GOT.ImdbID, show.ImdbId);
+            Assert.NotNull(list);
+
+            Assert.That(list.Any());
+            Assert.AreEqual(Veep.SeasonsCount, list.Count);
+
+            Log(list);
         }
     }
 }
