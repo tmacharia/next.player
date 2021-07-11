@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Tests.TestModels;
 
@@ -6,10 +7,24 @@ namespace Tests
 {
     class TestsBase : TestsRoot
     {
-        internal static MetaIdsTestModel GOT => new("tt0944947", 82, 121361, 1399, 0, "Game of Thrones");
-        internal static MetaIdsTestModel SocialNetwork => new("tt1285016", 82, 2240, 37799, 3726, "The Social Network");
-        internal static MetaIdsTestModel TheMorningShow => new("tt7203552", 41524, 361563, 0, 0, "The Morning Show");
+        internal static TvShowTestModel GOT => new("tt0944947", 82, 121361, 1399, 0, "Game of Thrones");
+        internal static BaseMetaTestModel SocialNetwork => new("tt1285016", 82, 2240, 37799, 3726, "The Social Network");
+        internal static TvShowTestModel TheMorningShow => new("tt7203552", 41524, 361563, 0, 0, "The Morning Show");
+        internal static TvShowTestModel Veep => new("tt1759761", 142, 237831, 0, 0, "Veep")
+        {
+            Year = 2012,
+            SeasonsCount = 7
+        };
 
+        public static IEnumerable TvShows
+        {
+            get
+            {
+                yield return GOT;
+                yield return Veep;
+                yield return TheMorningShow;
+            }
+        }
         internal static List<string> Genres => new()
         {
             "Comedy,Drama",
@@ -22,7 +37,7 @@ namespace Tests
         };
         internal static List<MovieTestModel> Movies => new()
         {
-            new MovieTestModel(SocialNetwork.ImdbID,120,2010,SocialNetwork.Name),
+            new MovieTestModel(SocialNetwork.ImdbId,120,2010,SocialNetwork.Name),
             new MovieTestModel("tt1210166", 133, 2011, "Moneyball"),
             new MovieTestModel("tt1596363", 130, 2015, "The Big Short")
         };

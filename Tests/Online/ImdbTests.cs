@@ -26,13 +26,13 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public void WrongPageNo_OnGetSuggestions_ThrowEx()
         {
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 0));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _imdb.GetSuggestionsAsync(SocialNetwork.ImdbId, 0));
         }
         [Order(1)]
         [TheoriesFrom(nameof(Movies), IMDB_TESTS)]
         public async Task Get_ImdbMov(MovieTestModel mov)
         {
-            var model = await _imdb.GetImdbAsync(mov.ImdbID);
+            var model = await _imdb.GetImdbAsync(mov.ImdbId);
 
             Assert.NotNull(model);
             Assert.True(model.ReleaseDate.HasValue);
@@ -54,7 +54,7 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_ImdbTV_MorningShow()
         {
-            var model = await _imdb.GetImdbAsync(TheMorningShow.ImdbID);
+            var model = await _imdb.GetImdbAsync(TheMorningShow.ImdbId);
 
             Assert.NotNull(model);
             Assert.That(model.Genres.Any());
@@ -73,7 +73,7 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Reviews()
         {
-            var list = await _imdb.GetReviewsAsync(GOT.ImdbID);
+            var list = await _imdb.GetReviewsAsync(GOT.ImdbId);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
@@ -88,7 +88,7 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_FilmingLocations()
         {
-            var list = await _imdb.GetLocationsAsync(GOT.ImdbID);
+            var list = await _imdb.GetLocationsAsync(GOT.ImdbId);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
@@ -101,7 +101,7 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_UserLists()
         {
-            var list = await _imdb.GetUserListsWithAsync(SocialNetwork.ImdbID);
+            var list = await _imdb.GetUserListsWithAsync(SocialNetwork.ImdbId);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
@@ -113,12 +113,12 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Suggestions_Page1()
         {
-            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 1);
+            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbId, 1);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
             Assert.That(list.All(x => x.ImdbId.IsValid()));
-            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbID)),"Should query id be part of suggestions?");
+            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbId)),"Should query id be part of suggestions?");
 
             Log(list);
         }
@@ -127,12 +127,12 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Suggestions_Page2()
         {
-            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 2);
+            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbId, 2);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
             Assert.That(list.All(x => x.ImdbId.IsValid()));
-            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbID)), "Should query id be part of suggestions?");
+            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbId)), "Should query id be part of suggestions?");
 
             Log(list);
         }
@@ -141,12 +141,12 @@ namespace Tests.Online
         [TestCase(Category = IMDB_TESTS)]
         public async Task Get_Suggestions_Page3_1()
         {
-            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbID, 1);
+            var list = await _imdb.GetSuggestionsAsync(SocialNetwork.ImdbId, 1);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
             Assert.That(list.All(x => x.ImdbId.IsValid()));
-            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbID)), "Should query id be part of suggestions?");
+            Assert.False(list.Any(x => x.ImdbId.EqualsOIC(SocialNetwork.ImdbId)), "Should query id be part of suggestions?");
 
             Log(list);
         }

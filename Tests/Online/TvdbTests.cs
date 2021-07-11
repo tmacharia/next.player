@@ -31,9 +31,9 @@ namespace Tests.Online
             var tv = await _tvdb.GetShowAsync(model.Url);
 
             Assert.NotNull(tv);
-            Assert.AreEqual(model.Id, tv.Id);
+            Assert.AreEqual(model.TvDbId, tv.Id);
             Assert.AreEqual(model.Name, tv.Name);
-            Assert.AreEqual(model.ImdbID, tv.ImdbId);
+            Assert.AreEqual(model.ImdbId, tv.ImdbId);
             Assert.AreEqual(model.Status, tv.Status);
 
             if (model.DayOfWeek.HasValue)
@@ -79,9 +79,9 @@ namespace Tests.Online
             var tv = await _tvdb.GetShowAsync(model.Name);
 
             Assert.NotNull(tv);
-            Assert.AreEqual(model.Id, tv.Id);
+            Assert.AreEqual(model.TvDbId, tv.Id);
             Assert.AreEqual(model.Name, tv.Name);
-            Assert.AreEqual(model.ImdbID, tv.ImdbId);
+            Assert.AreEqual(model.ImdbId, tv.ImdbId);
             Assert.AreEqual(model.Status, tv.Status);
 
             if (model.DayOfWeek.HasValue)
@@ -365,12 +365,9 @@ namespace Tests.Online
         {
             get
             {
-                yield return new TvdbTestModel()
+                yield return new TvdbTestModel("tt2356777",2014, "True Detective")
                 {
-                    Id = 270633,
-                    ImdbID = "tt2356777",
-                    Name = "True Detective",
-                    Year = 2014,
+                    TvDbId = 270633,
                     Status = MetaStatus.Airing,
                     DayOfWeek = DayOfWeek.Sunday,
                     Genre = "Crime",
@@ -378,12 +375,9 @@ namespace Tests.Online
                     SeasonsCount = 4,
                     Url = new("https://thetvdb.com/series/true-detective")
                 };
-                yield return new TvdbTestModel()
+                yield return new TvdbTestModel("tt0455275", 2005, "Prison Break")
                 {
-                    Id = 360115,
-                    ImdbID = "tt0455275",
-                    Name = "Prison Break",
-                    Year = 2005,
+                    TvDbId = 360115,
                     Status = MetaStatus.Ended,
                     DayOfWeek = DayOfWeek.Tuesday,
                     Genre = "Crime",
@@ -391,12 +385,9 @@ namespace Tests.Online
                     SeasonsCount = 6,
                     Url = new("https://www.thetvdb.com/series/prison-break")
                 };
-                yield return new TvdbTestModel()
+                yield return new TvdbTestModel("tt8289930", 2019, "Formula 1: Drive to Survive")
                 {
-                    Id = 359913,
-                    ImdbID = "tt8289930",
-                    Name = "Formula 1: Drive to Survive",
-                    Year = 2019,
+                    TvDbId = 359913,
                     Status = MetaStatus.Airing,
                     DayOfWeek = DayOfWeek.Friday,
                     Genre = "Sport",

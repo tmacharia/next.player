@@ -31,13 +31,13 @@ namespace Tests.Online
         [Case(TMDB_TESTS, SHOW_TESTS)]
         public async Task Get_TvShow_ById()
         {
-            var show = await _tmdb.GetShowAsync(GOT.TmDbID);
+            var show = await _tmdb.GetShowAsync(GOT.TmDbId);
 
             Assert.NotNull(show);
             Assert.NotNull(show.Posters);
             Assert.NotNull(show.ExternalIds);
-            Assert.AreEqual(GOT.TmDbID, show.Id);
-            Assert.AreEqual(GOT.ImdbID, show.ExternalIds.ImdbId);
+            Assert.AreEqual(GOT.TmDbId, show.Id);
+            Assert.AreEqual(GOT.ImdbId, show.ExternalIds.ImdbId);
 
             Log(show);
         }
@@ -50,19 +50,19 @@ namespace Tests.Online
             Assert.NotNull(shows);
             Assert.Greater(shows.Count, 0);
             Assert.AreEqual(GOT.Name, shows[0].Name);
-            Assert.AreEqual(GOT.TmDbID, shows[0].Id);
+            Assert.AreEqual(GOT.TmDbId, shows[0].Id);
             Log(shows);
         }
 
         [Case(TMDB_TESTS, MOVIE_TESTS)]
         public async Task Get_Movie_ById()
         {
-            var mov = await _tmdb.GetMovieAsync(SocialNetwork.TmDbID);
+            var mov = await _tmdb.GetMovieAsync(SocialNetwork.TmDbId);
 
             Assert.NotNull(mov);
             Assert.NotNull(mov.ExternalIds);
-            Assert.AreEqual(SocialNetwork.TmDbID, mov.Id);
-            Assert.AreEqual(SocialNetwork.ImdbID, mov.ExternalIds.ImdbId);
+            Assert.AreEqual(SocialNetwork.TmDbId, mov.Id);
+            Assert.AreEqual(SocialNetwork.ImdbId, mov.ExternalIds.ImdbId);
             Log(mov);
         }
         [Case(TMDB_TESTS, MOVIE_TESTS)]
@@ -73,14 +73,14 @@ namespace Tests.Online
             Assert.NotNull(movies);
             Assert.Greater(movies.Count, 0);
             Assert.AreEqual(SocialNetwork.Name, movies[0].Name);
-            Assert.AreEqual(SocialNetwork.TmDbID, movies[0].Id);
+            Assert.AreEqual(SocialNetwork.TmDbId, movies[0].Id);
             Log(movies);
         }
 
         [Case(TMDB_TESTS)]
         public async Task Get_Reviews()
         {
-            var list = await _tmdb.GetReviewsAsync(GOT.TmDbID.ToString(), MetaType.TvShow);
+            var list = await _tmdb.GetReviewsAsync(GOT.TmDbId.ToString(), MetaType.TvShow);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
@@ -89,7 +89,7 @@ namespace Tests.Online
         [Case(TMDB_TESTS, MOVIE_TESTS)]
         public async Task Get_Movie_Reviews()
         {
-            var list = await _tmdb.GetReviewsAsync(SocialNetwork.TmDbID.ToString(), MetaType.Movie);
+            var list = await _tmdb.GetReviewsAsync(SocialNetwork.TmDbId.ToString(), MetaType.Movie);
 
             Assert.NotNull(list);
             Assert.That(list.Any());
@@ -99,7 +99,7 @@ namespace Tests.Online
         [Case(TMDB_TESTS, MOVIE_TESTS)]
         public async Task Get_Movie_Suggestions()
         {
-            var list = await _tmdb.SimilarMoviesAsync(SocialNetwork.TmDbID);
+            var list = await _tmdb.SimilarMoviesAsync(SocialNetwork.TmDbId);
 
             Assert.That(list.Any());
             Log(list);
@@ -108,7 +108,7 @@ namespace Tests.Online
         [Case(TMDB_TESTS, SHOW_TESTS)]
         public async Task Get_Show_Suggestions()
         {
-            var list = await _tmdb.SimilarShowsAsync(GOT.TmDbID);
+            var list = await _tmdb.SimilarShowsAsync(GOT.TmDbId);
 
             Assert.That(list.Any());
             Log(list);
@@ -117,7 +117,7 @@ namespace Tests.Online
         [Case(TMDB_TESTS)]
         public async Task Get_Movie_Credits()
         {
-            var credits = await _tmdb.GetCreditsAsync(SocialNetwork.TmDbID, MetaType.Movie);
+            var credits = await _tmdb.GetCreditsAsync(SocialNetwork.TmDbId, MetaType.Movie);
 
             Assert.NotNull(credits);
             // Jesse Eisenberg

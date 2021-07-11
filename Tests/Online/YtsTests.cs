@@ -19,19 +19,19 @@ namespace Tests.Online
         [TestCase(Category = YTS_TESTS)]
         public async Task Get_By_ID()
         {
-            var model = await _yts.GetMovieByIdAsync(SocialNetwork.YtsID);
+            var model = await _yts.GetMovieByIdAsync(SocialNetwork.YtsId);
 
-            Assert.AreEqual(SocialNetwork.ImdbID, model.ImdbId);
+            Assert.AreEqual(SocialNetwork.ImdbId, model.ImdbId);
             Assert.AreEqual(SocialNetwork.Name, model.Name);
         }
 
         [TestCase(Category = YTS_TESTS)]
         public async Task Search_By_ImdbID()
         {
-            var list = await _yts.SearchAsync(SocialNetwork.ImdbID);
+            var list = await _yts.SearchAsync(SocialNetwork.ImdbId);
             var model = list.FirstOrDefault();
 
-            Assert.AreEqual(SocialNetwork.ImdbID, model.ImdbId);
+            Assert.AreEqual(SocialNetwork.ImdbId, model.ImdbId);
             Assert.AreEqual(SocialNetwork.Name, model.Name);
             Log(model.Id);
         }
@@ -42,7 +42,7 @@ namespace Tests.Online
             var list = await _yts.SearchAsync(SocialNetwork.Name);
             var model = list.FirstOrDefault();
 
-            Assert.AreEqual(SocialNetwork.ImdbID, model.ImdbId);
+            Assert.AreEqual(SocialNetwork.ImdbId, model.ImdbId);
             Assert.AreEqual(SocialNetwork.Name, model.Name);
             Log(model.Id);
         }
@@ -51,7 +51,7 @@ namespace Tests.Online
         [TestCase(Category = YTS_TESTS)]
         public async Task Get_Suggestions_ByID()
         {
-            var list = await _yts.GetSuggestionsAsync(SocialNetwork.YtsID);
+            var list = await _yts.GetSuggestionsAsync(SocialNetwork.YtsId);
 
             Assert.That(list.Any());
             Log(list);

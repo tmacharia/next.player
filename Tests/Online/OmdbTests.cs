@@ -28,7 +28,7 @@ namespace Tests.Online
         {
             var omdb = new Omdb(MocksAndSetups.Settings.TmdbApiKey, MocksAndSetups.HttpOnlineClient);
 
-            Assert.ThrowsAsync<OnlineException>(() => omdb.FindAsync(SocialNetwork.ImdbID));
+            Assert.ThrowsAsync<OnlineException>(() => omdb.FindAsync(SocialNetwork.ImdbId));
         }
 
         [TestCase(Category = OMDB_TESTS)]
@@ -40,9 +40,9 @@ namespace Tests.Online
         [TestCase(Category = OMDB_TESTS)]
         public async Task Get_By_ImdbID()
         {
-            var model = await _omdb.FindAsync(SocialNetwork.ImdbID);
+            var model = await _omdb.FindAsync(SocialNetwork.ImdbId);
 
-            Assert.AreEqual(SocialNetwork.ImdbID, model.ImdbId);
+            Assert.AreEqual(SocialNetwork.ImdbId, model.ImdbId);
             Assert.AreEqual(SocialNetwork.Name, model.Name);
         }
     }
