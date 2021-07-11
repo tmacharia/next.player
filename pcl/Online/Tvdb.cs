@@ -18,7 +18,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Tvdb : BaseOnline, IMetaSearchProvider<TvDbShow>
+    public class Tvdb : BaseOnline, IMetaSearchProvider<TvDbShow>, IMetaCompaniesProvider
     {
         private readonly IMapper _mapper;
         private readonly TvDbParser _parser;

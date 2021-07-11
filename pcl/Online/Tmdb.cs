@@ -19,7 +19,7 @@ using Next.PCL.Services;
 
 namespace Next.PCL.Online
 {
-    public class Tmdb : IMetaReviewsProvider
+    public class Tmdb : IMetaReviewsProvider, IMetaCompaniesProvider
     {
         private readonly IMapper _mapper;
         private readonly TMDbClient _client;
@@ -160,7 +160,13 @@ namespace Next.PCL.Online
             return null;
         }
 
-        public async Task<Entities.Company> GetCompanyAsync(int id, CancellationToken cancellationToken = default)
+        public Task<Entities.Company> GetCompanyAsync(string metaId, CancellationToken cancellationToken = default)
+        {
+            if (int.TryParse(metaId, out int id))
+                return GetCompanyAsync(id, cancellationToken);
+            return null;
+        }
+        internal async Task<Entities.Company> GetCompanyAsync(int id, CancellationToken cancellationToken = default)
         {
             var res = await _client.GetCompanyAsync(id, cancellationToken: cancellationToken);
             var comp = _mapper.Map<Entities.Company>(res);
