@@ -13,5 +13,10 @@ namespace Next.PCL.Online.Models
         public TimeSpan? AirTime { get; set; }
         [JsonProperty("runtime")]
         public int Runtime { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("S{0}E{1}, {2}", Season, Number, Name);
+        }
     }
 }

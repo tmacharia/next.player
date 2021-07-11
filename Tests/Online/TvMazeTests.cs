@@ -37,6 +37,8 @@ namespace Tests.Online
             Assert.AreEqual(model.ImdbId, show.ImdbId);
             Assert.AreEqual(model.Name, show.Name);
 
+            Assert.NotNull(show.ReleaseDate);
+
             Log(show);
         }
 
@@ -78,6 +80,23 @@ namespace Tests.Online
             Assert.AreEqual(Veep.SeasonsCount, list.Count);
 
             Log(list);
+        }
+        [Case(TVMAZE_TESTS, EPISODE_TESTS)]
+        public async Task GetEpisode()
+        {
+            var ep = await _maze.GetEpisodeAsync(Veep.TvMazeId, 1, 1);
+
+            Assert.NotNull(ep);
+            Assert.AreEqual(1, ep.Number);
+            Assert.AreEqual(1, ep.Season);
+            Assert.AreEqual("Fundraiser", ep.Name);
+
+            Assert.NotNull(ep.AirDate);
+            Assert.AreEqual(22, ep.AirDate.Value.Day);
+            Assert.AreEqual(04, ep.AirDate.Value.Month);
+            Assert.AreEqual(2012, ep.AirDate.Value.Year);
+
+            Log(ep);
         }
     }
 }
