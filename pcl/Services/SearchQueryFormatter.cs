@@ -24,7 +24,6 @@ namespace Next.PCL.Services
                 int year = int.Parse(match.Value);
                 if(year < 1700)
                 {
-                    // probably not a year
                     result.Term = query;
                 }
                 else
@@ -32,13 +31,11 @@ namespace Next.PCL.Services
                     result.Year = year;
                     string good = query.Substring(0, match.Index);
                     string bad = query.Substring(match.Index + match.Length);
-                    //Console.WriteLine("Bad\t: {0}", bad);
                     result.Term = good.Trim('(', ')', '-', '.', ' ');
                     if (result.Term.Contains("."))
                         result.Term = result.Term.Replace(".", " ");
                 }
             }
-            //Console.WriteLine(result);
             return result;
         }
     }

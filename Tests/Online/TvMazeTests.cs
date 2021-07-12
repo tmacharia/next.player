@@ -55,6 +55,7 @@ namespace Tests.Online
 
             Log(show);
         }
+        
         [ComboCase(nameof(TvShows), TVMAZE_TESTS, SHOW_TESTS)]
         public async Task Lookup_ByTvdbId(TvShowTestModel model)
         {
@@ -81,6 +82,7 @@ namespace Tests.Online
 
             Log(list);
         }
+        
         [Case(TVMAZE_TESTS, EPISODE_TESTS)]
         public async Task GetEpisode()
         {
