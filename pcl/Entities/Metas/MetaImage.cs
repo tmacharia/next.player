@@ -31,5 +31,10 @@ namespace Next.PCL.Metas
         public MetaSource Source { get; set; }
         public MetaImageType Type { get; set; }
         public Resolution Resolution { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}x{2}, {3}", Type, Width, Height, Url);
+        }
     }
 }

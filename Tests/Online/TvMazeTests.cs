@@ -100,5 +100,16 @@ namespace Tests.Online
 
             Log(ep);
         }
+
+        [ComboCase(nameof(TvShows), TVMAZE_TESTS, SHOW_TESTS)]
+        public async Task GetShowImages(TvShowTestModel model)
+        {
+            var list = await _maze.GetShowImagesAsync(showId: model.TvMazeId);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+
+            Log(list);
+        }
     }
 }
