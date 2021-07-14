@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
+using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Exceptions;
 using Next.PCL.Extensions;
@@ -59,13 +60,15 @@ namespace Next.PCL.Online
         }
 
 
-        public Task<List<TvMazeCast>> GetCastAsync(int showId, CancellationToken cancellationToken = default)
+        public async Task<List<Cast>> GetCastAsync(int showId, CancellationToken cancellationToken = default)
         {
-            return RequestAsync<List<TvMazeCast>>($"/shows/{showId}/cast", cancellationToken);
+            var list = await RequestAsync<List<TvMazeCast>>($"/shows/{showId}/cast", cancellationToken);
+            return list.Select(x => x.CreateCast()).ToList();
         }
-        public Task<List<TvMazeCrew>> GetCrewAsync(int showId, CancellationToken cancellationToken = default)
+        public async Task<List<FilmMaker>> GetCrewAsync(int showId, CancellationToken cancellationToken = default)
         {
-            return RequestAsync<List<TvMazeCrew>>($"/shows/{showId}/crew", cancellationToken);
+            var list = await RequestAsync<List<TvMazeCrew>>($"/shows/{showId}/crew", cancellationToken);
+            return list.Select(x => x.CreateCrew()).ToList();
         }
 
 
