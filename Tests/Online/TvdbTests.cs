@@ -368,7 +368,7 @@ namespace Tests.Online
                 yield return new TvdbTestModel("tt2356777",2014, "True Detective")
                 {
                     TvDbId = 270633,
-                    Status = MetaStatus.Ended,
+                    Status = MetaStatus.Airing,
                     DayOfWeek = DayOfWeek.Sunday,
                     Genre = "Crime",
                     Network = "HBO",
