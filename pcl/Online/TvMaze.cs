@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Common;
 using Next.PCL.Enums;
 using Next.PCL.Exceptions;
+using Next.PCL.Extensions;
+using Next.PCL.Metas;
 using Next.PCL.Online.Models;
 using Next.PCL.Services;
 
@@ -50,9 +52,10 @@ namespace Next.PCL.Online
         }
 
 
-        public Task<List<TvMazeImage>> GetShowImagesAsync(int showId, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImage>> GetShowImagesAsync(int showId, CancellationToken cancellationToken = default)
         {
-            return RequestAsync<List<TvMazeImage>>($"/shows/{showId}/images", cancellationToken);
+            var list = await RequestAsync<List<TvMazeImage>>($"/shows/{showId}/images", cancellationToken);
+            return list.SelectMany(x => x.ParseToMetaImages()).ToList();
         }
 
 

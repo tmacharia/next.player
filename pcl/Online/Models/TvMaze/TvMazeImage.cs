@@ -35,8 +35,8 @@ namespace Next.PCL.Online.Models
         [JsonProperty("url")]
         public Uri Url { get; set; }
         [JsonProperty("width")]
-        public int Width { get; set; }
+        public ushort Width { get; set; }
         [JsonProperty("height")]
-        public int Height { get; set; }
+        public ushort Height { get; set; }
     }
 }
