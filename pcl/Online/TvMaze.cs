@@ -68,7 +68,7 @@ namespace Next.PCL.Online
         public async Task<List<FilmMaker>> GetCrewAsync(int showId, CancellationToken cancellationToken = default)
         {
             var list = await RequestAsync<List<TvMazeCrew>>($"/shows/{showId}/crew", cancellationToken);
-            return list.Select(x => x.CreateCrew()).ToList();
+            return list.Select(x => x.CreateCrew()).Distinct().ToList();
         }
 
 

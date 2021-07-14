@@ -111,5 +111,25 @@ namespace Tests.Online
 
             Log(list);
         }
+        [ComboCase(nameof(TvShows), TVMAZE_TESTS, CAST_TESTS)]
+        public async Task GetCast(TvShowTestModel model)
+        {
+            var list = await _maze.GetCastAsync(showId: model.TvMazeId);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+
+            Log(list);
+        }
+        [ComboCase(nameof(TvShows), TVMAZE_TESTS, CAST_TESTS)]
+        public async Task GetCrew(TvShowTestModel model)
+        {
+            var list = await _maze.GetCrewAsync(showId: model.TvMazeId);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+
+            Log(list);
+        }
     }
 }

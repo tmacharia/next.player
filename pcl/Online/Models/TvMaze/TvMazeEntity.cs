@@ -4,7 +4,7 @@ using Next.PCL.Entities;
 
 namespace Next.PCL.Online.Models
 {
-    public abstract class TvMazeEntity : INamedEntity
+    public class TvMazeEntity : INamedEntity
     {
         [JsonProperty("id")]
         public int Id { get; set; }
