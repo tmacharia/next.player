@@ -10,6 +10,7 @@ namespace Tests
         internal static TvShowTestModel GOT => new("tt0944947", 82, 121361, 1399, 0, "Game of Thrones");
         internal static BaseMetaTestModel SocialNetwork => new("tt1285016", 82, 2240, 37799, 3726, "The Social Network");
         internal static TvShowTestModel TheMorningShow => new("tt7203552", 41524, 361563, 0, 0, "The Morning Show");
+        internal static TvShowTestModel TedLasso => new("tt10986410", 44458, 383203, 97546, 0, "Ted Lasso");
         internal static TvShowTestModel Veep => new("tt1759761", 142, 237831, 0, 0, "Veep")
         {
             Year = 2012,
@@ -22,6 +23,7 @@ namespace Tests
             {
                 yield return GOT;
                 yield return Veep;
+                yield return TedLasso;
                 yield return TheMorningShow;
             }
         }
