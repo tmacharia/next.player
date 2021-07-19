@@ -38,7 +38,7 @@ namespace Next.PCL.Online
             string suffix = $"/episodes?season={season}";
             var url = GenerateUrl(imdbId, suffix);
             string html = await GetAsync(url, cancellationToken);
-            return new List<Episode>();
+            return _parser.ParseSeasonEpisodes(html, season).ToList();
         }
 
 

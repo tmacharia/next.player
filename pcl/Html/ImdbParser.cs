@@ -23,56 +23,66 @@ namespace Next.PCL.Html
             :base(httpOnlineClient)
         { }
 
-        internal async Task<List<string>> GetImageIds(string imdbId, CancellationToken cancellationToken = default)
+        internal ImdbModel ParseImdb(string html, HtmlDocument htmlDocument = default)
         {
-            var list = new List<string>();
-            if (!imdbId.IsValid())
-                return list;
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
-            var uri = new Uri(string.Format("{0}/title/{1}/mediaindex", SiteUrls.IMDB, imdbId));
-            var doc = await GetHtmlDocumentAsync(uri, cancellationToken);
-
-            var nodes = doc.FindAll("//div[@id='media_index_thumbnail_grid']/a");
-            if (nodes.IsNotNullOrEmpty())
+            var json = doc.Find("//script[@type='application/ld+json']")?.ParseText();
+            if (json.IsValid())
             {
-                foreach (var node in nodes)
+                var model = json.DeserializeTo<ImdbModel>();
+                model.Url = doc.GetMetaProp("og:url").ParseToUri();
+                model.ImdbId = model.Url.AbsolutePath.SplitByAndTrim("/").Last();
+                if (model.Trailer != null && model.Trailer.EmbedUrl != null)
                 {
-                    string href = node.GetHref();
-                    if (href.IsValid() && href.StartsWith("/title"))
+                    model.Trailer.EmbedUrl = (SiteUrls.IMDB + model.Trailer.EmbedUrl.OriginalString).ParseToUri();
+                }
+                var blocks = doc.GetElementbyId("titleDetails")?.ExtendFindAll("div");
+                if (blocks != null && blocks.Any())
+                {
+                    model.OtherSites = GetLinks(blocks, ImdbKeys.OfficialSites)
+                                    .Select(x => x.ParseToMetaUrl(MetaSource.IMDB)).ToList();
+                    model.ProductionCompanies = GetLinks(blocks, ImdbKeys.ProductionCo)
+                                    .Select(x => x.ParseToCompany(MetaSource.IMDB, CompanyService.Production)).ToList();
+                    model.ProductionCountries = GetLinks(blocks, ImdbKeys.Country)
+                                    .Select(x => x.ParseText())
+                                    .Select(x => x.ToGeoLocale(true)).ToList();
+                    if (model.Type == MetaType.Movie)
                     {
-                        string id = href.SplitByAndTrim("?").First().Split('/').Last();
-                        if (id.IsValid())
-                            list.Add(id);
+                        model.Revenue = new MetaRevenue();
+                        model.Revenue.Budget = GetAsNumber(blocks, ImdbKeys.Budget);
+                        model.Revenue.CumulativeGross = GetAsNumber(blocks, ImdbKeys.WorldGross);
+                    }
+                    else if (model.Type == MetaType.TvShow)
+                    {
+                        model.Runtime = doc.Find("//div[@class='title_wrapper']/div/time")?.GetAttrib("datetime").ParseToRuntime();
+                        if (!model.Runtime.HasValue)
+                            model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
                     }
                 }
+                return model;
             }
-            return list;
+
+            return null;
         }
 
-        internal async Task<IEnumerable<ImdbSuggestion>> ParseSuggestionsAsync(Uri imdbUrl, CancellationToken cancellationToken = default)
+        internal IEnumerable<Episode> ParseSeasonEpisodes(string html, int season, HtmlDocument htmlDocument = default)
         {
-            var doc = await GetHtmlDocumentAsync(imdbUrl, cancellationToken, true);
-            return ParseSuggestions(null, doc);
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+            // validate if html is for correct season
+            var nodes = doc.DocumentNode.SelectNodes("//div[@class='list detail eplist']/div");
+            foreach (var node in nodes)
+            {
+                var ep = ParseSingleEpisode(node);
+                if (ep != null)
+                    yield return ep;
+            }
         }
+
         internal async Task<IEnumerable<ImdbUserList>> ParseUserListsAsync(Uri imdbUrl, CancellationToken cancellationToken = default)
         {
             var doc = await GetHtmlDocumentAsync(imdbUrl, cancellationToken, false);
             return ParseUserLists(null, doc);
-        }
-        internal IEnumerable<ImdbSuggestion> ParseSuggestions(string html, HtmlDocument htmlDocument = default)
-        {
-            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
-
-            var nodes = doc.FindAll("//div[@class='rec_overview']");
-            if (nodes.IsNotNullOrEmpty())
-            {
-                foreach (var node in nodes)
-                {
-                    var rv = ParseSingleImdbSuggestion(node);
-                    if (rv != null)
-                        yield return rv;
-                }
-            }
         }
         internal IEnumerable<ImdbSuggestion> ParseSuggestions2(string html, HtmlDocument htmlDocument = default)
         {
@@ -135,71 +145,9 @@ namespace Next.PCL.Html
         }
 
 
-        internal ImdbModel ParseImdb(string html, HtmlDocument htmlDocument = default)
+        private Episode ParseSingleEpisode(HtmlNode node)
         {
-            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
-
-            var json = doc.Find("//script[@type='application/ld+json']")?.ParseText();
-            if (json.IsValid())
-            {
-                var model = json.DeserializeTo<ImdbModel>();
-                model.Url = doc.GetMetaProp("og:url").ParseToUri();
-                model.ImdbId = model.Url.AbsolutePath.SplitByAndTrim("/").Last();
-                if(model.Trailer != null && model.Trailer.EmbedUrl != null)
-                {
-                    model.Trailer.EmbedUrl = (SiteUrls.IMDB + model.Trailer.EmbedUrl.OriginalString).ParseToUri();
-                }
-                var blocks = doc.GetElementbyId("titleDetails")?.ExtendFindAll("div");
-                if(blocks != null && blocks.Any())
-                {
-                    model.OtherSites = GetLinks(blocks, ImdbKeys.OfficialSites)
-                                    .Select(x => x.ParseToMetaUrl(MetaSource.IMDB)).ToList();
-                    model.ProductionCompanies = GetLinks(blocks, ImdbKeys.ProductionCo)
-                                    .Select(x => x.ParseToCompany(MetaSource.IMDB, CompanyService.Production)).ToList();
-                    model.ProductionCountries = GetLinks(blocks, ImdbKeys.Country)
-                                    .Select(x => x.ParseText())
-                                    .Select(x => x.ToGeoLocale(true)).ToList();
-                    if(model.Type == MetaType.Movie)
-                    {
-                        model.Revenue = new MetaRevenue();
-                        model.Revenue.Budget = GetAsNumber(blocks, ImdbKeys.Budget);
-                        model.Revenue.CumulativeGross = GetAsNumber(blocks, ImdbKeys.WorldGross);
-                    }
-                    else if(model.Type == MetaType.TvShow)
-                    {
-                        model.Runtime = doc.Find("//div[@class='title_wrapper']/div/time")?.GetAttrib("datetime").ParseToRuntime();
-                        if (!model.Runtime.HasValue)
-                            model.Runtime = GetAsText(blocks, ImdbKeys.Runtime, "/time").ParseToRuntime();
-                    }
-                }
-                return model;
-            }
-
-            return null;
-        }
-
-        private ImdbSuggestion ParseSingleImdbSuggestion(HtmlNode node)
-        {
-            string imdbId = node.GetAttrib("data-tconst");
-            var rec_poster = node.ExtendFind("div[@class='rec_poster']");
-            var rec_info = node.ExtendFind("div[@class='rec_details']/div[@class='rec-info']");
-            var rec_title = rec_info.ExtendFind("div/div[@class='rec-title']");
-            var rec_genres = rec_info.ExtendFind("div/div[@class='rec-cert-genre']");
-            var rec_rating = rec_info.ExtendFind("div/div[@class='rec-rating']");
-
-            var suggestion = new ImdbSuggestion();
-            suggestion.ImdbId = imdbId;
-            suggestion.Name = rec_title.ExtendFind("a").ParseText();
-            suggestion.Poster = rec_poster.ExtendFind("/a/img").GetAttrib("src").ParseToUri();
-            suggestion.Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri();
-            suggestion.Plot = rec_rating.ExtendFind("div[@class='rec-outline']/p").ParseText();
-            suggestion.Genres = rec_genres.ParseText().Replace('|', ',').SplitByAndTrim(",").ToList();
-            Console.WriteLine(rec_rating.ExtendFind("div[@class='rating rating-list']/span[@class='rating-rating']").ParseText());
-            suggestion.Score = rec_rating.ExtendFind("div/span[@class='rating-rating']/span").ParseDouble();
-            suggestion.ReleaseDate = new DateTime(rec_title.Elements("span").Last().ParseText('(', ')').ParseToInt().Value, 1, 1);
-
-
-            return suggestion;
+            return new Episode();
         }
         private ImdbReview ParseSingleImdbReview(HtmlNode node)
         {
