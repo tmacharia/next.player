@@ -33,7 +33,7 @@ namespace Next.PCL.Online
             string html = await GetAsync(GenerateUrl(imdbId), cancellationToken);
             return _parser.ParseImdb(html);
         }
-        public async Task<List<Episode>> GetEpisodesAsync(string imdbId, int season, CancellationToken cancellationToken = default)
+        public async Task<List<ImdbEpisode>> GetEpisodesAsync(string imdbId, int season, CancellationToken cancellationToken = default)
         {
             string suffix = $"/episodes?season={season}";
             var url = GenerateUrl(imdbId, suffix);

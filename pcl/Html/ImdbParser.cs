@@ -66,10 +66,15 @@ namespace Next.PCL.Html
             return null;
         }
 
-        internal IEnumerable<Episode> ParseSeasonEpisodes(string html, int season, HtmlDocument htmlDocument = default)
+        internal IEnumerable<ImdbEpisode> ParseSeasonEpisodes(string html, int season, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
             // validate if html is for correct season
+            var sn = doc.GetElementbyId("bySeason").ExtendFind("option[@selected]").ParseInt();
+            if (!sn.HasValue || sn != season)
+                yield break;
+
             var nodes = doc.DocumentNode.SelectNodes("//div[@class='list detail eplist']/div");
             foreach (var node in nodes)
             {
@@ -145,9 +150,21 @@ namespace Next.PCL.Html
         }
 
 
-        private Episode ParseSingleEpisode(HtmlNode node)
+        private ImdbEpisode ParseSingleEpisode(HtmlNode node)
         {
-            return new Episode();
+            var link = node.ExtendFind("a[@itemprop='url']");
+
+            var ep= new ImdbEpisode();
+            ep.Url = link.GetHref().ParseToUri();
+            ep.ImdbId = link.ExtendFind("div").GetAttrib("data-const");
+            ep.Name = node.ExtendFind("a[@itemprop='name']").ParseText();
+            ep.Number = node.ExtendFind("meta[@itemprop='episodeNumber']")
+                            .GetAttrib("content").ParseToInt() ?? 0;
+            ep.Poster = link.ExtendFind("div/img").GetAttrib("src").ParseToUri();
+            ep.Plot = node.ExtendFind("div[@itemprop='description']").ParseText();
+            ep.ReleaseDate = node.ExtendFind("div[@class='airdate']").ParseDateTime();
+            ep.Notation = link.ExtendFind("div/div").ParseText().Replace(",", "").ToUpper();
+            return ep;
         }
         private ImdbReview ParseSingleImdbReview(HtmlNode node)
         {
