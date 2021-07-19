@@ -152,18 +152,22 @@ namespace Next.PCL.Html
 
         private ImdbEpisode ParseSingleEpisode(HtmlNode node)
         {
-            var link = node.ExtendFind("a[@itemprop='url']");
+            var link = node.ExtendFind("div/a[@itemprop='url']");
 
             var ep= new ImdbEpisode();
+            ep.Name = link.GetAttrib("title");
             ep.Url = link.GetHref().ParseToUri();
             ep.ImdbId = link.ExtendFind("div").GetAttrib("data-const");
-            ep.Name = node.ExtendFind("a[@itemprop='name']").ParseText();
-            ep.Number = node.ExtendFind("meta[@itemprop='episodeNumber']")
+            ep.Number = node.ExtendFind("div/meta[@itemprop='episodeNumber']")
                             .GetAttrib("content").ParseToInt() ?? 0;
             ep.Poster = link.ExtendFind("div/img").GetAttrib("src").ParseToUri();
             ep.Plot = node.ExtendFind("div[@itemprop='description']").ParseText();
             ep.ReleaseDate = node.ExtendFind("div[@class='airdate']").ParseDateTime();
-            ep.Notation = link.ExtendFind("div/div").ParseText().Replace(",", "").ToUpper();
+            ep.Notation = link.ExtendFind("div/div")
+                              .ParseText()
+                              .Replace(",", "")
+                              .Replace(" ", "")
+                              .ToUpper();
             return ep;
         }
         private ImdbReview ParseSingleImdbReview(HtmlNode node)

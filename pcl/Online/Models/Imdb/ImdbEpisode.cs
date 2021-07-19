@@ -13,5 +13,10 @@ namespace Next.PCL.Online.Models.Imdb
         public virtual string Plot { get; set; }
         public virtual int? Runtime { get; set; }
         public virtual DateTime? ReleaseDate { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", Notation, Name);
+        }
     }
 }

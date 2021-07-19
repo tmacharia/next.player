@@ -150,5 +150,18 @@ namespace Tests.Online
 
             Log(list);
         }
+
+        [Order(4)]
+        [Case(IMDB_TESTS, SEASON_TESTS, EPISODE_TESTS)]
+        public async Task Get_Episodes_BySeason()
+        {
+            var list = await _imdb.GetEpisodesAsync(Veep.ImdbId, 1);
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+            Assert.That(list.All(x => x.ImdbId.IsValid()));
+
+            Log(list);
+        }
     }
 }
