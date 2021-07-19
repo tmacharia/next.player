@@ -33,7 +33,15 @@ namespace Next.PCL.Online
             string html = await GetAsync(GenerateUrl(imdbId), cancellationToken);
             return _parser.ParseImdb(html);
         }
-        
+        public async Task<List<Episode>> GetEpisodesAsync(string imdbId, int season, CancellationToken cancellationToken = default)
+        {
+            string suffix = $"/episodes?season={season}";
+            var url = GenerateUrl(imdbId, suffix);
+            string html = await GetAsync(url, cancellationToken);
+            return new List<Episode>();
+        }
+
+
         public async Task<List<ReviewComment>> GetReviewsAsync(string imdbId, MetaType metaType = MetaType.TvShow, CancellationToken cancellationToken = default)
         {
             string html = await GetAsync(GenerateUrl(imdbId, "reviews"), cancellationToken);
@@ -79,6 +87,7 @@ namespace Next.PCL.Online
 
             return await _appCache.GetOrAddAsync(cacheKey, factory);
         }
+        
         public async Task<List<GeographicLocation>> GetLocationsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
             string html = await GetAsync(GenerateUrl(imdbId, "locations"), cancellationToken);
