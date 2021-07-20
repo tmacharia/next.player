@@ -163,5 +163,15 @@ namespace Tests.Online
 
             Log(list);
         }
+
+        [Order(4)]
+        [Case(IMDB_TESTS, SEASON_TESTS, EPISODE_TESTS)]
+        public async Task ForInvalidSeason_Return_EmptyEpisodes()
+        {
+            var list = await _imdb.GetEpisodesAsync(Veep.ImdbId, 8);
+
+            Assert.NotNull(list);
+            Assert.False(list.Any());
+        }
     }
 }
