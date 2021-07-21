@@ -171,10 +171,16 @@ namespace Next.PCL.Html
                               .ToUpper();
             ep.ReleaseDate = node.ExtendFind("div/div[@class='airdate']")
                                  .ParseDateTime();
-            ep.Url = string.Format("{0}{1}",
-                                SiteUrls.IMDB,
-                                link.GetHref().SplitByAndTrim("?").First())
-                         .ParseToUri();
+            ep.Url = (SiteUrls.IMDB + link.GetHref().SplitByAndTrim("?").First())
+                           .ParseToUri();
+
+            // parse ratings
+            var ipl_rw = node.ExtendFind("div/div[@class='ipl-rating-widget']/div");
+            ep.Rating.Score = ipl_rw.ExtendFind("span[@class='ipl-rating-star__rating']").ParseDouble() ?? 0;
+            ep.Rating.Votes = ipl_rw.ExtendFind("span[@class='ipl-rating-star__total-votes']")
+                                    .ParseText('(', ')')
+                                    .ParseToInt() ?? 0;
+
             return ep;
         }
         private ImdbReview ParseSingleImdbReview(HtmlNode node)

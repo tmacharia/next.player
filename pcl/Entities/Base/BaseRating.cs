@@ -7,7 +7,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0:N1} | {1:N0} votes", Score, Votes);
+            return string.Format("{0:N1}/10 {1:N0} votes", Score, Votes);
         }
     }
 }
