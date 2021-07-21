@@ -117,7 +117,9 @@ namespace Next.PCL.Html
                 {
                     var imu = node.ParseToMediaUrl();
                     if (imu != null)
+                    {
                         yield return imu;
+                    }
                 }
             }
         }

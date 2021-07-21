@@ -193,6 +193,7 @@ namespace Tests.Online
             Assert.NotNull(list);
             Assert.That(list.Any());
 
+            Log(list.Count);
             Log(list);
         }
     }

@@ -12,7 +12,7 @@ namespace Next.PCL.Online.Models.Imdb
 
         public override string ToString()
         {
-            return string.Format("{0}\n{1}", ImdbId, Url);
+            return string.Format("{0}, {1}", ImdbId, Url);
         }
     }
     public class ImdbImage : ImdbMediaUrl
