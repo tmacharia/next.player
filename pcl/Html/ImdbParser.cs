@@ -32,7 +32,7 @@ namespace Next.PCL.Html
             {
                 var model = json.DeserializeTo<ImdbModel>();
                 model.Url = doc.GetMetaProp("og:url").ParseToUri();
-                model.ImdbId = model.Url.AbsolutePath.SplitByAndTrim("/").Last();
+                model.ImdbId = doc.GetMetaProp("imdb:pageConst");
                 if (model.Trailer != null && model.Trailer.EmbedUrl != null)
                 {
                     model.Trailer.EmbedUrl = (SiteUrls.IMDB + model.Trailer.EmbedUrl.OriginalString).ParseToUri();
@@ -82,6 +82,22 @@ namespace Next.PCL.Html
                 if (ep != null)
                     yield return ep;
             }
+        }
+        internal ImdbEpisode ParseEpisode(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var json = doc.Find("//script[@type='application/ld+json']")?.ParseText();
+
+            if (json.IsValid())
+            {
+                var model = json.DeserializeTo<ImdbEpisode>();
+                model.Url = doc.GetMetaProp("og:url").ParseToUri();
+                model.ImdbId = doc.GetMetaProp("imdb:pageConst");
+                return model;
+            }
+
+            return null;
         }
 
         internal async Task<IEnumerable<ImdbUserList>> ParseUserListsAsync(Uri imdbUrl, CancellationToken cancellationToken = default)

@@ -173,5 +173,17 @@ namespace Tests.Online
             Assert.NotNull(list);
             Assert.False(list.Any());
         }
+
+        [Order(5)]
+        [Case(IMDB_TESTS, EPISODE_TESTS)]
+        public async Task Get_Episode_ById()
+        {
+            var imdb = await _imdb.GetEpisodeAsync("tt2103089");
+
+            Assert.NotNull(imdb);
+            Assert.AreEqual("tt2103089", imdb.ImdbId);
+
+            Log(imdb);
+        }
     }
 }

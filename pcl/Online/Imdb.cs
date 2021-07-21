@@ -40,6 +40,11 @@ namespace Next.PCL.Online
             string html = await GetAsync(url, cancellationToken);
             return _parser.ParseSeasonEpisodes(html, season).ToList();
         }
+        public async Task<ImdbEpisode> GetEpisodeAsync(string imdbId, CancellationToken cancellationToken = default)
+        {
+            string html = await GetAsync(GenerateUrl(imdbId), cancellationToken);
+            return _parser.ParseEpisode(html);
+        }
 
 
         public async Task<List<ReviewComment>> GetReviewsAsync(string imdbId, MetaType metaType = MetaType.TvShow, CancellationToken cancellationToken = default)
