@@ -94,6 +94,13 @@ namespace Next.PCL.Html
                 var model = json.DeserializeTo<ImdbEpisode>();
                 model.Url = doc.GetMetaProp("og:url").ParseToUri();
                 model.ImdbId = doc.GetMetaProp("imdb:pageConst");
+
+                var lis = doc.FindAll("//ul[@data-testid='hero-subnav-bar-season-episode-numbers-section']/li/span");
+                string sn = lis[0].ParseText();
+                string ep = lis[1].ParseText();
+                model.Notation = sn + ep;
+                model.Number = ep.GetNumber() ?? 0;
+
                 return model;
             }
 

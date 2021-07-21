@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Common;
 using Iso8601DurationHelper;
 using Serilog;
@@ -42,6 +43,7 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
+        
         internal static int? ParseToInt(this string s)
         {
             if (s.IsValid())
@@ -107,8 +109,22 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
+        internal static int? GetNumber(this string s)
+        {
+            if (s.IsValid())
+            {
+                var match = Regex.Match(s, "[0-9]+");
+                if (match.Success)
+                {
+                    if (int.TryParse(match.Value, out int n))
+                    {
+                        return n;
+                    }
+                }
+            }
+            return null;
+        }
 
-        
         /// <summary>
         /// Splits a string into substrings based on the strings in an array. 
         /// <br/>
