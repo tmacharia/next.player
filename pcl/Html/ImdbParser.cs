@@ -106,21 +106,18 @@ namespace Next.PCL.Html
 
             return null;
         }
-        internal IEnumerable<ImdbMediaUrl> ParseMediaUrls(string html, HtmlDocument htmlDocument = default)
+        internal IEnumerable<ImdbImage> ParseMediaUrls(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
             var nodes = doc.FindAll("//div[@class='media_index_thumb_list']/a");
             foreach (var node in nodes)
             {
-                string href = node.GetHref();
-                if (href.StartsWith("/title"))
+                if (node.GetHref().StartsWith("/title"))
                 {
-                    string part = href.SplitByAndTrim("?").First();
-                    var imu = new ImdbMediaUrl();
-                    imu.Url = (SiteUrls.IMDB + part).ParseToUri();
-                    imu.ImdbId = part.SplitByAndTrim("/").LastOrDefault();
-                    yield return imu;
+                    var imu = node.ParseToMediaUrl();
+                    if (imu != null)
+                        yield return imu;
                 }
             }
         }
