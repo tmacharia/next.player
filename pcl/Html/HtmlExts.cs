@@ -21,19 +21,19 @@ namespace Next.PCL.Html
         }
         internal static int? ParseInt(this HtmlNode node)
         {
-            return node.ParseText().ParseToInt();
+            return node?.ParseText().ParseToInt();
         }
         internal static Uri ParseUri(this HtmlNode node)
         {
-            return node.ParseText().ParseToUri();
+            return node?.ParseText().ParseToUri();
         }
         internal static double? ParseDouble(this HtmlNode node)
         {
-            return node.ParseText().ParseToDouble();
+            return node?.ParseText().ParseToDouble();
         }
         internal static DateTime? ParseDateTime(this HtmlNode node)
         {
-            return node.ParseText().ParseToDateTime();
+            return node?.ParseText().ParseToDateTime();
         }
         #endregion
 

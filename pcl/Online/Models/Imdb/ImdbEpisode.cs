@@ -16,7 +16,12 @@ namespace Next.PCL.Online.Models.Imdb
 
         public override string ToString()
         {
-            return string.Format("{0} - {1}", Notation, Name);
+            return string.Format("{0}, {1} - {2}, {3}, {4:dd MMM yyyy}" +
+                "\n\t{5}" +
+                "\n\t{6}",
+                Number, Notation, Name, ImdbId, ReleaseDate,
+                Url,
+                Poster);
         }
     }
 }
