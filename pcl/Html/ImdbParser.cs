@@ -123,6 +123,20 @@ namespace Next.PCL.Html
                 }
             }
         }
+        internal IEnumerable<ImdbImage> ParseImdbImages(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var nodes = doc.FindAll("//img");
+            foreach (var node in nodes)
+            {
+                var imu = node.ParseToMediaUrl();
+                if (imu != null)
+                {
+                    yield return imu;
+                }
+            }
+        }
 
 
         internal async Task<IEnumerable<ImdbUserList>> ParseUserListsAsync(Uri imdbUrl, CancellationToken cancellationToken = default)
