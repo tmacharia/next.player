@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Common;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
+using Next.PCL.Extensions;
 using Next.PCL.Html;
 using Next.PCL.Infra;
 using Next.PCL.Online.Models.Imdb;
@@ -50,6 +51,25 @@ namespace Next.PCL.Online
             max = max <= 5 ? max : 5;
             string html = await GetAsync(GenerateUrl(imdbId, "mediaindex"), cancellationToken);
             return _parser.ParseMediaUrls(html).Take((int)max).ToList();
+        }
+        public async Task<List<ImdbImage>> GetImagesAsync(string imdbId, string[] imageIds, CancellationToken cancellationToken = default)
+        {
+            var list = new List<ImdbImage>();
+            foreach (var id in imageIds)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+
+                var images = await GetImagesAsync(imdbId, id, cancellationToken);
+                if (images.IsNotNullOrEmpty())
+                    list.AddRange(images);
+            }
+            return list;
+        }
+        public async Task<List<ImdbImage>> GetImagesAsync(string imdbId, string imageId, CancellationToken cancellationToken = default)
+        {
+            string html = await GetAsync(GenerateUrl(imdbId, $"mediaviewer/{imageId}"), cancellationToken);
+            return _parser.ParseMediaUrls(html).ToList();
         }
 
 
