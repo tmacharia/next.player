@@ -10,6 +10,7 @@ using Next.PCL.Enums;
 using Next.PCL.Extensions;
 using Next.PCL.Html;
 using Next.PCL.Infra;
+using Next.PCL.Metas;
 using Next.PCL.Online.Models.Imdb;
 using Next.PCL.Services;
 
@@ -71,6 +72,12 @@ namespace Next.PCL.Online
         {
             string html = await GetAsync(GenerateUrl(imdbId, $"mediaviewer/{imageId}"), cancellationToken);
             return _parser.ParseImdbImages(html).ToList();
+        }
+        public async Task<List<ImdbVideo>> GetVideoGalleryAsync(string imdbId, uint max = 5, CancellationToken cancellationToken = default)
+        {
+            max = max <= 5 ? max : 5;
+            string html = await GetAsync(GenerateUrl(imdbId, "videogallery"), cancellationToken);
+            return _parser.ParseVideoGallery(html).Take((int)max).ToList();
         }
 
 

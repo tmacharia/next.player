@@ -36,5 +36,31 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
+        internal static ImdbVideo ParseVideoGalleryItem(this HtmlNode node)
+        {
+            if (node != null)
+            {
+                string href = node.GetHref();
+                string part = href.SplitByAndTrim("?").First();
+
+                var image = new ImdbVideo();
+                image.Url = (SiteUrls.IMDB + part).ParseToUri();
+                image.ImdbId = part.SplitByAndTrim("/").LastOrDefault();
+
+                var imgNode = node.ExtendFind("img");
+
+                if (imgNode != null)
+                {
+                    string imgUrl = imgNode?.GetAttrib("src");
+                    image.Poster = new MetaImage(MetaImageType.Thumbnail, MetaSource.IMDB)
+                    {
+                        Url = imgUrl.ParseToUri()
+                    };
+                }
+
+                return image;
+            }
+            return null;
+        }
     }
 }

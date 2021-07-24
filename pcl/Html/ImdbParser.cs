@@ -123,6 +123,23 @@ namespace Next.PCL.Html
                 }
             }
         }
+        internal IEnumerable<ImdbVideo> ParseVideoGallery(string html, HtmlDocument htmlDocument = default)
+        {
+            var doc = htmlDocument ?? ConvertToHtmlDoc(html);
+
+            var nodes = doc.FindAll("//div[@class='search-results']/ol/li/div");
+            foreach (var node in nodes)
+            {
+                if (node.GetHref().StartsWith("/videoplayer"))
+                {
+                    var imu = node.ParseVideoGalleryItem();
+                    if (imu != null)
+                    {
+                        yield return imu;
+                    }
+                }
+            }
+        }
         internal IEnumerable<ImdbImage> ParseImdbImages(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);

@@ -25,4 +25,10 @@ namespace Next.PCL.Online.Models.Imdb
 
         public virtual List<MetaImage> Sizes { get; set; }
     }
+    
+    public class ImdbVideo : ImdbMediaUrl, INamedEntity
+    {
+        public virtual string Name { get; set; }
+        public virtual MetaImage Poster { get; set; }
+    }
 }
