@@ -20,7 +20,7 @@ namespace Next.PCL.Html
         /// <param name="cancellationToken">Cancellation cancellationToken.</param>
         /// <param name="useHtmlWeb4Download">Whether to use <see cref="HtmlWeb"/> for loading html from an online resource or the simple &amp; often quick get.</param>
         /// <returns>A <see cref="HtmlDocument"/></returns>
-        protected virtual async Task<HtmlDocument> GetHtmlDocumentAsync(Uri uri, CancellationToken cancellationToken = default, bool useHtmlWeb4Download = false)
+        internal virtual async Task<HtmlDocument> GetHtmlDocumentAsync(Uri uri, CancellationToken cancellationToken = default, bool useHtmlWeb4Download = false)
         {
             if (!useHtmlWeb4Download)
             {

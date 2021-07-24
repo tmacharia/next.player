@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Common;
 using HtmlAgilityPack;
 using Next.PCL.Enums;
 using Next.PCL.Html;
@@ -42,16 +44,19 @@ namespace Next.PCL.Extensions
             if (node != null)
             {
                 string srcset = node.GetAttrib("srcset");
-                var sizes = srcset.SplitByAndTrim(",");
-                foreach (var sz in sizes)
+                if (srcset.IsValid())
                 {
-                    string[] parts = sz.SplitByAndTrim(" ").ToArray();
-                    int? num = parts[1].TrimEnd('w').Trim().ParseToInt();
-                    int width = num ?? 0;
-                    var img = new MetaImage(MetaImageType.Image, MetaSource.IMDB);
-                    img.Url = parts[0].ParseToUri();
-                    img.Width = (ushort)width;
-                    yield return img;
+                    var sizes = srcset.SplitByAndTrim(",");
+                    foreach (var sz in sizes)
+                    {
+                        string[] parts = sz.SplitByAndTrim(" ").ToArray();
+                        int? num = parts[1].TrimEnd('w').Trim().ParseToInt();
+                        int width = num ?? 0;
+                        var img = new MetaImage(MetaImageType.Image, MetaSource.IMDB);
+                        img.Url = parts[0].ParseToUri();
+                        img.Width = (ushort)width;
+                        yield return img;
+                    }
                 }
             }
         }

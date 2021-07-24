@@ -145,7 +145,7 @@ namespace Next.PCL.Html
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
-            return doc.Find("//img").ParseImageSet();
+            return doc.Find("//img[@srcset]").ParseImageSet();
         }
 
 

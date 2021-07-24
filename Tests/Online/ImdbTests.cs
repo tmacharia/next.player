@@ -196,5 +196,17 @@ namespace Tests.Online
             Log(list.Count);
             Log(list);
         }
+        //[Order(0)]
+        [Case(IMDB_TESTS, "ImageSet")]
+        public async Task Get_ImageSet_ByTitleIdAndImageId()
+        {
+            var list = await _imdb.GetImageSetAsync(Veep.ImdbId, "rm563688448");
+
+            Assert.NotNull(list);
+            Assert.That(list.Any());
+
+            Log(list.Count);
+            Log(list);
+        }
     }
 }
