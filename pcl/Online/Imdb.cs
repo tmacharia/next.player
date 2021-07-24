@@ -54,9 +54,9 @@ namespace Next.PCL.Online
             string html = await GetAsync(GenerateUrl(imdbId, "mediaindex"), cancellationToken);
             return _parser.ParseImageGallery(html).Take((int)max).ToList();
         }
-        public async Task<List<ImdbImage>> GetImagesAsync(string imdbId, string[] imageIds, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImage>> GetImagesAsync(string imdbId, string[] imageIds, CancellationToken cancellationToken = default)
         {
-            var list = new List<ImdbImage>();
+            var list = new List<MetaImage>();
             foreach (var id in imageIds)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -68,7 +68,7 @@ namespace Next.PCL.Online
             }
             return list;
         }
-        public async Task<List<ImdbImage>> GetImagesAsync(string imdbId, string imageId, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImage>> GetImagesAsync(string imdbId, string imageId, CancellationToken cancellationToken = default)
         {
             string html = await GetAsync(GenerateUrl(imdbId, $"mediaviewer/{imageId}"), cancellationToken);
             return _parser.ParseImdbImages(html).ToList();

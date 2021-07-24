@@ -11,6 +11,7 @@ using HtmlAgilityPack;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
 using Next.PCL.Extensions;
+using Next.PCL.Metas;
 using Next.PCL.Online;
 using Next.PCL.Online.Models.Imdb;
 using Next.PCL.Static;
@@ -140,19 +141,11 @@ namespace Next.PCL.Html
                 }
             }
         }
-        internal IEnumerable<ImdbImage> ParseImdbImages(string html, HtmlDocument htmlDocument = default)
+        internal IEnumerable<MetaImage> ParseImdbImages(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
-            var nodes = doc.FindAll("//img");
-            foreach (var node in nodes)
-            {
-                var imu = node.ParseImageGalleryItem();
-                if (imu != null)
-                {
-                    yield return imu;
-                }
-            }
+            return doc.Find("//img").ParseImageSet();
         }
 
 
