@@ -46,6 +46,7 @@ namespace Next.PCL.Online
             string html = await GetAsync(GenerateUrl(imdbId), cancellationToken);
             return _parser.ParseEpisode(html);
         }
+        
         public async Task<List<ImdbImage>> PreFetchImagesAsync(string imdbId, uint max = 5, CancellationToken cancellationToken = default)
         {
             max = max <= 5 ? max : 5;
