@@ -9,7 +9,7 @@ namespace Next.PCL.Extensions
 {
     internal static class ImdbExts
     {
-        internal static ImdbImage ParseToMediaUrl(this HtmlNode node)
+        internal static ImdbImage ParseImageGalleryItem(this HtmlNode node)
         {
             if (node != null)
             {

@@ -186,9 +186,9 @@ namespace Tests.Online
 
         [Order(5)]
         [Case(IMDB_TESTS)]
-        public async Task Get_Images_ByTitleId()
+        public async Task Get_ImageGallery_ByTitleId()
         {
-            var list = await _imdb.PreFetchImagesAsync(Veep.ImdbId);
+            var list = await _imdb.GetImageGalleryAsync(Veep.ImdbId);
 
             Assert.NotNull(list);
             Assert.That(list.Any());

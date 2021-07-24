@@ -47,11 +47,11 @@ namespace Next.PCL.Online
             return _parser.ParseEpisode(html);
         }
         
-        public async Task<List<ImdbImage>> PreFetchImagesAsync(string imdbId, uint max = 5, CancellationToken cancellationToken = default)
+        public async Task<List<ImdbImage>> GetImageGalleryAsync(string imdbId, uint max = 5, CancellationToken cancellationToken = default)
         {
             max = max <= 5 ? max : 5;
             string html = await GetAsync(GenerateUrl(imdbId, "mediaindex"), cancellationToken);
-            return _parser.ParseMediaUrls(html).Take((int)max).ToList();
+            return _parser.ParseImageGallery(html).Take((int)max).ToList();
         }
         public async Task<List<ImdbImage>> GetImagesAsync(string imdbId, string[] imageIds, CancellationToken cancellationToken = default)
         {

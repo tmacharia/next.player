@@ -106,7 +106,7 @@ namespace Next.PCL.Html
 
             return null;
         }
-        internal IEnumerable<ImdbImage> ParseMediaUrls(string html, HtmlDocument htmlDocument = default)
+        internal IEnumerable<ImdbImage> ParseImageGallery(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
@@ -115,7 +115,7 @@ namespace Next.PCL.Html
             {
                 if (node.GetHref().StartsWith("/title"))
                 {
-                    var imu = node.ParseToMediaUrl();
+                    var imu = node.ParseImageGalleryItem();
                     if (imu != null)
                     {
                         yield return imu;
@@ -130,7 +130,7 @@ namespace Next.PCL.Html
             var nodes = doc.FindAll("//img");
             foreach (var node in nodes)
             {
-                var imu = node.ParseToMediaUrl();
+                var imu = node.ParseImageGalleryItem();
                 if (imu != null)
                 {
                     yield return imu;
