@@ -71,10 +71,7 @@ namespace Next.PCL.Online
         public async Task<List<MetaImage>> GetImageSetAsync(string imdbId, string imageId, CancellationToken cancellationToken = default)
         {
             var url = GenerateUrl(imdbId, $"mediaviewer/{imageId}");
-            Console.WriteLine(url);
-            string html = "";
-            //var doc = await _parser.GetHtmlDocumentAsync(url, cancellationToken, true);
-            html = await GetAsync(url, cancellationToken);
+            string html = await GetAsync(url, cancellationToken);
             return _parser.ParseImdbImages(html).ToList();
         }
         public async Task<List<ImdbVideo>> GetVideoGalleryAsync(string imdbId, uint max = 5, CancellationToken cancellationToken = default)

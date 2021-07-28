@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Common;
 using Next.PCL.Enums;
 using Next.PCL.Exceptions;
+using Next.PCL.Extensions;
 using Next.PCL.Online.Models.Yts;
 using Next.PCL.Services;
 
@@ -21,16 +22,25 @@ namespace Next.PCL.Online
         public async Task<YtsMovie> GetMovieByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var res = await RequestAsync<YtsMovieSingleResponse>($"/movie_details.json?movie_id={id}&with_images=true", cancellationToken);
+
+            res.Movie.ResolveMetaImages();
+
             return res.Movie;
         }
         public async Task<List<YtsMovie>> GetSuggestionsAsync(int id, CancellationToken cancellationToken = default)
         {
             var res = await RequestAsync<YtsMovieListResponse>($"/movie_suggestions.json?movie_id={id}", cancellationToken);
+
+            res.Movies.ForEach(x => x.ResolveMetaImages());
+
             return res.Movies;
         }
         public async Task<List<YtsMovie>> SearchAsync(string query, MetaType metaType = MetaType.Movie, CancellationToken cancellationToken = default)
         {
             var res = await RequestAsync<YtsMovieListResponse>($"/list_movies.json?query_term={query}", cancellationToken);
+
+            res.Movies.ForEach(x => x.ResolveMetaImages());
+
             return res.Movies;
         }
 

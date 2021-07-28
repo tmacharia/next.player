@@ -248,6 +248,7 @@ namespace Next.PCL.Online
         }
         public async Task<TvdbEpisode> GetEpisodeAsync(Uri episodeUrl, CancellationToken cancellationToken = default)
         {
+            Console.WriteLine(episodeUrl);
             string html = await GetAsync(episodeUrl, cancellationToken);
             return _parser.ParseEpisode(html, episodeUrl);
         }

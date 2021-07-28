@@ -9,25 +9,26 @@ namespace Next.PCL.Extensions
 {
     internal static class YtsExts
     {
-        internal static List<MetaImage> GetMetaImages(this YtsMovie model)
+        internal static void ResolveMetaImages(this YtsMovie model)
         {
-            List<MetaImage> images = new List<MetaImage>();
+            var list = new List<MetaImage>();
             if(model != null)
             {
-                model.GetImageAs(x => x.Poster, MetaImageType.Poster, Resolution.WVGA, ref images);
-                model.GetImageAs(x => x.Poster_SM, MetaImageType.Poster, Resolution.WVGA, ref images);
-                model.GetImageAs(x => x.Poster_LG, MetaImageType.Poster, Resolution.HD, ref images);
+                model.AddImageTo(x => x.Poster, MetaImageType.Poster, Resolution.WVGA, ref list);
+                model.AddImageTo(x => x.Poster_SM, MetaImageType.Poster, Resolution.WVGA, ref list);
+                model.AddImageTo(x => x.Poster_LG, MetaImageType.Poster, Resolution.HD, ref list);
 
-                model.GetImageAs(x => x.BackgroundImage, MetaImageType.Backdrop, Resolution.WVGA, ref images);
-                model.GetImageAs(x => x.BackgroundImageOriginal, MetaImageType.Backdrop, Resolution.HD, ref images);
+                model.AddImageTo(x => x.BackgroundImage, MetaImageType.Backdrop, Resolution.WVGA, ref list);
+                model.AddImageTo(x => x.BackgroundImageOriginal, MetaImageType.Backdrop, Resolution.HD, ref list);
 
-                model.GetImageAs(x => x.LargeScreenshotImage1, MetaImageType.Screenshot, Resolution.HD, ref images);
-                model.GetImageAs(x => x.LargeScreenshotImage2, MetaImageType.Screenshot, Resolution.HD, ref images);
-                model.GetImageAs(x => x.LargeScreenshotImage3, MetaImageType.Screenshot, Resolution.HD, ref images);
+                model.AddImageTo(x => x.LargeScreenshotImage1, MetaImageType.Screenshot, Resolution.HD, ref list);
+                model.AddImageTo(x => x.LargeScreenshotImage2, MetaImageType.Screenshot, Resolution.HD, ref list);
+                model.AddImageTo(x => x.LargeScreenshotImage3, MetaImageType.Screenshot, Resolution.HD, ref list);
             }
-            return images;
+            if (list.Count > 0)
+                model.Images.AddRange(list);
         }
-        private static void GetImageAs(this YtsMovie model, Expression<Func<YtsMovie,Uri>> keySelector, MetaImageType type, Resolution resolution, ref List<MetaImage> images)
+        private static void AddImageTo(this YtsMovie model, Expression<Func<YtsMovie,Uri>> keySelector, MetaImageType type, Resolution resolution, ref List<MetaImage> images)
         {
             var url = model.GetPropValue2(keySelector);
             if(url != null)
