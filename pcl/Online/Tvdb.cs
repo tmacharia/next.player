@@ -196,6 +196,14 @@ namespace Next.PCL.Online
         {
             return _parser.GetAndParseImagesAsync(uri, MetaImageType.Backdrop, cancellationToken);
         }
+        public Task<List<MetaImage>> GetAllClearArtsAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            return _parser.GetAndParseImagesAsync(uri, MetaImageType.ClearArt, cancellationToken);
+        }
+        public Task<List<MetaImage>> GetAllClearLogosAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            return _parser.GetAndParseImagesAsync(uri, MetaImageType.ClearLogo, cancellationToken);
+        }
         #endregion
 
         public Task<TvdbSeason> GetSeasonAsync(string tvSlugName, int season, CancellationToken cancellationToken = default)

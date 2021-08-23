@@ -100,6 +100,8 @@ namespace Next.PCL.Html
             model.Banners = doc.GetArtworksOfType(MetaImageType.Banner);
             model.Posters = doc.GetArtworksOfType(MetaImageType.Poster);
             model.Backdrops = doc.GetArtworksOfType(MetaImageType.Backdrop);
+            model.ClearArts = doc.GetArtworksOfType(MetaImageType.ClearArt);
+            model.ClearLogos = doc.GetArtworksOfType(MetaImageType.ClearLogo);
 
             var lists = doc.FindAll("//div[@id='series_basic_info']/ul/li");
 

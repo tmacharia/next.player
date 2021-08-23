@@ -6,6 +6,8 @@
         internal const string Banners = "banners";
         internal const string Posters = "posters";
         internal const string Backdrops = "backgrounds";
+        internal const string ClearArt = "clearart";
+        internal const string ClearLogo = "clearlogo";
         internal const string Images = "image";
         internal const string EP_IMG = "image";
 

@@ -134,6 +134,8 @@ namespace Next.PCL.Extensions
                     case MetaImageType.Backdrop: return new Size(640, 360);
                     case MetaImageType.Profile: return new Size(300, 450);
                     case MetaImageType.Image: return new Size(640, 360);
+                    case MetaImageType.ClearArt: return new Size(500, 281);
+                    case MetaImageType.ClearLogo: return new Size(400, 155);
                 }
             }
             else
@@ -146,6 +148,8 @@ namespace Next.PCL.Extensions
                     case MetaImageType.Banner: return new Size(758, 140);
                     case MetaImageType.Backdrop: return new Size(1920, 1080);
                     case MetaImageType.Image: return new Size(640, 360);
+                    case MetaImageType.ClearArt: return new Size(1000, 562);
+                    case MetaImageType.ClearLogo: return new Size(800, 310);
                 }
             }
             return new Size(0, 0);
@@ -158,6 +162,8 @@ namespace Next.PCL.Extensions
                 case MetaImageType.Poster: return TvDbKeys.Posters;
                 case MetaImageType.Banner: return TvDbKeys.Banners;
                 case MetaImageType.Backdrop: return TvDbKeys.Backdrops;
+                case MetaImageType.ClearArt: return TvDbKeys.ClearArt;
+                case MetaImageType.ClearLogo: return TvDbKeys.ClearLogo;
                 default: return TvDbKeys.Images;
             }
         }
