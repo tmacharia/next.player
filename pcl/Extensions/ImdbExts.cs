@@ -28,7 +28,7 @@ namespace Next.PCL.Extensions
                 if(imgNode != null)
                 {
                     string imgUrl = imgNode?.GetAttrib("src");
-                    image.TinyImage = new MetaImage(MetaImageType.Thumbnail, MetaSource.IMDB)
+                    image.TinyImage = new MetaImageNx(MetaImageType.Thumbnail, MetaSource.IMDB)
                     {
                         Url = imgUrl.ParseToUri()
                     };
@@ -39,7 +39,7 @@ namespace Next.PCL.Extensions
             }
             return null;
         }
-        internal static IEnumerable<MetaImage> ParseImageSet(this HtmlNode node)
+        internal static IEnumerable<MetaImageNx> ParseImageSet(this HtmlNode node)
         {
             if (node != null)
             {
@@ -52,7 +52,7 @@ namespace Next.PCL.Extensions
                         string[] parts = sz.SplitByAndTrim(" ").ToArray();
                         int? num = parts[1].TrimEnd('w').Trim().ParseToInt();
                         int width = num ?? 0;
-                        var img = new MetaImage(MetaImageType.Image, MetaSource.IMDB);
+                        var img = new MetaImageNx(MetaImageType.Image, MetaSource.IMDB);
                         img.Url = parts[0].ParseToUri();
                         img.Width = (ushort)width;
                         yield return img;
@@ -77,7 +77,7 @@ namespace Next.PCL.Extensions
                 if (imgNode != null)
                 {
                     string imgUrl = imgNode?.GetAttrib("src");
-                    image.Poster = new MetaImage(MetaImageType.Thumbnail, MetaSource.IMDB)
+                    image.Poster = new MetaImageNx(MetaImageType.Thumbnail, MetaSource.IMDB)
                     {
                         Url = imgUrl.ParseToUri()
                     };

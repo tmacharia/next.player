@@ -4,6 +4,16 @@ using System.Threading.Tasks;
 
 namespace Next.PCL.Infra
 {
+    public interface INaiveCache
+    {
+        bool ContainsKey(string key);
+
+        TItem Get<TItem>(string key);
+
+        Task<TItem> GetOrAddAsync<TItem>(string key, Func<Task<TItem>> executor);
+
+        bool TryAdd(string key, object obj);
+    }
     public class NaiveMemoryCache : INaiveCache
     {
         private readonly ConcurrentDictionary<string, object> _naiveCache;
@@ -19,7 +29,7 @@ namespace Next.PCL.Infra
         {
             if (_naiveCache.TryGetValue(key, out object obj))
                 return (TItem)obj;
-            return default(TItem);
+            return default;
         }
 
         

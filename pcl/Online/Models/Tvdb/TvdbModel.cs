@@ -16,12 +16,12 @@ namespace Next.PCL.Online.Models.Tvdb
             Settings = new List<string>();
             TimePeriods = new List<string>();
 
-            Icons = new List<MetaImage>();
-            Banners = new List<MetaImage>();
-            Posters = new List<MetaImage>();
-            Backdrops = new List<MetaImage>();
-            ClearArts = new List<MetaImage>();
-            ClearLogos = new List<MetaImage>();
+            Icons = new List<MetaImageNx>();
+            Banners = new List<MetaImageNx>();
+            Posters = new List<MetaImageNx>();
+            Backdrops = new List<MetaImageNx>();
+            ClearArts = new List<MetaImageNx>();
+            ClearLogos = new List<MetaImageNx>();
 
             Cast = new List<Cast>();
 
@@ -37,12 +37,12 @@ namespace Next.PCL.Online.Models.Tvdb
         public List<string> Settings { get; set; }
         public List<string> TimePeriods { get; set; }
 
-        public List<MetaImage> Icons { get; set; }
-        public List<MetaImage> Banners { get; set; }
-        public List<MetaImage> Posters { get; set; }
-        public List<MetaImage> Backdrops { get; set; }
-        public List<MetaImage> ClearArts { get; set; }
-        public List<MetaImage> ClearLogos { get; set; }
+        public List<MetaImageNx> Icons { get; set; }
+        public List<MetaImageNx> Banners { get; set; }
+        public List<MetaImageNx> Posters { get; set; }
+        public List<MetaImageNx> Backdrops { get; set; }
+        public List<MetaImageNx> ClearArts { get; set; }
+        public List<MetaImageNx> ClearLogos { get; set; }
 
         public List<Cast> Cast { get; set; }
 

@@ -19,16 +19,16 @@ namespace Next.PCL.Online.Models.Imdb
     {
         public ImdbImage()
         {
-            Sizes = new List<MetaImage>();
+            Sizes = new List<MetaImageNx>();
         }
-        public virtual MetaImage TinyImage { get; set; }
+        public virtual MetaImageNx TinyImage { get; set; }
 
-        public virtual List<MetaImage> Sizes { get; set; }
+        public virtual List<MetaImageNx> Sizes { get; set; }
     }
     
     public class ImdbVideo : ImdbMediaUrl, INamedEntity
     {
         public virtual string Name { get; set; }
-        public virtual MetaImage Poster { get; set; }
+        public virtual MetaImageNx Poster { get; set; }
     }
 }

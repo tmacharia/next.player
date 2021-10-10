@@ -11,7 +11,7 @@ namespace Next.PCL.Online.Models.Tvdb
         {
             Crews = new List<FilmMaker>();
             Guests = new List<Cast>();
-            Images = new List<MetaImage>();
+            Images = new List<MetaImageNx>();
         }
         public int Id { get; set; }
         public Uri Url { get; set; }
@@ -24,6 +24,6 @@ namespace Next.PCL.Online.Models.Tvdb
 
         public List<FilmMaker> Crews { get; set; }
         public List<Cast> Guests { get; set; }
-        public List<MetaImage> Images { get; set; }
+        public List<MetaImageNx> Images { get; set; }
     }
 }

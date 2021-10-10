@@ -15,7 +15,7 @@ namespace Next.PCL.Entities
             IDs = new List<MetaID>();
             Aliases = new List<Alias>();
             Urls = new List<MetaUrl>();
-            Images = new List<MetaImage>();
+            Images = new List<MetaImageNx>();
         }
 
         public int MainPlotId { get; set; }
@@ -26,7 +26,7 @@ namespace Next.PCL.Entities
         public List<MetaID> IDs { get; set; }
         public List<Alias> Aliases { get; set; }
         public List<MetaUrl> Urls { get; set; }
-        public List<MetaImage> Images { get; set; }
+        public List<MetaImageNx> Images { get; set; }
     }
     /// <summary>
     /// Class B of related media items. Targets; movies,

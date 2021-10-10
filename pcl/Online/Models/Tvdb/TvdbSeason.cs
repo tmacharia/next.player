@@ -9,7 +9,7 @@ namespace Next.PCL.Online.Models.Tvdb
     {
         public TvdbSeason()
         {
-            Posters = new List<MetaImage>();
+            Posters = new List<MetaImageNx>();
             Episodes = new List<TvdbEpisode>();
         }
         public int Id { get; set; }
@@ -20,7 +20,7 @@ namespace Next.PCL.Online.Models.Tvdb
         public DateTime? AirDate { get; set; }
         public DateTime? LastAirDate { get; set; }
 
-        public List<MetaImage> Posters { get; set; }
+        public List<MetaImageNx> Posters { get; set; }
         public List<TvdbEpisode> Episodes { get; set; }
 
         public override string ToString()

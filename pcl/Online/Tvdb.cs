@@ -9,6 +9,7 @@ using Next.PCL.AutoMap;
 using Next.PCL.Configurations;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
+using Next.PCL.Exceptions;
 using Next.PCL.Extensions;
 using Next.PCL.Html;
 using Next.PCL.Infra;
@@ -163,44 +164,50 @@ namespace Next.PCL.Online
 
 
         #region Images Section
-        public async Task<List<MetaImage>> GetArtworksAsync(Uri uri, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetArtworksAsync(Uri uri, CancellationToken cancellationToken = default)
         {
-            var images = new List<MetaImage>();
+            var images = new List<MetaImageNx>();
 
-            images.AddRange(await GetAllPostersAsync(uri, cancellationToken));
+            images.AddRange(await GetAllPostersAsync(uri, cancellationToken)); //1.
             if (cancellationToken.IsCancellationRequested)
                 return images;
-            images.AddRange(await GetAllBackdropsAsync(uri, cancellationToken));
+            images.AddRange(await GetAllBackdropsAsync(uri, cancellationToken)); //2.
             if (cancellationToken.IsCancellationRequested)
                 return images;
-            images.AddRange(await GetAllIconsAsync(uri, cancellationToken));
+            images.AddRange(await GetAllIconsAsync(uri, cancellationToken)); //3.
             if (cancellationToken.IsCancellationRequested)
                 return images;
-            images.AddRange(await GetAllBannersAsync(uri, cancellationToken));
+            images.AddRange(await GetAllClearArtsAsync(uri, cancellationToken)); //4.
+            if (cancellationToken.IsCancellationRequested)
+                return images;
+            images.AddRange(await GetAllClearLogosAsync(uri, cancellationToken)); //5.
+            if (cancellationToken.IsCancellationRequested)
+                return images;
+            images.AddRange(await GetAllBannersAsync(uri, cancellationToken)); //6.
             
             return images;
         }
-        public Task<List<MetaImage>> GetAllIconsAsync(Uri uri, CancellationToken cancellationToken = default)
+        public Task<List<MetaImageNx>> GetAllIconsAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             return _parser.GetAndParseImagesAsync(uri, MetaImageType.Icon, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllBannersAsync(Uri uri, CancellationToken cancellationToken = default)
+        public Task<List<MetaImageNx>> GetAllBannersAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             return _parser.GetAndParseImagesAsync(uri, MetaImageType.Banner, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllPostersAsync(Uri uri, CancellationToken cancellationToken = default)
+        public Task<List<MetaImageNx>> GetAllPostersAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             return _parser.GetAndParseImagesAsync(uri, MetaImageType.Poster, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllBackdropsAsync(Uri uri, CancellationToken cancellationToken = default)
+        public Task<List<MetaImageNx>> GetAllBackdropsAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             return _parser.GetAndParseImagesAsync(uri, MetaImageType.Backdrop, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllClearArtsAsync(Uri uri, CancellationToken cancellationToken = default)
+        public Task<List<MetaImageNx>> GetAllClearArtsAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             return _parser.GetAndParseImagesAsync(uri, MetaImageType.ClearArt, cancellationToken);
         }
-        public Task<List<MetaImage>> GetAllClearLogosAsync(Uri uri, CancellationToken cancellationToken = default)
+        public Task<List<MetaImageNx>> GetAllClearLogosAsync(Uri uri, CancellationToken cancellationToken = default)
         {
             return _parser.GetAndParseImagesAsync(uri, MetaImageType.ClearLogo, cancellationToken);
         }
@@ -276,6 +283,23 @@ namespace Next.PCL.Online
         public Task<List<TvDbShow>> SearchAsync(string query, MetaType metaType = MetaType.TvShow, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
+        }
+
+
+        public override Task<string> GetAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return base.GetAsync(uri, cancellationToken);
+            }
+            catch (Exception xe)
+            {
+                if (xe is OnlineException)
+                {
+                    return Task.FromResult(string.Empty);
+                }
+                throw;
+            }
         }
     }
 }

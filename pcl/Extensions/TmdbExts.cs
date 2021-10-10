@@ -34,22 +34,22 @@ namespace Next.PCL.Extensions
             return model;
         }
 
-        internal static List<MetaImage> GetPosters(this PosterImages model, TMDbClient client)
+        internal static List<MetaImageNx> GetPosters(this PosterImages model, TMDbClient client)
         {
             if (model.Posters.IsNotNullOrEmpty())
-                return model.Posters.AsMetaImages(MetaImageType.Poster, client);
-            return new List<MetaImage>();
+                return model.Posters.AsMetaImages(MetaImageType.Poster, client).ToList();
+            return new List<MetaImageNx>();
         }
-        internal static List<MetaImage> GetPosters<TPoster>(this TPoster poster, TMDbClient client)
+        internal static List<MetaImageNx> GetPosters<TPoster>(this TPoster poster, TMDbClient client)
             where TPoster : class, IPosterPath
         {
             return client.ExtractImages(poster, MetaImageType.Logo, x => x.PosterPath, x => x.Config.Images.PosterSizes).ToList();
         }
-        internal static List<MetaImage> GetStills(this StillImages model, TMDbClient client)
+        internal static List<MetaImageNx> GetStills(this StillImages model, TMDbClient client)
         {
             if (model.Stills.IsNotNullOrEmpty())
-                return model.Stills.AsMetaImages(MetaImageType.Still, client);
-            return new List<MetaImage>();
+                return model.Stills.AsMetaImages(MetaImageType.Still, client).ToList();
+            return new List<MetaImageNx>();
         }
         internal static List<MetaVideo> GetVideos(this ResultContainer<Video> model)
         {
@@ -67,9 +67,9 @@ namespace Next.PCL.Extensions
             return new List<MetaVideo>();
         }
 
-        internal static List<MetaImage> GetAllImages(this ImagesWithId model, TMDbClient client)
+        internal static List<MetaImageNx> GetAllImages(this ImagesWithId model, TMDbClient client)
         {
-            var images = new List<MetaImage>();
+            var images = new List<MetaImageNx>();
 
             if(model != null)
             {
@@ -89,20 +89,67 @@ namespace Next.PCL.Extensions
             return images;
         }
 
-        internal static List<MetaImage> AsMetaImages(this List<ImageData> images, MetaImageType type, TMDbClient client)
+        internal static IEnumerable<MetaImageNx> AsMetaImages(this List<ImageData> images, MetaImageType type, TMDbClient client)
         {
-            if (images != null)
-                return images.Select(x =>
-            new MetaImage(type, MetaSource.TMDB)
+            var sizes = GetSizesByImageType(client, type);
+            if (sizes.Count > 0)
             {
-                Width = (ushort)x.Width,
-                Height = (ushort)x.Height,
-                Resolution = MetaImageExts.EstimateResolution(x.Height, x.Width),
-                Url = client.GetImageUrl("{RM_TO_SET}", x.FilePath)
-            }).ToList();
-            return null;
+                foreach (var item in images)
+                {
+                    ushort width = (ushort)item.Width;
+                    ushort height = (ushort)item.Height;
+                    double ratio = (double)width / height;
+
+                    foreach (var size in sizes)
+                    {
+                        if (size.StartsWith("w"))
+                        {
+                            width = ushort.Parse(size.TrimStart('w'));
+                            height = Convert.ToUInt16(width / ratio);
+                        }
+                        var img = new MetaImageNx(type, MetaSource.TMDB)
+                        {
+                            Width = width,
+                            Height = height,
+                            Resolution = MetaImageExts.EstimateResolution(height, width),
+                            Url = client.GetImageUrl(size, item.FilePath)
+                        };
+                        yield return img;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var x in images)
+                {
+                    yield return new MetaImageNx(type, MetaSource.TMDB)
+                    {
+                        Width = (ushort)x.Width,
+                        Height = (ushort)x.Height,
+                        Resolution = MetaImageExts.EstimateResolution(x.Height, x.Width),
+                        Url = client.GetImageUrl("original", x.FilePath)
+                    };
+                }
+            }
         }
-        internal static IEnumerable<MetaImage> ExtractImages<TClass>(this TMDbClient client, TClass obj, MetaImageType type, Expression<Func<TClass,string>> pathSelector, Expression<Func<TMDbClient, List<string>>> sizeSelector)
+        internal static List<string> GetSizesByImageType(TMDbClient client, MetaImageType type)
+        {
+            switch (type)
+            {
+                case MetaImageType.Poster:
+                    return client.Config.Images.PosterSizes;
+                case MetaImageType.Backdrop:
+                    return client.Config.Images.BackdropSizes;
+                case MetaImageType.Logo:
+                    return client.Config.Images.LogoSizes;
+                case MetaImageType.Profile:
+                    return client.Config.Images.ProfileSizes;
+                case MetaImageType.Still:
+                    return client.Config.Images.StillSizes;
+            }
+            return new List<string>();
+        }
+        internal static IEnumerable<MetaImageNx> ExtractImages<TClass>(this TMDbClient client, TClass obj, MetaImageType type, Expression<Func<TClass,string>> pathSelector, Expression<Func<TMDbClient, List<string>>> sizeSelector)
             where TClass : class
         {
             if (obj == null)
@@ -114,7 +161,7 @@ namespace Next.PCL.Extensions
             foreach (var item in rr)
                 yield return item;
         }
-        internal static IEnumerable<MetaImage> ExtractImages(this TMDbClient client, MetaImageType type, string path, Expression<Func<TMDbClient, List<string>>> sizeSelector)
+        internal static IEnumerable<MetaImageNx> ExtractImages(this TMDbClient client, MetaImageType type, string path, Expression<Func<TMDbClient, List<string>>> sizeSelector)
         {
             if (!client.HasConfig)
                 throw new ConfigException("Tmdb config not set.");
@@ -126,7 +173,7 @@ namespace Next.PCL.Extensions
 
             foreach (var sz in sizes)
             {
-                var img = new MetaImage(type, MetaSource.TMDB);
+                var img = new MetaImageNx(type, MetaSource.TMDB);
                 img.Url = client.GetImageUrl(sz, path);
                 if (sz.StartsWith("w"))
                 {

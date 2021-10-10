@@ -37,6 +37,14 @@ namespace Next.PCL.Enums
     public enum Resolution
     {
         /// <summary>
+        /// Unknown
+        /// </summary>
+        Unknown = 0,
+        /// <summary>
+        /// 0 --> 480p / SD
+        /// </summary>
+        SD      = 360,
+        /// <summary>
         /// 720 x 480 / WVGA
         /// </summary>
         WVGA    = 480,
@@ -72,13 +80,32 @@ namespace Next.PCL.Enums
         Backdrop    = 2,
         Thumbnail   = 3,
         Screenshot  = 4,
-        Banner      = 5,
+        /// <summary>
+        /// Banners are wide and short images 
+        /// that contain recognizable characters or props 
+        /// from the movie/tv-show and typically includes 
+        /// a clearly visible logo or the name of the movie, movie set or tv show.
+        /// </summary>
+        Banner = 5,
         Icon        = 6,
+        /// <summary>
+        /// Mostly used for company logos.
+        /// </summary>
         Logo        = 7,
         Typography  = 8,
+        /// <summary>
+        /// Portrait picture of an actor or crew member.
+        /// </summary>
         Profile     = 9,
         Still       = 10,
-        ClearArt    = 11,
+        /// <summary>
+        /// Transparent recognizable characters or props 
+        /// from the movie/tv-show along with a logo or name.
+        /// </summary>
+        ClearArt = 11,
+        /// <summary>
+        /// Transparent logo of a movie or tv show.
+        /// </summary>
         ClearLogo   = 12
     }
     public enum MetaVideoType

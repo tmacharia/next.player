@@ -9,7 +9,7 @@ namespace Next.PCL.Online.Models.Tvdb
     {
         public TvdbPerson()
         {
-            Images = new List<MetaImage>();
+            Images = new List<MetaImageNx>();
         }
         public TvdbPerson(TvdbPerson p) :this()
         {
@@ -22,7 +22,7 @@ namespace Next.PCL.Online.Models.Tvdb
         public string Name { get; set; }
         public virtual string Role { get; set; }
 
-        public List<MetaImage> Images { get; set; }
+        public List<MetaImageNx> Images { get; set; }
 
         public override string ToString()
         {

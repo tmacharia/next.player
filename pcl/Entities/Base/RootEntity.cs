@@ -2,7 +2,11 @@
 
 namespace Next.PCL.Entities
 {
-    public abstract class RootEntity<TKey>
+    public interface IIdEntity<TKey>
+    {
+        TKey Id { get; set; }
+    }
+    public abstract class RootEntity<TKey> : IIdEntity<TKey>
     {
         public RootEntity()
         {

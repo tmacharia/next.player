@@ -11,11 +11,11 @@ namespace Next.PCL.Online.Models.Tvdb
         public TinyTvdbModel()
         {
             Source = MetaSource.TVDB;
-            Posters = new List<MetaImage>();
+            Posters = new List<MetaImageNx>();
         }
         public Uri Url { get; set; }
         public string Name { get; set; }
         public MetaSource Source { get; set; }
-        public List<MetaImage> Posters { get; set; }
+        public List<MetaImageNx> Posters { get; set; }
     }
 }

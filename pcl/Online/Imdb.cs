@@ -54,9 +54,9 @@ namespace Next.PCL.Online
             string html = await GetAsync(GenerateUrl(imdbId, "mediaindex"), cancellationToken);
             return _parser.ParseImageGallery(html).Take((int)max).ToList();
         }
-        public async Task<List<MetaImage>> GetImageSetsAsync(string imdbId, string[] imageIds, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetImageSetsAsync(string imdbId, string[] imageIds, CancellationToken cancellationToken = default)
         {
-            var list = new List<MetaImage>();
+            var list = new List<MetaImageNx>();
             foreach (var id in imageIds)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -68,7 +68,7 @@ namespace Next.PCL.Online
             }
             return list;
         }
-        public async Task<List<MetaImage>> GetImageSetAsync(string imdbId, string imageId, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetImageSetAsync(string imdbId, string imageId, CancellationToken cancellationToken = default)
         {
             var url = GenerateUrl(imdbId, $"mediaviewer/{imageId}");
             string html = await GetAsync(url, cancellationToken);
@@ -96,8 +96,9 @@ namespace Next.PCL.Online
             Func<Task<List<ImdbUserList>>> factory = async () =>
             {
                 var ulists = await _parser.ParseUserListsAsync(url, cancellationToken);
-                return ulists.OrderBy(x => x.TitlesCount)
-                            .ThenByDescending(x => x.Name.Length)
+                return ulists
+                            //.OrderBy(x => Guid.NewGuid())
+                            //.ThenByDescending(x => x.Name.Length)
                             .ToList();
             };
 
@@ -108,24 +109,32 @@ namespace Next.PCL.Online
             if (page <= 0)
                 throw new ArgumentOutOfRangeException(nameof(page));
 
-            List<ImdbUserList> ulists = await GetUserListsWithAsync(imdbId, cancellationToken);
-
-            ImdbUserList selected = ulists[page - 1];
-
-            string cacheKey = string.Format("userlist-{0}", selected.ListId);
-
-            Func<Task<List<ImdbSuggestion>>> factory = async () =>
+            try
             {
-                string html = await GetAsync(GenerateUrl(selected.ListId, null, "list"), cancellationToken);
+                List<ImdbUserList> ulists = await GetUserListsWithAsync(imdbId, cancellationToken);
 
-                var list = _parser.ParseSuggestions2(html);
+                ImdbUserList selected = ulists[page - 1];
 
-                return list.Where(x => !x.ImdbId.EqualsOIC(imdbId))
-                    .OrderByDescending(x => x.Score)
-                    .ToList();
-            };
+                string cacheKey = string.Format("userlist-{0}", selected.ListId);
 
-            return await _appCache.GetOrAddAsync(cacheKey, factory);
+                Func<Task<List<ImdbSuggestion>>> factory = async () =>
+                {
+                    //var doc = await _parser.GetHtmlDocumentAsync(GenerateUrl(selected.ListId, null, "list"), cancellationToken, true);
+                    string html = await GetAsync(GenerateUrl(selected.ListId, null, "list"), cancellationToken);
+
+                    var list = _parser.ParseSuggestions2(html, null);
+
+                    return list.Where(x => !x.ImdbId.EqualsOIC(imdbId))
+                        //.OrderByDescending(x => x.Score)
+                        .ToList();
+                };
+
+                return await _appCache.GetOrAddAsync(cacheKey, factory);
+            }
+            catch (Exception)
+            {
+                return new List<ImdbSuggestion>();
+            }
         }
         
         public async Task<List<GeographicLocation>> GetLocationsAsync(string imdbId, CancellationToken cancellationToken = default)

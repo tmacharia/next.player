@@ -10,7 +10,7 @@ namespace Next.PCL.Online.Models
     {
         public TmdbCompany()
         {
-            Logos = new List<MetaImage>();
+            Logos = new List<MetaImageNx>();
         }
         public int Id { get; set; }
         public string Name { get; set; }
@@ -20,18 +20,18 @@ namespace Next.PCL.Online.Models
         public string LogoPath { get; set; }
         public string OriginCountry { get; set; }
 
-        public List<MetaImage> Logos { get; set; }
+        public List<MetaImageNx> Logos { get; set; }
     }
     public class TmdbSearch : SearchMovieTvBase, INamedEntity, IPosterPath
     {
         public TmdbSearch()
         {
-            Posters = new List<MetaImage>();
+            Posters = new List<MetaImageNx>();
         }
         public string Name { get; set; }
         public DateTime? ReleaseDate { get; set; }
 
-        public List<MetaImage> Posters { get; set; }
+        public List<MetaImageNx> Posters { get; set; }
 
         public override string ToString()
         {

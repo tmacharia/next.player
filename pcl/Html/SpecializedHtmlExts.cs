@@ -17,7 +17,13 @@ namespace Next.PCL.Html
                 if (!node.Name.EqualsOIC("a"))
                     throw new ExpectationFailedException("a", node.Name);
 
-                return node.GetHref().ParseToUri().ParseToMetaUrl(metaSource);
+                string href = node.GetHref();
+                if (href.StartsWith("/"))
+                {
+                    href = SiteUrls.GetBaseUrl(metaSource) + href;
+                }
+
+                return href.ParseToUri().ParseToMetaUrl(metaSource);
             }
             return null;
         }

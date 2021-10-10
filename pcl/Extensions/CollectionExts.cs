@@ -16,5 +16,15 @@ namespace Next.PCL.Extensions
             if (item != null)
                 ts.Add(item);
         }
+        public static void AddToThis<T>(this List<T> ts, IEnumerable<T> items)
+        {
+            if (items.IsNotNullOrEmpty())
+            {
+                foreach (var item in items)
+                {
+                    ts.AddToThis(item);
+                }
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace Next.PCL.Extensions
             return val.GetValueOrDefault();
         }
     }
-    internal static class StringExts
+    public static class StringExts
     {
         internal static bool IsNotEmptyOr(this string s, string defaultValue = "N/A")
         {
@@ -44,7 +44,7 @@ namespace Next.PCL.Extensions
             return null;
         }
         
-        internal static int? ParseToInt(this string s)
+        public static int? ParseToInt(this string s)
         {
             if (s.IsValid())
             {

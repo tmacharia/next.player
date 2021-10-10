@@ -9,7 +9,7 @@ namespace Next.PCL.Extensions
 {
     internal static class TvMazeExts
     {
-        internal static IEnumerable<MetaImage> ParseToMetaImages(this TvMazeImage tvMazeImage)
+        internal static IEnumerable<MetaImageNx> ParseToMetaImages(this TvMazeImage tvMazeImage)
         {
             if(tvMazeImage != null && tvMazeImage.Sizes != null)
             {
@@ -54,19 +54,19 @@ namespace Next.PCL.Extensions
 
             return crew;
         }
-        private static MetaImage CreateImage(this TvMazeImageUrl tvMazeImageUrl, MetaImageType type)
+        private static MetaImageNx CreateImage(this TvMazeImageUrl tvMazeImageUrl, MetaImageType type)
         {
-            var meta = new MetaImage(type, MetaSource.TVMAZE, tvMazeImageUrl.Url);
+            var meta = new MetaImageNx(type, MetaSource.TVMAZE, tvMazeImageUrl.Url);
             meta.Width = tvMazeImageUrl.Width;
             meta.Height = tvMazeImageUrl.Height;
             meta.Resolution = meta.DetermineResolution();
             return meta;
         }
-        private static IEnumerable<MetaImage> CreateImage(this TvMazeTinyImage tinyImage, MetaImageType type)
+        private static IEnumerable<MetaImageNx> CreateImage(this TvMazeTinyImage tinyImage, MetaImageType type)
         {
             if(tinyImage != null)
             {
-                var meta = new MetaImage(type, MetaSource.TVMAZE);
+                var meta = new MetaImageNx(type, MetaSource.TVMAZE);
                 if(tinyImage.Original != null)
                 {
                     meta.Url = tinyImage.Original;

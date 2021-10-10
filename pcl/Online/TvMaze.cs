@@ -53,7 +53,7 @@ namespace Next.PCL.Online
         }
 
 
-        public async Task<List<MetaImage>> GetShowImagesAsync(int showId, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetShowImagesAsync(int showId, CancellationToken cancellationToken = default)
         {
             var list = await RequestAsync<List<TvMazeImage>>($"/shows/{showId}/images", cancellationToken);
             return list.SelectMany(x => x.ParseToMetaImages()).ToList();

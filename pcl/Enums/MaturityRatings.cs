@@ -3,20 +3,23 @@
 namespace Next.PCL.Enums
 {
     /// <summary>
-    /// Movies Maturity Ratings
+    /// Maturity Ratings, Motion Picture Association.
     /// </summary>
     public enum MPAA
     {
         /// <summary>
-        /// Kids(All), GE
+        /// General Audiences.<br/>
+        /// All Ages Admitted
         /// </summary>
         G = 0X0,
         /// <summary>
-        /// Older Kids(7+), PG
+        /// Parental Guidance Suggested.<br/>
+        /// Some material may not be suitable for children.
         /// </summary>
         PG = 0X07,
         /// <summary>
-        /// Teens(13+), PG-13
+        /// Parents Strongly Cautioned.<br/>
+        /// Some material may be inappropriate for children under 13.
         /// </summary>
         [Description("PG-13")] PG_13 = 0X013,
         /// <summary>
@@ -24,7 +27,7 @@ namespace Next.PCL.Enums
         /// </summary>
         [Description("PG-16")] PG_16 = 0X016,
         /// <summary>
-        /// Adults(18+), NC-17
+        /// No One 17 &amp; Under Admitted.
         /// </summary>
         [Description("NC-17")] NC_17 = 0X0180,
         /// <summary>
@@ -35,6 +38,10 @@ namespace Next.PCL.Enums
         /// Adults(18+), Unrated
         /// </summary>
         Unrated = 0X0182,
+        /// <summary>
+        /// Restricted.<br/>
+        /// Under 17 requires accompanying parent or adult guardian.
+        /// </summary>
         R = 0X0183
     }
     public enum TVAA

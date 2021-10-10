@@ -59,7 +59,7 @@ namespace Next.PCL.Extensions
         {
             return node.ParseToCompany(MetaSource.TVDB, companyType);
         }
-        internal static IEnumerable<MetaImage> ParseToImagesAs(this HtmlNode node, MetaImageType type)
+        internal static IEnumerable<MetaImageNx> ParseToImagesAs(this HtmlNode node, MetaImageType type)
         {
             if (node != null)
             {
@@ -91,37 +91,40 @@ namespace Next.PCL.Extensions
         }
 
 
-        internal static List<MetaImage> GetArtworksOfType(this HtmlDocument doc, MetaImageType type)
+        internal static List<MetaImageNx> GetArtworksOfType(this HtmlDocument doc, MetaImageType type)
         {
-            string imageType = CastImageType(type);
-
-            var images = new List<MetaImage>();
-            var anchors = doc.FindAll($"//a[@rel='artwork_{imageType}']");
-            if (anchors == null)
-                return images;
-            foreach (var item in anchors)
+            var images = new List<MetaImageNx>();
+            if(doc != null)
             {
-                var link_url = item.GetHref().ParseToUri();
-                var img_url = item.Element("img")?.GetAttrib("src")?.ParseToUri();
+                string imageType = CastImageType(type);
 
-                if (img_url != null)
-                    images.Add(img_url.CreateImage(type));
+                var anchors = doc.FindAll($"//a[@rel='artwork_{imageType}']");
+                if (anchors == null)
+                    return images;
+                foreach (var item in anchors)
+                {
+                    var link_url = item.GetHref().ParseToUri();
+                    var img_url = item.Element("img")?.GetAttrib("src")?.ParseToUri();
 
-                if (link_url != null)
-                    images.Add(link_url.CreateImage(type, 1));
+                    if (img_url != null)
+                        images.Add(img_url.CreateImage(type));
+
+                    if (link_url != null)
+                        images.Add(link_url.CreateImage(type, 1));
+                }
             }
             return images;
         }
-        internal static MetaImage CreateImage(this Uri uri, MetaImageType type, uint imageType = 0)
+        internal static MetaImageNx CreateImage(this Uri uri, MetaImageType type, uint imageType = 0)
         {
-            var meta = new MetaImage(type, MetaSource.TVDB, uri);
+            var meta = new MetaImageNx(type, MetaSource.TVDB, uri);
             var size = meta.GetDefaultDimensions(imageType);
             meta.Width = (ushort)size.Width;
             meta.Height = (ushort)size.Height;
             meta.Resolution = meta.DetermineResolution();
             return meta;
         }
-        private static Size GetDefaultDimensions(this MetaImage metaImage, uint imageType = 0)
+        private static Size GetDefaultDimensions(this MetaImageNx metaImage, uint imageType = 0)
         {
             if (imageType == 0)
             {

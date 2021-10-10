@@ -12,7 +12,7 @@ namespace Next.PCL.Online.Models.Yts
         {
             Source = MetaSource.YTS_MX;
             Genres = new List<string>();
-            Images = new List<MetaImage>();
+            Images = new List<MetaImageNx>();
         }
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -63,6 +63,6 @@ namespace Next.PCL.Online.Models.Yts
 
         [JsonProperty("genres")]
         public override List<string> Genres { get; set; }
-        public List<MetaImage> Images { get; set; }
+        public List<MetaImageNx> Images { get; set; }
     }
 }

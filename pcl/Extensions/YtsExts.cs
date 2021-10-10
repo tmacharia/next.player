@@ -11,7 +11,7 @@ namespace Next.PCL.Extensions
     {
         internal static void ResolveMetaImages(this YtsMovie model)
         {
-            var list = new List<MetaImage>();
+            var list = new List<MetaImageNx>();
             if(model != null)
             {
                 model.AddImageTo(x => x.Poster, MetaImageType.Poster, Resolution.WVGA, ref list);
@@ -28,12 +28,12 @@ namespace Next.PCL.Extensions
             if (list.Count > 0)
                 model.Images.AddRange(list);
         }
-        private static void AddImageTo(this YtsMovie model, Expression<Func<YtsMovie,Uri>> keySelector, MetaImageType type, Resolution resolution, ref List<MetaImage> images)
+        private static void AddImageTo(this YtsMovie model, Expression<Func<YtsMovie,Uri>> keySelector, MetaImageType type, Resolution resolution, ref List<MetaImageNx> images)
         {
             var url = model.GetPropValue2(keySelector);
             if(url != null)
             {
-                images.Add(new MetaImage(type, MetaSource.YTS_MX)
+                images.Add(new MetaImageNx(type, MetaSource.YTS_MX)
                 {
                     Url = url,
                     Resolution = resolution

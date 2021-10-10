@@ -10,9 +10,9 @@ namespace Next.PCL.Online.Models
     {
         public TmdbMovie()
         {
-            Posters = new List<MetaImage>();
+            Posters = new List<MetaImageNx>();
         }
-        public List<MetaImage> Posters { get; set; }
+        public List<MetaImageNx> Posters { get; set; }
         public override string ToString()
         {
             return string.Format("{0:yyyy} \n" +
@@ -24,9 +24,9 @@ namespace Next.PCL.Online.Models
     {
         public TmdbShow()
         {
-            Posters = new List<MetaImage>();
+            Posters = new List<MetaImageNx>();
         }
-        public List<MetaImage> Posters { get; set; }
+        public List<MetaImageNx> Posters { get; set; }
 
         public override string ToString()
         {
@@ -39,9 +39,9 @@ namespace Next.PCL.Online.Models
     {
         public TmdbSeason()
         {
-            Posters = new List<MetaImage>();
+            Posters = new List<MetaImageNx>();
         }
-        public List<MetaImage> Posters { get; set; }
+        public List<MetaImageNx> Posters { get; set; }
         public override string ToString()
         {
             return string.Format("{0}, {1} episodes\n" +
@@ -51,7 +51,7 @@ namespace Next.PCL.Online.Models
     public interface ITmdbEntity : IPosterPath
     {
         List<Genre> Genres { get; set; }
-        List<MetaImage> Posters { get; set; }
+        List<MetaImageNx> Posters { get; set; }
         ResultContainer<Video> Videos { get; set; }
         List<ProductionCountry> ProductionCountries { get; set; }
         List<ProductionCompany> ProductionCompanies { get; set; }

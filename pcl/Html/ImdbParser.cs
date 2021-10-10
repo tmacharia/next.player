@@ -141,7 +141,7 @@ namespace Next.PCL.Html
                 }
             }
         }
-        internal IEnumerable<MetaImage> ParseImdbImages(string html, HtmlDocument htmlDocument = default)
+        internal IEnumerable<MetaImageNx> ParseImdbImages(string html, HtmlDocument htmlDocument = default)
         {
             var doc = htmlDocument ?? ConvertToHtmlDoc(html);
 
@@ -294,15 +294,15 @@ namespace Next.PCL.Html
 
                 var ulist = new ImdbUserList();
                 ulist.Name = link?.ParseText();
-                ulist.ListId = href.Split('/').LastOrDefault();
-                ulist.Url = (SiteUrls.IMDB + href).ParseToUri();
+                ulist.ListId = href?.Split('/').LastOrDefault();
+                if (href.IsValid())
+                    ulist.Url = (SiteUrls.IMDB + href).ParseToUri();
                 if(img != null)
                 {
                     ulist.ImageUrl = img?.GetAttrib("src").ParseToUri();
 
                     //Console.WriteLine(string.Join(",", img.Attributes.Select(x => x.Name)));
                 }
-
 
                 var rg = Regex.Match(meta, @"\d+");
                 if (rg.Success)
@@ -352,11 +352,12 @@ namespace Next.PCL.Html
             var suggestion = new ImdbSuggestion();
             suggestion.ImdbId = imdbId;
             suggestion.Name = rec_poster.GetAttrib("alt");
-            suggestion.Poster = rec_poster.GetAttrib("src").ParseToUri();
+            suggestion.Poster = rec_poster.GetAttrib("loadlate").ParseToUri();
             suggestion.Url = string.Format("{0}/title/{1}", SiteUrls.IMDB, imdbId).ParseToUri();
             suggestion.Runtime = infos.FirstContainingClass("runtime").ParseText().ParseToRuntime();
             suggestion.Genres = infos.FirstContainingClass("genre").ParseText().SplitByAndTrim(",").ToList();
             suggestion.Score = node.ExtendFind("div/div/div/span[@class='ipl-rating-star__rating']").ParseDouble();
+            suggestion.Plot = node.ExtendFindAll("div/p")?.ElementAtOrDefault(1)?.ParseText();
 
             var rg = Regex.Match(hd3, @"\d{4}");
             if (rg.Success)

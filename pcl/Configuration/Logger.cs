@@ -16,7 +16,7 @@ namespace Next.PCL
                         .Enrich.FromLogContext()
                         .WriteTo.Console();
 
-#if RELEASE
+#if RELEASE || DEBUG
             config = config.WriteTo.Conditional(
                     x => x.Level == LogEventLevel.Error,
                     s => s.File(errors_log_file))

@@ -10,26 +10,17 @@ namespace Next.PCL.Entities
         {
             Id = Constants.random.Next();
         }
-
         public bool Equals(BaseEntity other)
         {
-            if (other == null)
-                return false;
-
-            return Id == other.Id;
+            return other != null && Id == other.Id;
         }
-
         public bool Equals(BaseEntity x, BaseEntity y)
         {
-            if (x == null)
-                return false;
-
-            return x.Equals(y);
+            return x != null && x.Equals(y);
         }
-
         public int GetHashCode(BaseEntity obj)
         {
-            return obj.Id;
+            return obj != null ? obj.Id : 0;
         }
     }
 }

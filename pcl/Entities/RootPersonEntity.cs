@@ -10,7 +10,7 @@ namespace Next.PCL.Entities
         public RootPersonEntity() : base()
         {
             Urls = new List<MetaUrl>();
-            Images = new List<MetaImage>();
+            Images = new List<MetaImageNx>();
         }
         public RootPersonEntity(Person person) : this()
         {
@@ -27,7 +27,7 @@ namespace Next.PCL.Entities
         public DateTime? LastModified { get; set; }
 
         public List<MetaUrl> Urls { get; set; }
-        public List<MetaImage> Images { get; set; }
+        public List<MetaImageNx> Images { get; set; }
 
         public override string ToString()
         {

@@ -10,6 +10,7 @@ using Next.PCL.AutoMap;
 using Next.PCL.Configurations;
 using Next.PCL.Entities;
 using Next.PCL.Enums;
+using Next.PCL.Exceptions;
 using Next.PCL.Extensions;
 using Next.PCL.Metas;
 using Next.PCL.Online;
@@ -132,8 +133,8 @@ namespace Next.PCL.Html
             model.Name = doc.GetElementbyId("series_title").ParseText();
             model.Address = GetAsText(lists, TvDbKeys.Country);
             model.Service = GetAsText(lists, TvDbKeys.PrimaryType).ParseToCompanyType();
-            model.Urls.Add(companyUrl.ParseToMetaUrl(MetaSource.TVDB));
-            model.Images.AddRange(img.ParseToImagesAs(MetaImageType.Logo));
+            model.Urls.AddToThis(companyUrl.ParseToMetaUrl(MetaSource.TVDB));
+            model.Images.AddToThis(img.ParseToImagesAs(MetaImageType.Logo));
 
             return model;
         }
@@ -183,6 +184,7 @@ namespace Next.PCL.Html
             return runs.Median();
         }
 
+        #region Seasons & Episodes
         public TvdbSeason ParseSimpleSeason(HtmlNode node)
         {
             int? num = node.GetAttrib("data-number").ParseToInt();
@@ -222,7 +224,7 @@ namespace Next.PCL.Html
                 Url = seasonUrl,
                 Name = doc.Find("//h1[@class='translated_title']").ParseText(),
                 Plot = doc.FindAll("//div[@class='change_translation_text']")
-                           .FirstWithAttrib("data-language", Config.Language)?.ParseText(),
+                           ?.FirstWithAttrib("data-language", Config.Language)?.ParseText(),
             };
             model.Id = doc.GetElementbyId("season_deleted_reason_confirm")
                        ?.GetAttrib("data-id")?.ParseToInt() ?? 0;
@@ -314,7 +316,9 @@ namespace Next.PCL.Html
 
             return model;
         }
+        #endregion
 
+        #region Cast & Crew
         internal IEnumerable<Cast> ParseCast(string html, HtmlDocument document = default)
         {
             var doc = document ?? ConvertToHtmlDoc(html);
@@ -435,15 +439,28 @@ namespace Next.PCL.Html
 
             return cast;
         }
+        #endregion
 
-        internal async Task<List<MetaImage>> GetAndParseImagesAsync(Uri uri, MetaImageType type, CancellationToken cancellationToken = default)
+        internal async Task<List<MetaImageNx>> GetAndParseImagesAsync(Uri uri, MetaImageType type, CancellationToken cancellationToken = default)
         {
-            string imageType = TvdbExts.CastImageType(type);
-            var url = string.Format("{0}/artwork/{1}", uri.OriginalString.TrimEnd('/'), imageType).ParseToUri();
-            var doc = await GetHtmlDocumentAsync(url, cancellationToken);
-            return doc.GetArtworksOfType(type);
+            try
+            {
+                string imageType = TvdbExts.CastImageType(type);
+                var url = string.Format("{0}/artwork/{1}", uri.OriginalString.TrimEnd('/'), imageType).ParseToUri();
+                var doc = await GetHtmlDocumentAsync(url, cancellationToken);
+                return doc.GetArtworksOfType(type);
+            }
+            catch (Exception xe)
+            {
+                if (xe is OnlineException)
+                {
+                    return new List<MetaImageNx>();
+                }
+                throw;
+            }
         }
 
+        
         private string GetAsText(HtmlNodeCollection nodes, string name)
         {
             return nodes.FirstOrDefault(x
@@ -476,6 +493,22 @@ namespace Next.PCL.Html
                 path += xPath;
             }
             return elem.ExtendFindAll(path);
+        }
+
+        public override Task<string> GetAsync(Uri uri, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return base.GetAsync(uri, cancellationToken);
+            }
+            catch (Exception xe)
+            {
+                if (xe is OnlineException)
+                {
+                    return Task.FromResult(string.Empty);
+                }
+                throw;
+            }
         }
     }
 }

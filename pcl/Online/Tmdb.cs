@@ -48,7 +48,7 @@ namespace Next.PCL.Online
             map.Posters.AddRange(map.GetPosters(_client));
             return map;
         }
-        public async Task<List<MetaImage>> GetMovieImagesAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetMovieImagesAsync(int id, CancellationToken cancellationToken = default)
         {
             ImagesWithId res = await _client.GetMovieImagesAsync(id, cancellationToken: cancellationToken);
             return res.GetAllImages(_client);
@@ -66,7 +66,7 @@ namespace Next.PCL.Online
             map.Posters.AddRange(map.GetPosters(_client));
             return map;
         }
-        public async Task<List<MetaImage>> GetShowImagesAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetShowImagesAsync(int id, CancellationToken cancellationToken = default)
         {
             ImagesWithId res = await _client.GetTvShowImagesAsync(id, cancellationToken: cancellationToken);
             return res.GetAllImages(_client);
@@ -83,12 +83,12 @@ namespace Next.PCL.Online
             map.Posters.AddRange(map.GetPosters(_client));
             return map;
         }
-        public async Task<List<MetaImage>> GetSeasonImagesAsync(int showId, int season, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetSeasonImagesAsync(int showId, int season, CancellationToken cancellationToken = default)
         {
             PosterImages res = await _client.GetTvSeasonImagesAsync(showId,season, cancellationToken: cancellationToken);
             return res.GetPosters(_client);
         }
-        public async Task<List<MetaImage>> GetEpisodeImagesAsync(int showId, int season, int episode, CancellationToken cancellationToken = default)
+        public async Task<List<MetaImageNx>> GetEpisodeImagesAsync(int showId, int season, int episode, CancellationToken cancellationToken = default)
         {
             StillImages res = await _client.GetTvEpisodeImagesAsync(showId, season,episode, cancellationToken: cancellationToken);
             return res.GetStills(_client);

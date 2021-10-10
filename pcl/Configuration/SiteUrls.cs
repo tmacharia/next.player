@@ -17,6 +17,19 @@ namespace Next.PCL
         {
             return ParseToSiteDomain(uri?.OriginalString, hint);
         }
+        public static string GetBaseUrl(MetaSource metaSource)
+        {
+            switch (metaSource)
+            {
+                case MetaSource.IMDB: return IMDB;
+                case MetaSource.TMDB: return TMDB;
+                case MetaSource.TVDB: return TVDB;
+                case MetaSource.OMDB: return OMDB;
+                case MetaSource.TVMAZE: return TVMAZE;
+                case MetaSource.YTS_MX: return YTS;
+                default: return string.Empty;
+            }
+        }
         public static OtherSiteDomain ParseToSiteDomain(string url, string hint = default)
         {
             if (url.IsValid())

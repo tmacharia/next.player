@@ -16,7 +16,7 @@ namespace Next.PCL.Entities
         List<MetaID> IDs { get; set; }
         List<Alias> Aliases { get; set; }
         List<MetaUrl> Urls { get; set; }
-        List<MetaImage> Images { get; set; }
+        List<MetaImageNx> Images { get; set; }
     }
     /// <summary>
     /// Class B of related media items. Targets; movies,

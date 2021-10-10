@@ -16,7 +16,7 @@ namespace Next.PCL.Entities
     }
     public interface IMetaImages
     {
-        List<MetaImage> Images { get; set; }
+        List<MetaImageNx> Images { get; set; }
     }
     public interface IMetaVideos
     {

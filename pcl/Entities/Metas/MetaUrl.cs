@@ -13,6 +13,11 @@ namespace Next.PCL.Entities
         {
             Source = metaSource;
         }
+        public MetaUrl(MetaSource metaSource, Uri uri) 
+            : this(metaSource)
+        {
+            Url = uri;
+        }
         public Uri Url { get; set; }
         public MetaSource Source { get; set; }
         public OtherSiteDomain Domain { get; set; }
@@ -47,10 +52,28 @@ namespace Next.PCL.Entities
         {
             return obj.GetHashCode();
         }
-
+        
         public override string ToString()
         {
             return string.Format("[{0}, {1}]\t{2}", Domain, Source, Url);
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is MetaUrl mu)
+                return Equals(mu);
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+                // Suitable nullity checks etc, of course :)
+                hash = (hash * 23) + Source.GetHashCode();
+                hash = (hash * 23) + Domain.GetHashCode();
+                hash = (hash * 23) + Url?.GetHashCode() ?? 0;
+                return hash;
+            }
         }
     }
 }
